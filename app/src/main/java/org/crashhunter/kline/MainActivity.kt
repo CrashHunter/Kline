@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import org.crashhunter.kline.data.IconInfo
+import org.crashhunter.kline.utils.StringUtils
 import org.jsoup.Jsoup
 import java.io.IOException
 
@@ -14,6 +15,10 @@ class MainActivity : AppCompatActivity() {
 
 
     var handler: Handler = Handler()
+
+
+    val volumMin = 9 * 1000000
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -65,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                                 var sevenDaysPercent = icons[i].select("td")[9]
                                 Log.e("icon sevenDaysPercent", sevenDaysPercent.text())
 
-                                if (volumeStr.toLong() > 10000000) {
+                                if (volumeStr.toLong() > volumMin) {
 
                                     var iconInfo = IconInfo()
                                     iconInfo.name = name.text()
@@ -92,8 +97,9 @@ class MainActivity : AppCompatActivity() {
 
                     for (i in 0 until iconInfos.size) {
                         var item = iconInfos[i]
+                        contextStr.append("${i + 1}: ")
                         contextStr.append(item.name + " ")
-                        contextStr.append(item.volume.toString() + " ")
+                        contextStr.append(StringUtils.getFormattedVolume(item.volume.toString()) + " ")
                         contextStr.append(item.oneDayPercent.toString() + " ")
                         contextStr.append(item.sevenDaysPercent.toString() + "\n")
                     }
