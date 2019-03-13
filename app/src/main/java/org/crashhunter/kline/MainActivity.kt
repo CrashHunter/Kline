@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     var handler: Handler = Handler()
 
 
-    val volumMin = 9 * 1000000
+    val volumMin = 10 * 1000000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 
                                 if (volumeStr.toLong() > volumMin) {
 
-                                    if (filterStable(name.text()) || filterTop(rank.text())) {
+                                    if (filterStable(name.text()) || filterBlack(name.text()) || filterTop(rank.text())) {
                                         continue
                                     }
 
@@ -88,10 +88,6 @@ class MainActivity : AppCompatActivity() {
                                     iconInfo.sevenDaysPercent = sevenDaysPercent.text().replace("%", "").toDouble()
                                     iconInfos.add(iconInfo)
 
-//                                    contextStr.append(index.text() + "-")
-//                                    contextStr.append(name.text() + "-")
-//                                    contextStr.append(sevenDaysPercent.text() + "-")
-//                                    contextStr.append(volumeStr + "\n")
                                 }
 
                             }
@@ -157,7 +153,18 @@ class MainActivity : AppCompatActivity() {
 
         return when (name) {
 
-            "USDT", "DAI", "TUSD", "USDC", "BITCNY" -> true
+            "USDT", "DAI", "TUSD", "USDC", "BITCNY", "PAX" -> true
+
+            else -> false
+        }
+    }
+
+    private fun filterBlack(name: String): Boolean {
+
+        return when (name) {
+
+            "ABBC", "XMR", "DMT", "BTG", "BSV", "BCD", "ZEC", "BTS",
+            "XEM", "OMG", "IGNIS", "EMC2", "COSM", "RLC", "GRS" -> true
 
             else -> false
         }
