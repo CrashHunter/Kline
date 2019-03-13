@@ -6,6 +6,8 @@ package org.crashhunter.kline.data
 class IconInfo {
 
     var name = ""
+    var rank = ""
+    var cap: Long = 0
     var volume: Long = 0
     var oneDayPercent: Double = 0.0
     var sevenDaysPercent: Double = 0.0

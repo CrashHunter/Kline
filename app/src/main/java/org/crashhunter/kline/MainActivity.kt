@@ -46,19 +46,20 @@ class MainActivity : AppCompatActivity() {
 
                     for (i in 0 until icons.size) {
 
-                        var index = icons[i].select("td")[0]
-                        Log.e("icon index", index.text())
+                        var rank = icons[i].select("td")[0]
+                        Log.e("icon rank", rank.text())
                         var name = icons[i].select("td")[2]
-//                        contextStr.append(name.text() + "-")
                         Log.e("icon name", name.text())
+
+                        var cap = icons[i].select("td")[3]
+                        Log.e("icon cap", cap.text())
+                        var capStr = cap.text().replace("$", "").replace(",", "")
 
                         if (icons[i].select("td").size < 7) {
                             Log.e("icon name", "----------------" + name.text())
                         } else {
                             var volume = icons[i].select("td")[6].select("a")
                             Log.e("icon volume", volume.text())
-//                            contextStr.append(volume.text() + "\n")
-
                             var volumeStr = volume.text().replace("$", "").replace(",", "")
 
 
@@ -74,7 +75,9 @@ class MainActivity : AppCompatActivity() {
 
                                     var iconInfo = IconInfo()
                                     iconInfo.name = name.text()
+                                    iconInfo.rank = rank.text()
                                     iconInfo.volume = volumeStr.toLong()
+                                    iconInfo.cap = capStr.toLong()
                                     iconInfo.oneDayPercent = oneDayPercent.text().replace("%", "").toDouble()
                                     iconInfo.sevenDaysPercent = sevenDaysPercent.text().replace("%", "").toDouble()
                                     iconInfos.add(iconInfo)
@@ -99,6 +102,8 @@ class MainActivity : AppCompatActivity() {
                         var item = iconInfos[i]
                         contextStr.append("${i + 1}: ")
                         contextStr.append(item.name + " ")
+                        contextStr.append("No.${item.rank} ")
+                        contextStr.append(StringUtils.getFormattedVolume(item.cap.toString()) + " ")
                         contextStr.append(StringUtils.getFormattedVolume(item.volume.toString()) + " ")
                         contextStr.append(item.oneDayPercent.toString() + " ")
                         contextStr.append(item.sevenDaysPercent.toString() + "\n")
