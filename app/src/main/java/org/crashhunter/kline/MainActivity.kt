@@ -2,6 +2,9 @@ package org.crashhunter.kline
 
 import android.os.Bundle
 import android.os.Handler
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -31,7 +34,7 @@ class MainActivity : AppCompatActivity() {
                     var iconInfos = ArrayList<IconInfo>()
 
                     var titleStr = StringBuffer()
-                    var contextStr = StringBuffer()
+                    var contextStr = SpannableStringBuilder()
 
                     var urlStr = "https://coinmarketcap.com/all/views/all/"
 //                    titleStr.append(urlStr)
@@ -107,10 +110,28 @@ class MainActivity : AppCompatActivity() {
                         contextStr.append("${i + 1}: ")
                         contextStr.append(item.name + " ")
                         contextStr.append("No.${item.rank} ")
-                        contextStr.append(StringUtils.getFormattedVolume(item.cap.toString()) + " ")
+//                        contextStr.append(StringUtils.getFormattedVolume(item.cap.toString()) + " ")
                         contextStr.append(StringUtils.getFormattedVolume(item.volume.toString()) + " ")
-                        contextStr.append(item.oneDayPercent.toString() + " ")
-                        contextStr.append(item.sevenDaysPercent.toString() + "\n")
+
+
+                        var oneDayPercent = item.oneDayPercent.toString() + " "
+                        var oneDayPercentStr = SpannableStringBuilder(oneDayPercent)
+                        if (item.oneDayPercent > 0) {
+                            oneDayPercentStr.setSpan(ForegroundColorSpan(getColor(android.R.color.holo_green_dark)), 0, oneDayPercent.length - 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+                        } else {
+                            oneDayPercentStr.setSpan(ForegroundColorSpan(getColor(android.R.color.holo_red_light)), 0, oneDayPercent.length - 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+                        }
+                        contextStr.append(oneDayPercentStr)
+
+
+                        var sevenDaysPercent = item.sevenDaysPercent.toString() + "\n"
+                        var sevenDaysPercentStr = SpannableStringBuilder(sevenDaysPercent)
+                        if (item.sevenDaysPercent > 0) {
+                            sevenDaysPercentStr.setSpan(ForegroundColorSpan(getColor(android.R.color.holo_green_dark)), 0, sevenDaysPercentStr.length - 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+                        } else {
+                            sevenDaysPercentStr.setSpan(ForegroundColorSpan(getColor(android.R.color.holo_red_light)), 0, sevenDaysPercentStr.length - 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+                        }
+                        contextStr.append(sevenDaysPercentStr)
                     }
 
 
