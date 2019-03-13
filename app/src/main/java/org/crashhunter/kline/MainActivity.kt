@@ -30,19 +30,17 @@ class MainActivity : AppCompatActivity() {
 
                     var iconInfos = ArrayList<IconInfo>()
 
+                    var titleStr = StringBuffer()
                     var contextStr = StringBuffer()
 
                     var urlStr = "https://coinmarketcap.com/all/views/all/"
-                    val doc = Jsoup.connect(urlStr).get()
+//                    titleStr.append(urlStr)
 
+                    val doc = Jsoup.connect(urlStr).get()
 //                    contextStr.append(doc.toString())
 
                     var icons = doc.select("#currencies-all > tbody > tr")
                     Log.e("icons size", icons.size.toString())
-
-
-//                    Log.e("icon ", icons[0].select("td").toString())
-
 
                     for (i in 0 until icons.size) {
 
@@ -73,6 +71,11 @@ class MainActivity : AppCompatActivity() {
 
                                 if (volumeStr.toLong() > volumMin) {
 
+                                    if (filterStable(name.text()) || filterTop(rank.text())) {
+                                        continue
+                                    }
+
+
                                     var iconInfo = IconInfo()
                                     iconInfo.name = name.text()
                                     iconInfo.rank = rank.text()
@@ -96,6 +99,7 @@ class MainActivity : AppCompatActivity() {
 
                     }
 
+                    titleStr.append("Size: ${iconInfos.size}")
                     iconInfos.sortBy { it.sevenDaysPercent }
 
                     for (i in 0 until iconInfos.size) {
@@ -112,7 +116,7 @@ class MainActivity : AppCompatActivity() {
 
                     handler.post {
 
-                        url.text = urlStr
+                        url.text = titleStr
 
                         context.text = contextStr
 
@@ -125,6 +129,23 @@ class MainActivity : AppCompatActivity() {
             }
         }.start()
 
+
+    }
+
+    private fun filterStable(name: String): Boolean {
+
+        return when (name) {
+
+            "USDT", "DAI", "TUSD", "USDC", "BITCNY" -> true
+
+            else -> false
+        }
+    }
+
+
+    private fun filterTop(rank: String): Boolean {
+
+        return rank.toInt() <= 10
 
     }
 }
