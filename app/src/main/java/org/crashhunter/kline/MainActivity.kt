@@ -184,50 +184,80 @@ class MainActivity : AppCompatActivity() {
         for (i in 0 until coinInfos.size) {
             var item = coinInfos[i]
             contextStr.append("${i + 1}: ")
-            contextStr.append(item.name + " ")
+
+            if (filterHold(item.name)) {
+
+                var nameStr = item.name + " "
+                var nameSpan = SpannableStringBuilder(nameStr)
+                nameSpan.setSpan(
+                    ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
+                    0,
+                    nameStr.length - 1,
+                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                )
+
+                contextStr.append(nameSpan)
+
+            } else {
+                contextStr.append(item.name + " ")
+            }
+
+
             contextStr.append("No.${item.rank} ")
-            //                        contextStr.append(StringUtils.getFormattedVolume(item.cap.toString()) + " ")
+            // contextStr.append(StringUtils.getFormattedVolume(item.cap.toString()) + " ")
             contextStr.append(StringUtils.getFormattedVolume(item.volume.toString()) + " ")
 
 
-            var oneDayPercent = item.oneDayPercent.toString() + " "
-            var oneDayPercentStr = SpannableStringBuilder(oneDayPercent)
+            var oneDayPercentStr = item.oneDayPercent.toString() + " "
+            var oneDayPercentSpan = SpannableStringBuilder(oneDayPercentStr)
             if (item.oneDayPercent > 0) {
-                oneDayPercentStr.setSpan(
+                oneDayPercentSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_green_dark)),
                     0,
-                    oneDayPercent.length - 1,
+                    oneDayPercentStr.length - 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE
                 )
             } else {
-                oneDayPercentStr.setSpan(
+                oneDayPercentSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
                     0,
-                    oneDayPercent.length - 1,
+                    oneDayPercentStr.length - 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE
                 )
             }
-            contextStr.append(oneDayPercentStr)
+            contextStr.append(oneDayPercentSpan)
 
 
-            var sevenDaysPercent = item.sevenDaysPercent.toString() + "\n"
-            var sevenDaysPercentStr = SpannableStringBuilder(sevenDaysPercent)
+            var sevenDaysPercentStr = item.sevenDaysPercent.toString() + "\n"
+            var sevenDaysPercentSpan = SpannableStringBuilder(sevenDaysPercentStr)
             if (item.sevenDaysPercent > 0) {
-                sevenDaysPercentStr.setSpan(
+                sevenDaysPercentSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_green_dark)),
                     0,
-                    sevenDaysPercentStr.length - 1,
+                    sevenDaysPercentSpan.length - 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE
                 )
             } else {
-                sevenDaysPercentStr.setSpan(
+                sevenDaysPercentSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
                     0,
-                    sevenDaysPercentStr.length - 1,
+                    sevenDaysPercentSpan.length - 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE
                 )
             }
-            contextStr.append(sevenDaysPercentStr)
+            contextStr.append(sevenDaysPercentSpan)
+        }
+    }
+
+
+    private fun filterHold(name: String): Boolean {
+
+        return when (name) {
+
+            "TRUE", "EOS", "AE", "POLY", "ZRX", "NANO", "MIOTA", "DCR",
+            "OKB", "ABT", "SNT", "CMT", "IOST", "ELF" -> true
+
+            else -> false
         }
     }
 
