@@ -3,7 +3,7 @@ package org.crashhunter.kline.data
 /**
  * Created by CrashHunter on 2019/3/13.
  */
-class IconInfo {
+class CoinInfo {
 
     var name = ""
     var rank = ""
