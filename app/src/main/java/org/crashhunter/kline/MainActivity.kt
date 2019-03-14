@@ -34,6 +34,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        supportActionBar?.hide()
+
         setContentView(R.layout.activity_main)
 
 
@@ -66,7 +69,7 @@ class MainActivity : AppCompatActivity() {
 
                         var rank = icons[i].select("td")[0]
                         Log.e("icon rank", rank.text())
-                        var name = icons[i].select("td")[2]
+                        var name = icons[i].select("td")[1]
                         Log.e("icon name", name.text())
 
                         var cap = icons[i].select("td")[3]
@@ -154,26 +157,31 @@ class MainActivity : AppCompatActivity() {
 
         for (i in 0 until sum.size) {
             var item = sum[i]
-            var diffName = item.name + "\n"
-            var diffNameStr = SpannableStringBuilder(diffName)
+
 
             if (currentCoinList.contains(item)) {
-                diffNameStr.setSpan(
+                var diffNameStr = "+${item.name}\n"
+                var diffNameSpan = SpannableStringBuilder(diffNameStr)
+                diffNameSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
                     0,
-                    diffName.length - 1,
+                    diffNameStr.length - 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE
                 )
+                contextStr.append(diffNameSpan)
             } else {
-                diffNameStr.setSpan(
+                var diffNameStr = "-${item.name}\n"
+                var diffNameSpan = SpannableStringBuilder(diffNameStr)
+                diffNameSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_green_dark)),
                     0,
-                    diffName.length - 1,
+                    diffNameStr.length - 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE
                 )
+                contextStr.append(diffNameSpan)
             }
 
-            contextStr.append(diffNameStr)
+
         }
     }
 
@@ -251,35 +259,33 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun filterHold(name: String): Boolean {
-
-        return when (name) {
-
+        var symbol = name.split(" ")[0]
+        var strArr = arrayListOf(
             "TRUE", "EOS", "AE", "POLY", "ZRX", "NANO", "MIOTA", "DCR",
-            "OKB", "ABT", "SNT", "CMT", "IOST", "ELF" -> true
+            "OKB", "ABT", "SNT", "CMT", "IOST", "ELF", "ADA"
+        )
 
-            else -> false
-        }
+        return strArr.contains(symbol)
     }
 
     private fun filterStable(name: String): Boolean {
+        var symbol = name.split(" ")[0]
+        var strArr = arrayListOf(
+            "USDT", "DAI", "TUSD", "USDC", "BITCNY", "PAX"
+        )
 
-        return when (name) {
-
-            "USDT", "DAI", "TUSD", "USDC", "BITCNY", "PAX" -> true
-
-            else -> false
-        }
+        return strArr.contains(symbol)
     }
 
     private fun filterBlack(name: String): Boolean {
-
-        return when (name) {
-
+        var symbol = name.split(" ")[0]
+        var strArr = arrayListOf(
             "ABBC", "XMR", "DMT", "BTG", "BSV", "BCD", "ZEC", "BTS",
-            "XEM", "OMG", "IGNIS", "EMC2", "COSM", "RLC", "GRS" -> true
+            "XEM", "OMG", "IGNIS", "EMC2", "COSM", "RLC", "GRS", "XZC",
+            "CVC"
+        )
 
-            else -> false
-        }
+        return strArr.contains(symbol)
     }
 
 
