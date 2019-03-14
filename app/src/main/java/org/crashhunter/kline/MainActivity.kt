@@ -6,6 +6,8 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -26,6 +28,16 @@ class MainActivity : AppCompatActivity() {
 
     val volumMin = 10 * 1000000
 
+    val capDivider = 100 * 1000000
+
+    var capStr = ""
+
+    var currentCoinList = ArrayList<CoinInfo>()
+    var latestCoinList = ArrayList<CoinInfo>()
+
+    var titleStr = StringBuffer()
+    var contextStr = SpannableStringBuilder()
+
     private var latestCoinListJsonStr by BaseSharedPreference(
         AppController.instance.applicationContext,
         LATEST_COIN_LIST,
@@ -35,7 +47,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        supportActionBar?.hide()
+//        supportActionBar?.hide()
 
         setContentView(R.layout.activity_main)
 
@@ -47,10 +59,6 @@ class MainActivity : AppCompatActivity() {
                 super.run()
                 try {
 
-                    var currentCoinList = ArrayList<CoinInfo>()
-
-                    var titleStr = StringBuffer()
-                    var contextStr = SpannableStringBuilder()
 
                     var urlStr = "https://coinmarketcap.com/all/views/all/"
 //                    titleStr.append(urlStr)
@@ -64,28 +72,30 @@ class MainActivity : AppCompatActivity() {
                     for (i in 0 until icons.size) {
 
                         if (icons[i].select("td").size < 10) {
+                            Log.e("invaild item", icons[i].toString())
                             continue
                         }
 
                         var rank = icons[i].select("td")[0]
-                        Log.e("icon rank", rank.text())
+//                        Log.e("icon rank", rank.text())
                         var name = icons[i].select("td")[1]
-                        Log.e("icon name", name.text())
+//                        Log.e("icon name", name.text())
 
                         var cap = icons[i].select("td")[3]
-                        Log.e("icon cap", cap.text())
-                        var capStr = cap.text().replace("$", "").replace(",", "")
+//                        Log.e("icon cap", cap.text())
+                        capStr = cap.text().replace("$", "").replace(",", "")
 
                         var volume = icons[i].select("td")[6].select("a")
-                        Log.e("icon volume", volume.text())
+//                        Log.e("icon volume", volume.text())
                         var volumeStr = volume.text().replace("$", "").replace(",", "")
 
 
                         var oneDayPercent = icons[i].select("td")[8]
-                        Log.e("icon oneDayPercent", oneDayPercent.text())
+//                        Log.e("icon oneDayPercent", oneDayPercent.text())
 
                         var sevenDaysPercent = icons[i].select("td")[9]
-                        Log.e("icon sevenDaysPercent", sevenDaysPercent.text())
+//                        Log.e("icon sevenDaysPercent", sevenDaysPercent.text())
+
 
                         if (volumeStr.toLong() > volumMin) {
 
@@ -110,26 +120,16 @@ class MainActivity : AppCompatActivity() {
                     titleStr.append("Size: ${currentCoinList.size}")
                     currentCoinList.sortBy { it.sevenDaysPercent }
 
-
-
-                    diaplayCoinList(currentCoinList, contextStr)
-
-
-                    displayDiffs(currentCoinList, contextStr)
+                    latestCoinList = Gson().fromJson(latestCoinListJsonStr, object : TypeToken<List<CoinInfo>>() {}
+                        .type) as ArrayList<CoinInfo>
 
 
                     var jsonList = Gson().toJson(currentCoinList)
                     Log.e("jsonListSave", jsonList)
                     latestCoinListJsonStr = jsonList
 
+                    showAllCap()
 
-                    handler.post {
-
-                        url.text = titleStr
-
-                        context.text = contextStr
-
-                    }
 
                 } catch (e: IOException) {
 //                    e.printStackTrace()
@@ -141,13 +141,19 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun displayDiffs(
-        currentCoinList: ArrayList<CoinInfo>,
-        contextStr: SpannableStringBuilder
-    ) {
-        val latestCoinList = Gson().fromJson(latestCoinListJsonStr, object : TypeToken<List<CoinInfo>>() {}
-            .type) as ArrayList<CoinInfo>
+    private fun refreshUI() {
+        handler.post {
 
+            url.text = titleStr
+
+            context.text = contextStr
+
+        }
+    }
+
+    private fun displayDiffs(
+        currentCoinList: List<CoinInfo>, latestCoinList: List<CoinInfo>
+    ) {
         var sum: List<CoinInfo> = latestCoinList + currentCoinList
         sum = sum.groupBy { it.name }
             .filter { it.value.size == 1 }
@@ -185,9 +191,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun diaplayCoinList(
-        coinInfos: ArrayList<CoinInfo>,
-        contextStr: SpannableStringBuilder
+    private fun displayCoinList(
+        coinInfos: List<CoinInfo>
     ) {
         for (i in 0 until coinInfos.size) {
             var item = coinInfos[i]
@@ -282,7 +287,7 @@ class MainActivity : AppCompatActivity() {
         var strArr = arrayListOf(
             "ABBC", "XMR", "DMT", "BTG", "BSV", "BCD", "ZEC", "BTS",
             "XEM", "OMG", "IGNIS", "EMC2", "COSM", "RLC", "GRS", "XZC",
-            "CVC"
+            "CVC", "META", "VTC"
         )
 
         return strArr.contains(symbol)
@@ -292,6 +297,64 @@ class MainActivity : AppCompatActivity() {
     private fun filterTop(rank: String): Boolean {
 
         return rank.toInt() <= 10
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.home_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        when (item.getItemId()) {
+            R.id.allcap -> {
+                showAllCap()
+                return true
+            }
+            R.id.bigcap -> {
+                showBigCap()
+                return true
+            }
+            R.id.smallcap -> {
+                showSmallCap()
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showAllCap() {
+        contextStr = SpannableStringBuilder()
+        displayCoinList(currentCoinList)
+        displayDiffs(currentCoinList, latestCoinList)
+
+        refreshUI()
+
+    }
+
+    private fun showSmallCap() {
+
+        var smallCoinList = currentCoinList.filter { it.cap < capDivider }
+        var smallLatestCoinList = latestCoinList.filter { it.cap < capDivider }
+        contextStr = SpannableStringBuilder()
+        displayCoinList(smallCoinList)
+        displayDiffs(smallCoinList, smallLatestCoinList)
+
+        refreshUI()
+
+    }
+
+    private fun showBigCap() {
+
+        var bigCoinList = currentCoinList.filter { it.cap >= capDivider }
+        var bigLatestCoinList = latestCoinList.filter { it.cap >= capDivider }
+        contextStr = SpannableStringBuilder()
+        displayCoinList(bigCoinList)
+        displayDiffs(bigCoinList, bigLatestCoinList)
+
+        refreshUI()
 
     }
 }
