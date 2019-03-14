@@ -57,6 +57,16 @@ class MainActivity : AppCompatActivity() {
 
         Log.e("latestCoinListGet", latestCoinListJsonStr)
 
+        getData()
+
+    }
+
+    private fun getData() {
+
+        tvTitle.text = "Loading..."
+
+        initData()
+
         object : Thread() {
             override fun run() {
                 super.run()
@@ -64,10 +74,10 @@ class MainActivity : AppCompatActivity() {
 
 
                     var urlStr = "https://coinmarketcap.com/all/views/all/"
-//                    titleStr.append(urlStr)
+                    //                    titleStr.append(urlStr)
 
                     val doc = Jsoup.connect(urlStr).get()
-//                    contextStr.append(doc.toString())
+                    //                    contextStr.append(doc.toString())
 
                     var icons = doc.select("#currencies-all > tbody > tr")
                     Log.e("icons size", icons.size.toString())
@@ -78,29 +88,29 @@ class MainActivity : AppCompatActivity() {
 
                         if (icons[i].select("td").size < 10) {
                             Log.e("invaild item", icons[i].toString())
-//                            titleStr.append("\n invaild item: ${icons[i]} \n")
+                            //                            titleStr.append("\n invaild item: ${icons[i]} \n")
                             continue
                         }
 
                         var rank = icons[i].select("td")[0]
-//                        Log.e("icon rank", rank.text())
+                        //                        Log.e("icon rank", rank.text())
                         var name = icons[i].select("td")[1]
-//                        Log.e("icon name", name.text())
+                        //                        Log.e("icon name", name.text())
 
                         var cap = icons[i].select("td")[3]
-//                        Log.e("icon cap", cap.text())
+                        //                        Log.e("icon cap", cap.text())
                         capStr = cap.text().replace("$", "").replace(",", "")
 
                         var volume = icons[i].select("td")[6].select("a")
-//                        Log.e("icon volume", volume.text())
+                        //                        Log.e("icon volume", volume.text())
                         var volumeStr = volume.text().replace("$", "").replace(",", "")
 
 
                         var oneDayPercent = icons[i].select("td")[8]
-//                        Log.e("icon oneDayPercent", oneDayPercent.text())
+                        //                        Log.e("icon oneDayPercent", oneDayPercent.text())
 
                         var sevenDaysPercent = icons[i].select("td")[9]
-//                        Log.e("icon sevenDaysPercent", sevenDaysPercent.text())
+                        //                        Log.e("icon sevenDaysPercent", sevenDaysPercent.text())
 
 
                         if (volumeStr.toLong() > volumMin) {
@@ -143,21 +153,31 @@ class MainActivity : AppCompatActivity() {
 
 
                 } catch (e: IOException) {
-//                    e.printStackTrace()
+                    //                    e.printStackTrace()
                 }
 
             }
         }.start()
+    }
 
+    private fun initData() {
+
+        currentCoinList = ArrayList<CoinInfo>()
+        latestCoinList = ArrayList<CoinInfo>()
+
+        titleStr = StringBuffer()
+        contextStr = SpannableStringBuilder()
+
+        volumeEnoughNum = 0
 
     }
 
     private fun refreshUI() {
         handler.post {
 
-            url.text = titleStr
+            tvTitle.text = titleStr
 
-            context.text = contextStr
+            tvContext.text = contextStr
 
         }
     }
@@ -320,6 +340,10 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         when (item.getItemId()) {
+            R.id.refresh -> {
+                getData()
+                return true
+            }
             R.id.allcap -> {
                 showAllCap()
                 return true
