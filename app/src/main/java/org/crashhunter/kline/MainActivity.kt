@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity() {
     var titleStr = StringBuffer()
     var contextStr = SpannableStringBuilder()
 
+    var volumeEnoughNum = 0
+
     private var latestCoinListJsonStr by BaseSharedPreference(
         AppController.instance.applicationContext,
         LATEST_COIN_LIST,
@@ -51,6 +53,7 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
+        volumeEnoughNum = 0
 
         Log.e("latestCoinListGet", latestCoinListJsonStr)
 
@@ -69,10 +72,13 @@ class MainActivity : AppCompatActivity() {
                     var icons = doc.select("#currencies-all > tbody > tr")
                     Log.e("icons size", icons.size.toString())
 
+                    titleStr.append("All: ${icons.size} ")
+
                     for (i in 0 until icons.size) {
 
                         if (icons[i].select("td").size < 10) {
                             Log.e("invaild item", icons[i].toString())
+//                            titleStr.append("\n invaild item: ${icons[i]} \n")
                             continue
                         }
 
@@ -99,6 +105,8 @@ class MainActivity : AppCompatActivity() {
 
                         if (volumeStr.toLong() > volumMin) {
 
+                            volumeEnoughNum++
+
                             if (filterStable(name.text()) || filterBlack(name.text()) || filterTop(rank.text())) {
                                 continue
                             }
@@ -117,7 +125,10 @@ class MainActivity : AppCompatActivity() {
 
                     }
 
-                    titleStr.append("Size: ${currentCoinList.size}")
+                    titleStr.append("VolEnough: $volumeEnoughNum ")
+                    titleStr.append("Filter: ${currentCoinList.size}")
+
+
                     currentCoinList.sortBy { it.sevenDaysPercent }
 
                     latestCoinList = Gson().fromJson(latestCoinListJsonStr, object : TypeToken<List<CoinInfo>>() {}
@@ -287,7 +298,7 @@ class MainActivity : AppCompatActivity() {
         var strArr = arrayListOf(
             "ABBC", "XMR", "DMT", "BTG", "BSV", "BCD", "ZEC", "BTS",
             "XEM", "OMG", "IGNIS", "EMC2", "COSM", "RLC", "GRS", "XZC",
-            "CVC", "META", "VTC"
+            "CVC", "META", "VTC", "AGI"
         )
 
         return strArr.contains(symbol)
