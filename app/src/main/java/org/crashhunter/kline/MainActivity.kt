@@ -30,10 +30,14 @@ class MainActivity : AppCompatActivity() {
 
     val capDivider = 100 * 1000000
 
+    val topNum = 0
+
     var capStr = ""
 
     var currentCoinList = ArrayList<CoinInfo>()
     var latestCoinList = ArrayList<CoinInfo>()
+
+    lateinit var diffs: List<CoinInfo>
 
     var titleStr = StringBuffer()
     var contextStr = SpannableStringBuilder()
@@ -183,21 +187,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displayDiffs(
-        currentCoinList: List<CoinInfo>, latestCoinList: List<CoinInfo>
+        currentCoinList: List<CoinInfo>
     ) {
-        var sum: List<CoinInfo> = latestCoinList + currentCoinList
-        sum = sum.groupBy { it.name }
-            .filter { it.value.size == 1 }
-            .flatMap { it.value }
+
 
         contextStr.append("-----------Diffs----------- \n")
 
-        for (i in 0 until sum.size) {
-            var item = sum[i]
+        for (i in 0 until diffs.size) {
+            var item = diffs[i]
 
 
             if (currentCoinList.contains(item)) {
-                var diffNameStr = "+${item.name}\n"
+                var index = currentCoinList.indexOf(item)
+                var diffNameStr = "+ ${index + 1}.${item.name} No.${item.rank} \n"
                 var diffNameSpan = SpannableStringBuilder(diffNameStr)
                 diffNameSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
@@ -207,7 +209,7 @@ class MainActivity : AppCompatActivity() {
                 )
                 contextStr.append(diffNameSpan)
             } else {
-                var diffNameStr = "-${item.name}\n"
+                var diffNameStr = "- ${item.name}\n"
                 var diffNameSpan = SpannableStringBuilder(diffNameStr)
                 diffNameSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_green_dark)),
@@ -222,12 +224,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun getdiffs(
+        currentCoinList: List<CoinInfo>,
+        latestCoinList: List<CoinInfo>
+    ) {
+        diffs = latestCoinList + currentCoinList
+        diffs = diffs.groupBy { it.name }
+            .filter { it.value.size == 1 }
+            .flatMap { it.value }
+    }
+
     private fun displayCoinList(
         coinInfos: List<CoinInfo>
     ) {
         for (i in 0 until coinInfos.size) {
             var item = coinInfos[i]
-            contextStr.append("${i + 1}: ")
+
+            var indexStr = "${i + 1}: "
+            if (diffs.contains(item)) {
+                var indexSpan = SpannableStringBuilder(indexStr)
+                indexSpan.setSpan(
+                    ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+                    0,
+                    indexStr.length - 1,
+                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                )
+                contextStr.append(indexSpan)
+            } else {
+                contextStr.append(indexStr)
+            }
+
 
             if (filterHold(item.name)) {
 
@@ -297,8 +323,9 @@ class MainActivity : AppCompatActivity() {
     private fun filterHold(name: String): Boolean {
         var symbol = name.split(" ")[0]
         var strArr = arrayListOf(
-            "TRUE", "EOS", "AE", "POLY", "ZRX", "NANO", "MIOTA", "DCR",
-            "OKB", "ABT", "SNT", "CMT", "IOST", "ELF", "ADA"
+            "SNT", "CMT", "IOST", "ELF", "ADA", "TRUE", "EOS", "AE", "OKB", "ABT",
+            "POLY", "ZRX", "NANO", "MIOTA", "DCR", "VET", "ZIL"
+
         )
 
         return strArr.contains(symbol)
@@ -327,7 +354,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun filterTop(rank: String): Boolean {
 
-        return rank.toInt() <= 10
+        return rank.toInt() <= topNum
 
     }
 
@@ -362,8 +389,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun showAllCap() {
         contextStr = SpannableStringBuilder()
+
+
+        getdiffs(currentCoinList, latestCoinList)
         displayCoinList(currentCoinList)
-        displayDiffs(currentCoinList, latestCoinList)
+        displayDiffs(currentCoinList)
 
         refreshUI()
 
@@ -374,8 +404,10 @@ class MainActivity : AppCompatActivity() {
         var smallCoinList = currentCoinList.filter { it.cap < capDivider }
         var smallLatestCoinList = latestCoinList.filter { it.cap < capDivider }
         contextStr = SpannableStringBuilder()
+
+        getdiffs(smallCoinList, smallLatestCoinList)
         displayCoinList(smallCoinList)
-        displayDiffs(smallCoinList, smallLatestCoinList)
+        displayDiffs(smallCoinList)
 
         refreshUI()
 
@@ -386,8 +418,10 @@ class MainActivity : AppCompatActivity() {
         var bigCoinList = currentCoinList.filter { it.cap >= capDivider }
         var bigLatestCoinList = latestCoinList.filter { it.cap >= capDivider }
         contextStr = SpannableStringBuilder()
+
+        getdiffs(bigCoinList, bigLatestCoinList)
         displayCoinList(bigCoinList)
-        displayDiffs(bigCoinList, bigLatestCoinList)
+        displayDiffs(bigCoinList)
 
         refreshUI()
 
