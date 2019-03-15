@@ -23,6 +23,21 @@ import java.io.IOException
 class MainActivity : AppCompatActivity() {
 
 
+    var holdList = arrayListOf(
+        "SNT", "CMT", "IOST", "ELF", "ADA", "TRUE", "EOS", "AE", "OKB", "ABT",
+        "POLY", "ZRX", "NANO", "MIOTA", "DCR", "VET", "ZIL"
+
+    )
+    var stableList = arrayListOf(
+        "USDT", "DAI", "TUSD", "USDC", "BITCNY", "PAX"
+    )
+    var blackList = arrayListOf(
+        "ABBC", "XMR", "DMT", "BTG", "BSV", "BCD", "ZEC", "BTS",
+        "XEM", "OMG", "IGNIS", "EMC2", "COSM", "RLC", "GRS", "XZC",
+        "CVC", "META", "VTC", "AGI", "SPND", "PPT", "QTUM", "ETC"
+    )
+
+
     var handler: Handler = Handler()
 
 
@@ -30,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
     val capDivider = 100 * 1000000
 
-    val topNum = 0
+    val topNum = 5
 
     var capStr = ""
 
@@ -322,33 +337,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun filterHold(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        var strArr = arrayListOf(
-            "SNT", "CMT", "IOST", "ELF", "ADA", "TRUE", "EOS", "AE", "OKB", "ABT",
-            "POLY", "ZRX", "NANO", "MIOTA", "DCR", "VET", "ZIL"
-
-        )
-
-        return strArr.contains(symbol)
+        return holdList.contains(symbol)
     }
 
     private fun filterStable(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        var strArr = arrayListOf(
-            "USDT", "DAI", "TUSD", "USDC", "BITCNY", "PAX"
-        )
-
-        return strArr.contains(symbol)
+        return stableList.contains(symbol)
     }
+
 
     private fun filterBlack(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        var strArr = arrayListOf(
-            "ABBC", "XMR", "DMT", "BTG", "BSV", "BCD", "ZEC", "BTS",
-            "XEM", "OMG", "IGNIS", "EMC2", "COSM", "RLC", "GRS", "XZC",
-            "CVC", "META", "VTC", "AGI"
-        )
-
-        return strArr.contains(symbol)
+        return blackList.contains(symbol)
     }
 
 
