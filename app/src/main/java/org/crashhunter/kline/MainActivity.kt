@@ -55,8 +55,8 @@ class MainActivity : AppCompatActivity() {
 
     var allCoinList = ArrayList<CoinInfo>()
 
-    var currentCoinList = ArrayList<CoinInfo>()
-    var latestCoinList = ArrayList<CoinInfo>()
+    lateinit var currentCoinList: List<CoinInfo>
+    lateinit var latestCoinList: List<CoinInfo>
 
     lateinit var diffs: List<CoinInfo>
 
@@ -148,33 +148,19 @@ class MainActivity : AppCompatActivity() {
                         iconInfo.sevenDaysPercent = sevenDaysPercent.text().replace("%", "").toDouble()
                         allCoinList.add(iconInfo)
 
-                        if (iconInfo.volume in (volumMin + 1)..(volumeMax - 1)) {
-
-                            volumeEnoughNum++
-
-                            if (filterStable(iconInfo.name) || filterBlack(iconInfo.name) || filterTop(iconInfo.rank)) {
-                                continue
-                            }
-
-                            currentCoinList.add(iconInfo)
-
-                        }
+//                        if (iconInfo.volume in (volumMin + 1)..(volumeMax - 1)) {
+//
+//                            volumeEnoughNum++
+//
+//                            if (filterStable(iconInfo.name) || filterBlack(iconInfo.name) || filterTop(iconInfo.rank)) {
+//                                continue
+//                            }
+//
+//                            currentCoinList.add(iconInfo)
+//
+//                        }
 
                     }
-
-                    titleStr.append("VolEnough: $volumeEnoughNum ")
-                    titleStr.append("Filter: ${currentCoinList.size}")
-
-
-                    currentCoinList.sortBy { it.sevenDaysPercent }
-
-                    latestCoinList = Gson().fromJson(latestCoinListJsonStr, object : TypeToken<List<CoinInfo>>() {}
-                        .type) as ArrayList<CoinInfo>
-
-
-                    var jsonList = Gson().toJson(currentCoinList)
-                    Log.e("jsonListSave", jsonList)
-                    latestCoinListJsonStr = jsonList
 
                     showAllCap()
 
@@ -189,6 +175,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun initData() {
 
+        volumeMax = 9999 * 1000000
+        volumMin = 8 * 1000000
+
+        allCoinList = ArrayList<CoinInfo>()
         currentCoinList = ArrayList<CoinInfo>()
         latestCoinList = ArrayList<CoinInfo>()
 
@@ -376,8 +366,6 @@ class MainActivity : AppCompatActivity() {
         // Handle item selection
         when (item.getItemId()) {
             R.id.refresh -> {
-                volumeMax = 9999 * 1000000
-                volumMin = 8 * 1000000
                 getData()
                 return true
             }
@@ -395,9 +383,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.smallVolume -> {
-                volumeMax = 8 * 1000000
-                volumMin = 5 * 1000000
-                getData()
+                showSmallVolume()
                 return true
             }
 
@@ -423,19 +409,47 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showSmallVolume() {
+
+        volumeMax = 8 * 1000000
+        volumMin = 5 * 1000000
+
         contextStr = SpannableStringBuilder()
 
-        var holdingList = allCoinList.filter { filterHold(it.name) }
+        var smallVolumeCoinList = allCoinList.filter { it.volume in (volumMin + 1)..(volumeMax - 1) }
 
-        holdingList = holdingList.sortedBy { it.sevenDaysPercent }
+        smallVolumeCoinList =
+            smallVolumeCoinList.filterNot { filterStable(it.name) || filterBlack(it.name) || filterTop(it.rank) }
+                .sortedBy { it.sevenDaysPercent }
 
-        displayCoinList(holdingList)
+        displayCoinList(smallVolumeCoinList)
 
         refreshUI()
 
     }
 
     private fun showAllCap() {
+
+        volumeMax = 9999 * 1000000
+        volumMin = 8 * 1000000
+
+        currentCoinList = allCoinList.filter { it.volume in (volumMin + 1)..(volumeMax - 1) }
+        titleStr.append("VolEnough: ${currentCoinList.size} ")
+
+        currentCoinList =
+            currentCoinList.filterNot { filterStable(it.name) || filterBlack(it.name) || filterTop(it.rank) }
+                .sortedBy { it.sevenDaysPercent }
+        titleStr.append("Filter: ${currentCoinList.size}")
+
+        //get latestCoinList
+        latestCoinList = Gson().fromJson(latestCoinListJsonStr, object : TypeToken<List<CoinInfo>>() {}
+            .type) as List<CoinInfo>
+
+        //save latestCoinList
+        var jsonList = Gson().toJson(currentCoinList)
+        Log.e("jsonListSave", jsonList)
+        latestCoinListJsonStr = jsonList
+
+
         contextStr = SpannableStringBuilder()
 
 
