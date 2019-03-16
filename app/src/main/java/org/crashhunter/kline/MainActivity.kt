@@ -34,20 +34,26 @@ class MainActivity : AppCompatActivity() {
     var blackList = arrayListOf(
         "ABBC", "XMR", "DMT", "BTG", "BSV", "BCD", "ZEC", "BTS",
         "XEM", "OMG", "IGNIS", "EMC2", "COSM", "RLC", "GRS", "XZC",
-        "CVC", "META", "VTC", "AGI", "SPND", "PPT", "QTUM", "ETC"
+        "CVC", "META", "VTC", "AGI", "SPND", "PPT", "QTUM", "ETC",
+        "CRO", "NEXO", "CNX", "VIA", "PLC", "BEAM", "INB"
     )
 
 
     var handler: Handler = Handler()
 
 
-    val volumMin = 10 * 1000000
+    var volumeMax = 9999 * 1000000
+
+    var volumMin = 8 * 1000000
 
     val capDivider = 100 * 1000000
 
     val topNum = 5
 
     var capStr = ""
+
+
+    var allCoinList = ArrayList<CoinInfo>()
 
     var currentCoinList = ArrayList<CoinInfo>()
     var latestCoinList = ArrayList<CoinInfo>()
@@ -111,6 +117,7 @@ class MainActivity : AppCompatActivity() {
                             continue
                         }
 
+
                         var rank = icons[i].select("td")[0]
                         //                        Log.e("icon rank", rank.text())
                         var name = icons[i].select("td")[1]
@@ -132,23 +139,24 @@ class MainActivity : AppCompatActivity() {
                         //                        Log.e("icon sevenDaysPercent", sevenDaysPercent.text())
 
 
-                        if (volumeStr.toLong() > volumMin) {
+                        var iconInfo = CoinInfo()
+                        iconInfo.name = name.text()
+                        iconInfo.rank = rank.text()
+                        iconInfo.volume = volumeStr.toLong()
+                        iconInfo.cap = capStr.toLong()
+                        iconInfo.oneDayPercent = oneDayPercent.text().replace("%", "").toDouble()
+                        iconInfo.sevenDaysPercent = sevenDaysPercent.text().replace("%", "").toDouble()
+                        allCoinList.add(iconInfo)
+
+                        if (iconInfo.volume in (volumMin + 1)..(volumeMax - 1)) {
 
                             volumeEnoughNum++
 
-                            if (filterStable(name.text()) || filterBlack(name.text()) || filterTop(rank.text())) {
+                            if (filterStable(iconInfo.name) || filterBlack(iconInfo.name) || filterTop(iconInfo.rank)) {
                                 continue
                             }
 
-                            var iconInfo = CoinInfo()
-                            iconInfo.name = name.text()
-                            iconInfo.rank = rank.text()
-                            iconInfo.volume = volumeStr.toLong()
-                            iconInfo.cap = capStr.toLong()
-                            iconInfo.oneDayPercent = oneDayPercent.text().replace("%", "").toDouble()
-                            iconInfo.sevenDaysPercent = sevenDaysPercent.text().replace("%", "").toDouble()
                             currentCoinList.add(iconInfo)
-
 
                         }
 
@@ -368,6 +376,8 @@ class MainActivity : AppCompatActivity() {
         // Handle item selection
         when (item.getItemId()) {
             R.id.refresh -> {
+                volumeMax = 9999 * 1000000
+                volumMin = 8 * 1000000
                 getData()
                 return true
             }
@@ -383,8 +393,46 @@ class MainActivity : AppCompatActivity() {
                 showSmallCap()
                 return true
             }
+
+            R.id.smallVolume -> {
+                volumeMax = 8 * 1000000
+                volumMin = 5 * 1000000
+                getData()
+                return true
+            }
+
+            R.id.myHolding -> {
+                showMyHolding()
+                return true
+            }
             else -> return super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun showMyHolding() {
+        contextStr = SpannableStringBuilder()
+
+        var holdingList = allCoinList.filter { filterHold(it.name) }
+
+        holdingList = holdingList.sortedBy { it.sevenDaysPercent }
+
+        displayCoinList(holdingList)
+
+        refreshUI()
+
+    }
+
+    private fun showSmallVolume() {
+        contextStr = SpannableStringBuilder()
+
+        var holdingList = allCoinList.filter { filterHold(it.name) }
+
+        holdingList = holdingList.sortedBy { it.sevenDaysPercent }
+
+        displayCoinList(holdingList)
+
+        refreshUI()
+
     }
 
     private fun showAllCap() {
