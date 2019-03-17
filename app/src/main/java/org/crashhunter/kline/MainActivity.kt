@@ -24,18 +24,28 @@ class MainActivity : AppCompatActivity() {
 
 
     var holdList = arrayListOf(
-        "SNT", "CMT", "IOST", "ELF", "ADA", "TRUE", "EOS", "AE", "OKB", "ABT",
-        "POLY", "ZRX", "NANO", "MIOTA", "DCR", "VET", "ZIL"
+        "SNT", "IOST", "ADA", "TRUE", "EOS", "AE", "OKB", "ABT",
+        "POLY", "ZRX", "NANO", "MIOTA", "DCR"
 
     )
     var stableList = arrayListOf(
         "USDT", "DAI", "TUSD", "USDC", "BITCNY", "PAX"
     )
+
+    //foreign / bad code
     var blackList = arrayListOf(
-        "ABBC", "XMR", "DMT", "BTG", "BSV", "BCD", "ZEC", "BTS",
-        "XEM", "OMG", "IGNIS", "EMC2", "COSM", "RLC", "GRS", "XZC",
-        "CVC", "META", "VTC", "AGI", "SPND", "PPT", "QTUM", "ETC",
-        "CRO", "NEXO", "CNX", "VIA", "PLC", "BEAM", "INB"
+        "BSV", "BCD", "ZEC", "BTS",
+        "XEM", "OMG", "IGNIS", "EMC2", "COSM", "QTUM", "ETC",
+        "PLC", "BEAM", "INB", "NEO"
+    )
+
+    //bad code / low avg. volume
+    var badCoinList = arrayListOf(
+        "ABBC", "XMR", "DMT", "BTG",
+        "RLC", "GRS", "XZC",
+        "CVC", "META", "VTC", "AGI", "SPND", "PPT",
+        "CRO", "NEXO", "CNX", "VIA", "DENT", "XVG", "KMD", "MDA",
+        "NAS", "VET", "CMT", "ARN", "FUEL"
     )
 
 
@@ -50,7 +60,6 @@ class MainActivity : AppCompatActivity() {
 
     val topNum = 5
 
-    var capStr = ""
 
 
     var allCoinList = ArrayList<CoinInfo>()
@@ -125,7 +134,7 @@ class MainActivity : AppCompatActivity() {
 
                         var cap = icons[i].select("td")[3]
                         //                        Log.e("icon cap", cap.text())
-                        capStr = cap.text().replace("$", "").replace(",", "")
+                        var capStr = cap.text().replace("$", "").replace(",", "")
 
                         var volume = icons[i].select("td")[6].select("a")
                         //                        Log.e("icon volume", volume.text())
@@ -148,17 +157,6 @@ class MainActivity : AppCompatActivity() {
                         iconInfo.sevenDaysPercent = sevenDaysPercent.text().replace("%", "").toDouble()
                         allCoinList.add(iconInfo)
 
-//                        if (iconInfo.volume in (volumMin + 1)..(volumeMax - 1)) {
-//
-//                            volumeEnoughNum++
-//
-//                            if (filterStable(iconInfo.name) || filterBlack(iconInfo.name) || filterTop(iconInfo.rank)) {
-//                                continue
-//                            }
-//
-//                            currentCoinList.add(iconInfo)
-//
-//                        }
 
                     }
 
@@ -346,7 +344,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun filterBlack(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return blackList.contains(symbol)
+        return blackList.contains(symbol) || badCoinList.contains(symbol)
     }
 
 
@@ -400,7 +398,7 @@ class MainActivity : AppCompatActivity() {
 
         var holdingList = allCoinList.filter { filterHold(it.name) }
 
-        holdingList = holdingList.sortedBy { it.sevenDaysPercent }
+        holdingList = holdingList.sortedBy { it.oneDayPercent }
 
         displayCoinList(holdingList)
 
