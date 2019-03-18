@@ -24,28 +24,40 @@ class MainActivity : AppCompatActivity() {
 
 
     var holdList = arrayListOf(
-        "SNT", "IOST", "ADA", "TRUE", "EOS", "AE", "OKB", "ABT",
-        "POLY", "ZRX", "NANO", "MIOTA", "DCR"
+        "SNT", "IOST", "ADA", "TRUE", "EOS",
+        "AE", "OKB", "POLY", "ZRX", "NANO",
+        "MIOTA", "DCR"
 
     )
     var stableList = arrayListOf(
-        "USDT", "DAI", "TUSD", "USDC", "BITCNY", "PAX"
+        "USDT", "DAI", "TUSD", "USDC", "BITCNY",
+        "PAX"
     )
 
-    //foreign / bad code
+    var candidateist = arrayListOf(
+        "LINK", "INS", "XLM", "ENJ", "LSK",
+        "HT", "MCO", "WAVES", "TRX", "THETA",
+        "BAT", "ONT", "GXC", "GVT", "RVN",
+        "DASH", "BCH", "BNB", "HOT", "LOOM"
+    )
+
+    //foreign
     var blackList = arrayListOf(
-        "BSV", "BCD", "ZEC", "BTS",
-        "XEM", "OMG", "IGNIS", "EMC2", "COSM", "QTUM", "ETC",
-        "PLC", "BEAM", "INB", "NEO"
+        "BSV", "BCD", "ZEC", "BTS", "XEM",
+        "OMG", "IGNIS", "EMC2", "COSM", "ETC",
+        "PLC", "BEAM", "INB"
+
     )
 
     //bad code / low avg. volume
     var badCoinList = arrayListOf(
-        "ABBC", "XMR", "DMT", "BTG",
-        "RLC", "GRS", "XZC",
-        "CVC", "META", "VTC", "AGI", "SPND", "PPT",
-        "CRO", "NEXO", "CNX", "VIA", "DENT", "XVG", "KMD", "MDA",
-        "NAS", "VET", "CMT", "ARN", "FUEL"
+        "ABBC", "XMR", "DMT", "BTG", "RLC",
+        "GRS", "XZC", "CVC", "META", "VTC",
+        "AGI", "SPND", "PPT", "CRO", "NEXO",
+        "CNX", "VIA", "DENT", "XVG", "KMD",
+        "MDA", "NAS", "VET", "CMT", "ARN",
+        "FUEL", "WAN", "ABT", "NEO", "QTUM"
+
     )
 
 
@@ -153,8 +165,10 @@ class MainActivity : AppCompatActivity() {
                         iconInfo.rank = rank.text()
                         iconInfo.volume = volumeStr.toLong()
                         iconInfo.cap = capStr.toLong()
-                        iconInfo.oneDayPercent = oneDayPercent.text().replace("%", "").toDouble()
-                        iconInfo.sevenDaysPercent = sevenDaysPercent.text().replace("%", "").toDouble()
+                        iconInfo.oneDayPercent =
+                            oneDayPercent.text().replace("%", "").replace("?", "").parseDouble()
+                        iconInfo.sevenDaysPercent =
+                            sevenDaysPercent.text().replace("%", "").replace("?", "").parseDouble()
                         allCoinList.add(iconInfo)
 
 
@@ -212,12 +226,23 @@ class MainActivity : AppCompatActivity() {
                 var index = currentCoinList.indexOf(item)
                 var diffNameStr = "+ ${index + 1}.${item.name} No.${item.rank} \n"
                 var diffNameSpan = SpannableStringBuilder(diffNameStr)
-                diffNameSpan.setSpan(
-                    ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
-                    0,
-                    diffNameStr.length - 1,
-                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                )
+
+                if (filterCandidate(item.name)) {
+                    diffNameSpan.setSpan(
+                        ForegroundColorSpan(getColor(android.R.color.holo_blue_light)),
+                        0,
+                        diffNameStr.length - 1,
+                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                    )
+                } else {
+                    diffNameSpan.setSpan(
+                        ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+                        0,
+                        diffNameStr.length - 1,
+                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                    )
+                }
+
                 contextStr.append(diffNameSpan)
             } else {
                 var diffNameStr = "- ${item.name}\n"
@@ -279,6 +304,17 @@ class MainActivity : AppCompatActivity() {
 
                 contextStr.append(nameSpan)
 
+            } else if (filterCandidate(item.name)) {
+                var nameStr = item.name + " "
+                var nameSpan = SpannableStringBuilder(nameStr)
+                nameSpan.setSpan(
+                    ForegroundColorSpan(getColor(android.R.color.holo_blue_light)),
+                    0,
+                    nameStr.length - 1,
+                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                )
+
+                contextStr.append(nameSpan)
             } else {
                 contextStr.append(item.name + " ")
             }
@@ -330,6 +366,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun filterCandidate(name: String): Boolean {
+        var symbol = name.split(" ")[0]
+        return candidateist.contains(symbol)
+    }
 
     private fun filterHold(name: String): Boolean {
         var symbol = name.split(" ")[0]

@@ -15,4 +15,11 @@ fun String?.isNumeric(): Boolean {
 }
 
 
+fun String?.parseDouble(): Double {
+    if (isNullOrEmpty()) {
+        return 0.00
+    }
 
+    return this!!.toDouble()
+
+}
