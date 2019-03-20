@@ -26,7 +26,8 @@ class MainActivity : AppCompatActivity() {
     var holdList = arrayListOf(
         "SNT", "IOST", "ADA", "TRUE", "EOS",
         "AE", "OKB", "POLY", "ZRX", "NANO",
-        "MIOTA", "DCR"
+        "MIOTA", "DCR", "BNT", "ZIL", "KNC",
+        "MFT", "PAI"
 
     )
     var stableList = arrayListOf(
@@ -34,18 +35,24 @@ class MainActivity : AppCompatActivity() {
         "PAX"
     )
 
+    var specialList = arrayListOf(
+        "PAI"
+    )
+
     var candidateist = arrayListOf(
         "LINK", "INS", "XLM", "ENJ", "LSK",
         "HT", "MCO", "WAVES", "TRX", "THETA",
         "BAT", "ONT", "GXC", "GVT", "RVN",
-        "DASH", "BCH", "BNB", "HOT", "LOOM"
+        "DASH", "BCH", "BNB", "HOT", "LOOM",
+        "ELF", "QKC"
     )
 
     //foreign
     var blackList = arrayListOf(
         "BSV", "BCD", "ZEC", "BTS", "XEM",
         "OMG", "IGNIS", "EMC2", "COSM", "ETC",
-        "PLC", "BEAM", "INB"
+        "PLC", "BEAM", "INB", "NET", "MEDX",
+        "MXM", "EDR", "XTZ"
 
     )
 
@@ -56,8 +63,9 @@ class MainActivity : AppCompatActivity() {
         "AGI", "SPND", "PPT", "CRO", "NEXO",
         "CNX", "VIA", "DENT", "XVG", "KMD",
         "MDA", "NAS", "VET", "CMT", "ARN",
-        "FUEL", "WAN", "ABT", "NEO", "QTUM"
-
+        "FUEL", "WAN", "ABT", "NEO", "QTUM",
+        "SMART", "DTA", "RFR", "MOC", "IQ",
+        "STORM", "NULS"
     )
 
 
@@ -315,6 +323,17 @@ class MainActivity : AppCompatActivity() {
                 )
 
                 contextStr.append(nameSpan)
+            } else if (filterSpecial(item.name)) {
+                var nameStr = item.name + " "
+                var nameSpan = SpannableStringBuilder(nameStr)
+                nameSpan.setSpan(
+                    ForegroundColorSpan(getColor(android.R.color.holo_purple)),
+                    0,
+                    nameStr.length - 1,
+                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                )
+
+                contextStr.append(nameSpan)
             } else {
                 contextStr.append(item.name + " ")
             }
@@ -364,6 +383,11 @@ class MainActivity : AppCompatActivity() {
             }
             contextStr.append(sevenDaysPercentSpan)
         }
+    }
+
+    private fun filterSpecial(name: String): Boolean {
+        var symbol = name.split(" ")[0]
+        return specialList.contains(symbol)
     }
 
     private fun filterCandidate(name: String): Boolean {
@@ -429,8 +453,25 @@ class MainActivity : AppCompatActivity() {
                 showMyHolding()
                 return true
             }
+            R.id.candidate -> {
+                showCandidate()
+                return true
+            }
             else -> return super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun showCandidate() {
+        contextStr = SpannableStringBuilder()
+
+        var list = allCoinList.filter { filterCandidate(it.name) || filterHold(it.name) || filterSpecial(it.name) }
+
+        list = list.sortedBy { it.oneDayPercent }
+
+        displayCoinList(list)
+
+        refreshUI()
+
     }
 
     private fun showMyHolding() {
