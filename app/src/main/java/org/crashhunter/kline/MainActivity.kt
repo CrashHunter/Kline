@@ -26,8 +26,8 @@ class MainActivity : AppCompatActivity() {
     var holdList = arrayListOf(
         "SNT", "IOST", "ADA", "TRUE", "EOS",
         "AE", "OKB", "POLY", "ZRX", "NANO",
-        "MIOTA", "DCR", "BNT", "ZIL", "KNC",
-        "MFT", "PAI"
+        "MIOTA", "DCR", "ZIL", "KNC", "MFT",
+        "PAI Project Pai", "GNT", "HOT"
 
     )
     var stableList = arrayListOf(
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         "HT", "MCO", "WAVES", "TRX", "THETA",
         "BAT", "ONT", "GXC", "GVT", "RVN",
         "DASH", "BCH", "BNB", "HOT", "LOOM",
-        "ELF", "QKC"
+        "ELF", "QKC", "BNT"
     )
 
     //foreign
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         "MDA", "NAS", "VET", "CMT", "ARN",
         "FUEL", "WAN", "ABT", "NEO", "QTUM",
         "SMART", "DTA", "RFR", "MOC", "IQ",
-        "STORM", "NULS"
+        "STORM", "NULS", "ETN"
     )
 
 
@@ -387,28 +387,29 @@ class MainActivity : AppCompatActivity() {
 
     private fun filterSpecial(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return specialList.contains(symbol)
+        return specialList.any { it == symbol || it.startsWith(name) }
     }
 
     private fun filterCandidate(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return candidateist.contains(symbol)
+        return candidateist.any { it == symbol || it.startsWith(name) }
     }
 
     private fun filterHold(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return holdList.contains(symbol)
+        return holdList.any { it == symbol || it.startsWith(name) }
     }
 
     private fun filterStable(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return stableList.contains(symbol)
+        return stableList.any { it == symbol || it.startsWith(name) }
     }
 
 
     private fun filterBlack(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return blackList.contains(symbol) || badCoinList.contains(symbol)
+        return blackList.any { it == symbol || it.startsWith(name) }
+                || badCoinList.any { it == symbol || it.startsWith(name) }
     }
 
 
