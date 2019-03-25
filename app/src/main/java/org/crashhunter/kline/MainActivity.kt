@@ -25,18 +25,19 @@ class MainActivity : AppCompatActivity() {
 
     var holdList = arrayListOf(
         "SNT", "IOST", "ADA", "TRUE", "EOS",
-        "AE", "OKB", "POLY", "ZRX", "NANO",
+        "AE", "POLY", "ZRX", "NANO", "HOT",
         "MIOTA", "DCR", "ZIL", "KNC", "MFT",
-        "PAI Project Pai", "GNT", "HOT"
+        "PAI Project Pai", "GNT", "TRX", "REP", "CELR",
+        "BNT"
 
     )
     var stableList = arrayListOf(
         "USDT", "DAI", "TUSD", "USDC", "BITCNY",
-        "PAX"
+        "PAX", "GUSD"
     )
 
     var specialList = arrayListOf(
-        "PAI"
+        "PAI Project Pai"
     )
 
     var candidateist = arrayListOf(
@@ -44,7 +45,8 @@ class MainActivity : AppCompatActivity() {
         "HT", "MCO", "WAVES", "TRX", "THETA",
         "BAT", "ONT", "GXC", "GVT", "RVN",
         "DASH", "BCH", "BNB", "HOT", "LOOM",
-        "ELF", "QKC", "BNT"
+        "ELF", "QKC", "BNT", "BTM", "OKB",
+        "MANA"
     )
 
     //foreign
@@ -52,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         "BSV", "BCD", "ZEC", "BTS", "XEM",
         "OMG", "IGNIS", "EMC2", "COSM", "ETC",
         "PLC", "BEAM", "INB", "NET", "MEDX",
-        "MXM", "EDR", "XTZ"
+        "MXM", "EDR", "XTZ", "MHC", "LA"
 
     )
 
@@ -65,7 +67,8 @@ class MainActivity : AppCompatActivity() {
         "MDA", "NAS", "VET", "CMT", "ARN",
         "FUEL", "WAN", "ABT", "NEO", "QTUM",
         "SMART", "DTA", "RFR", "MOC", "IQ",
-        "STORM", "NULS", "ETN"
+        "STORM", "NULS", "ETN", "MITH", "OCN",
+        "GTC", "POWR", "GTO"
     )
 
 
@@ -339,9 +342,21 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-            contextStr.append("No.${item.rank} ")
+            contextStr.append("No.${item.rank} | ")
             // contextStr.append(StringUtils.getFormattedVolume(item.cap.toString()) + " ")
-            contextStr.append(StringUtils.getFormattedVolume(item.volume.toString()) + " ")
+            var volumeStr = StringUtils.getFormattedVolume(item.volume.toString()) + " "
+            if (item.volume > volumMin) {
+                var volumeSpan = SpannableStringBuilder(volumeStr)
+                volumeSpan.setSpan(
+                    ForegroundColorSpan(getColor(android.R.color.holo_orange_light)),
+                    0,
+                    volumeStr.length - 1,
+                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                )
+                contextStr.append(volumeSpan)
+            } else {
+                contextStr.append(volumeStr)
+            }
 
 
             var oneDayPercentStr = item.oneDayPercent.toString() + " "
@@ -387,22 +402,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun filterSpecial(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return specialList.any { it == symbol || it.startsWith(name) }
+        return specialList.any { it == symbol || it == name }
     }
 
     private fun filterCandidate(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return candidateist.any { it == symbol || it.startsWith(name) }
+        return candidateist.any { it == symbol || it == name }
     }
 
     private fun filterHold(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return holdList.any { it == symbol || it.startsWith(name) }
+        return holdList.any { it == symbol || it == name }
     }
 
     private fun filterStable(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return stableList.any { it == symbol || it.startsWith(name) }
+        return stableList.any { it == symbol || it == name }
     }
 
 
@@ -521,8 +536,11 @@ class MainActivity : AppCompatActivity() {
         titleStr.append("Filter: ${currentCoinList.size}")
 
         //get latestCoinList
-        latestCoinList = Gson().fromJson(latestCoinListJsonStr, object : TypeToken<List<CoinInfo>>() {}
-            .type) as List<CoinInfo>
+        if (latestCoinListJsonStr.isNotEmpty()) {
+            latestCoinList = Gson().fromJson(latestCoinListJsonStr, object : TypeToken<List<CoinInfo>>() {}
+                .type) as List<CoinInfo>
+        }
+
 
         //save latestCoinList
         var jsonList = Gson().toJson(currentCoinList)
