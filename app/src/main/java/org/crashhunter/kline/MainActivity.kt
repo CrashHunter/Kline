@@ -42,38 +42,38 @@ class MainActivity : AppCompatActivity() {
 
     var candidateist = arrayListOf(
         "LINK", "INS", "XLM", "ENJ", "LSK",
-        "HT", "MCO", "WAVES", "TRX", "THETA",
-        "BAT", "ONT", "GXC", "GVT", "RVN",
-        "DASH", "BCH", "BNB", "HOT", "LOOM",
-        "ELF", "QKC", "BNT", "BTM", "OKB",
-        "MANA", "DATA Streamr DATAcoin", "ENG",
-        "STORJ","RDN"
+        "HT", "MCO", "WAVES", "THETA", "BAT",
+        "ONT", "GXC", "GVT", "RVN", "STORJ",
+        "DASH", "BCH", "BNB", "LOOM", "ENG",
+        "ELF", "QKC", "BTM", "OKB", "MANA",
+        "RDN", "NEO", "QTUM", "STEEM", "VET",
+        "ICX", "ARK", "PIVX"
     )
 
     //foreign
-    var blackList = arrayListOf(
+    var foreignList = arrayListOf(
         "BSV", "BCD", "ZEC", "BTS", "XEM",
         "OMG", "IGNIS", "EMC2", "COSM", "ETC",
         "PLC", "BEAM", "INB", "NET", "MEDX",
         "MXM", "EDR", "XTZ", "MHC", "LA",
-        "KCS"
+        "KCS", "VTC", "DGB"
 
     )
 
     //bad code / low avg. volume
     var badCoinList = arrayListOf(
         "ABBC", "XMR", "DMT", "BTG", "RLC",
-        "GRS", "XZC", "CVC", "META", "VTC",
+        "GRS", "XZC", "CVC", "META", "ETP",
         "AGI", "SPND", "PPT", "CRO", "NEXO",
         "CNX", "VIA", "DENT", "XVG", "KMD",
-        "MDA", "NAS", "VET", "CMT", "ARN",
-        "FUEL", "WAN", "ABT", "NEO", "QTUM",
+        "MDA", "NAS", "CMT", "ARN", "WTC",
+        "FUEL", "WAN", "ABT", "WABI", "MTL",
         "SMART", "DTA", "RFR", "MOC", "IQ",
         "STORM", "NULS", "ETN", "MITH", "OCN",
         "GTC", "POWR", "GTO", "EVX", "REN",
         "MKR", "QLC", "XAS", "ADX", "MTH",
         "OAX", "SNGLS", "VIB", "ETHOS", "DLT",
-        "TNB", "ETP", "WTC"
+        "TNB"
     )
 
 
@@ -136,10 +136,27 @@ class MainActivity : AppCompatActivity() {
 
 
                     var urlStr = "https://coinmarketcap.com/all/views/all/"
+//                    var urlStr = "https://www.baidu.com"
                     //                    titleStr.append(urlStr)
 
+
+//                    val httpUtils = HttpUtils.instance
+//                    httpUtils.timeout = 30000
+//                    httpUtils.waitForBackgroundJavaScript = 30000
+//                    val doc = httpUtils.getHtmlPageResponseAsDocument(urlStr)
+
+//                    val webClient = WebClient(BrowserVersion.CHROME)
+//                    val htmlpage: HtmlPage = webClient.getPage(urlStr)
+//
+//                    val pageAsXml = htmlpage.asXml()
+//                    val doc = Jsoup.parse(pageAsXml, urlStr)
+
+//                    val driver = FirefoxDriver()
+//                    driver.get(urlStr)
+//                    var list = driver.findElements("//*[@id=\"id-waves\"]")
+
                     val doc = Jsoup.connect(urlStr).get()
-                    //                    contextStr.append(doc.toString())
+                    contextStr.append(doc.toString())
 
                     var icons = doc.select("#currencies-all > tbody > tr")
                     Log.e("icons size", icons.size.toString())
@@ -428,7 +445,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun filterBlack(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return blackList.any { it == symbol || it.startsWith(name) }
+        return foreignList.any { it == symbol || it.startsWith(name) }
                 || badCoinList.any { it == symbol || it.startsWith(name) }
     }
 
