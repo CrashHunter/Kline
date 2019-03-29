@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         "AE", "POLY", "ZRX", "NANO", "HOT",
         "MIOTA", "DCR", "ZIL", "KNC", "MFT",
         "PAI Project Pai", "GNT", "TRX", "REP", "CELR",
-        "BNT"
+        "BNT", "DATA Streamr DATAcoin"
 
     )
     var stableList = arrayListOf(
@@ -46,7 +46,8 @@ class MainActivity : AppCompatActivity() {
         "BAT", "ONT", "GXC", "GVT", "RVN",
         "DASH", "BCH", "BNB", "HOT", "LOOM",
         "ELF", "QKC", "BNT", "BTM", "OKB",
-        "MANA"
+        "MANA", "DATA Streamr DATAcoin", "ENG",
+        "STORJ","RDN"
     )
 
     //foreign
@@ -54,7 +55,8 @@ class MainActivity : AppCompatActivity() {
         "BSV", "BCD", "ZEC", "BTS", "XEM",
         "OMG", "IGNIS", "EMC2", "COSM", "ETC",
         "PLC", "BEAM", "INB", "NET", "MEDX",
-        "MXM", "EDR", "XTZ", "MHC", "LA"
+        "MXM", "EDR", "XTZ", "MHC", "LA",
+        "KCS"
 
     )
 
@@ -68,7 +70,10 @@ class MainActivity : AppCompatActivity() {
         "FUEL", "WAN", "ABT", "NEO", "QTUM",
         "SMART", "DTA", "RFR", "MOC", "IQ",
         "STORM", "NULS", "ETN", "MITH", "OCN",
-        "GTC", "POWR", "GTO"
+        "GTC", "POWR", "GTO", "EVX", "REN",
+        "MKR", "QLC", "XAS", "ADX", "MTH",
+        "OAX", "SNGLS", "VIB", "ETHOS", "DLT",
+        "TNB", "ETP", "WTC"
     )
 
 
