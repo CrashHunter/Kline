@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         "AE", "POLY", "ZRX", "NANO", "HOT",
         "MIOTA", "DCR", "ZIL", "KNC", "MFT",
         "PAI Project Pai", "GNT", "TRX", "REP", "CELR",
-        "BNT", "DATA Streamr DATAcoin"
+        "BNT", "DATA Streamr DATAcoin", "WAVES", "MANA"
 
     )
     var stableList = arrayListOf(
@@ -42,12 +42,12 @@ class MainActivity : AppCompatActivity() {
 
     var candidateist = arrayListOf(
         "LINK", "INS", "XLM", "ENJ", "LSK",
-        "HT", "MCO", "WAVES", "THETA", "BAT",
+        "HT", "MCO", "THETA", "BAT", "ARK",
         "ONT", "GXC", "GVT", "RVN", "STORJ",
         "DASH", "BCH", "BNB", "LOOM", "ENG",
-        "ELF", "QKC", "BTM", "OKB", "MANA",
+        "ELF", "QKC", "BTM", "OKB", "PIVX",
         "RDN", "NEO", "QTUM", "STEEM", "VET",
-        "ICX", "ARK", "PIVX"
+        "ICX","OST"
     )
 
     //foreign
@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         "GTC", "POWR", "GTO", "EVX", "REN",
         "MKR", "QLC", "XAS", "ADX", "MTH",
         "OAX", "SNGLS", "VIB", "ETHOS", "DLT",
-        "TNB"
+        "TNB", "AMB", "TTC"
     )
 
 
