@@ -23,12 +23,15 @@ import java.io.IOException
 class MainActivity : AppCompatActivity() {
 
 
+    var sortByoneDayPercent = true
+
+
     var holdList = arrayListOf(
         "SNT", "IOST", "ADA", "TRUE", "EOS",
         "AE", "POLY", "ZRX", "NANO", "HOT",
         "MIOTA", "DCR", "ZIL", "KNC", "MFT",
         "PAI Project Pai", "GNT", "TRX", "REP", "CELR",
-        "BNT", "DATA Streamr DATAcoin", "WAVES", "MANA"
+        "BNT", "DATA Streamr DATAcoin", "ENJ", "MANA"
 
     )
     var stableList = arrayListOf(
@@ -47,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         "DASH", "BCH", "BNB", "LOOM", "ENG",
         "ELF", "QKC", "BTM", "OKB", "PIVX",
         "RDN", "NEO", "QTUM", "STEEM", "VET",
-        "ICX","OST"
+        "ICX", "OST", "LRC", "AION", "WAVES"
     )
 
     //foreign
@@ -56,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         "OMG", "IGNIS", "EMC2", "COSM", "ETC",
         "PLC", "BEAM", "INB", "NET", "MEDX",
         "MXM", "EDR", "XTZ", "MHC", "LA",
-        "KCS", "VTC", "DGB"
+        "KCS", "VTC", "DGB", "ANKR", "DEX"
 
     )
 
@@ -73,7 +76,9 @@ class MainActivity : AppCompatActivity() {
         "GTC", "POWR", "GTO", "EVX", "REN",
         "MKR", "QLC", "XAS", "ADX", "MTH",
         "OAX", "SNGLS", "VIB", "ETHOS", "DLT",
-        "TNB", "AMB", "TTC"
+        "TNB", "AMB", "TTC", "LAMB", "TRIO",
+        "SWFTC"
+
     )
 
 
@@ -160,8 +165,6 @@ class MainActivity : AppCompatActivity() {
 
                     var icons = doc.select("#currencies-all > tbody > tr")
                     Log.e("icons size", icons.size.toString())
-
-                    titleStr.append("All: ${icons.size} ")
 
                     for (i in 0 until icons.size) {
 
@@ -504,7 +507,14 @@ class MainActivity : AppCompatActivity() {
 
         var list = allCoinList.filter { filterCandidate(it.name) || filterHold(it.name) || filterSpecial(it.name) }
 
-        list = list.sortedBy { it.oneDayPercent }
+        if (sortByoneDayPercent) {
+            sortByoneDayPercent = false
+            list = list.sortedBy { it.sevenDaysPercent }
+        } else {
+            sortByoneDayPercent = true
+            list = list.sortedBy { it.oneDayPercent }
+        }
+
 
         displayCoinList(list)
 
@@ -517,7 +527,13 @@ class MainActivity : AppCompatActivity() {
 
         var holdingList = allCoinList.filter { filterHold(it.name) }
 
-        holdingList = holdingList.sortedBy { it.oneDayPercent }
+        if (sortByoneDayPercent) {
+            sortByoneDayPercent = false
+            holdingList = holdingList.sortedBy { it.sevenDaysPercent }
+        } else {
+            sortByoneDayPercent = true
+            holdingList = holdingList.sortedBy { it.oneDayPercent }
+        }
 
         displayCoinList(holdingList)
 
@@ -548,6 +564,10 @@ class MainActivity : AppCompatActivity() {
 
         volumeMax = 9999 * 1000000
         volumMin = 8 * 1000000
+
+        titleStr = StringBuffer()
+
+        titleStr.append("All: ${allCoinList.size} ")
 
         currentCoinList = allCoinList.filter { it.volume in (volumMin + 1)..(volumeMax - 1) }
         titleStr.append("VolEnough: ${currentCoinList.size} ")
