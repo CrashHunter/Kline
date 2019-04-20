@@ -27,11 +27,10 @@ class MainActivity : AppCompatActivity() {
 
 
     var holdList = arrayListOf(
-        "SNT", "IOST", "ADA", "TRUE", "EOS",
-        "AE", "POLY", "ZRX", "NANO", "HOT",
-        "MIOTA", "DCR", "ZIL", "KNC", "MFT",
-        "PAI Project Pai", "GNT", "TRX", "REP", "CELR",
-        "BNT", "DATA Streamr DATAcoin", "ENJ", "MANA"
+        "SNT", "TRUE", "EOS", "WAVES", "STORJ",
+        "HOT", "DCR", "MCO", "ENJ",
+        "REP", "CELR", "INS", "ENG", "LOOM",
+        "RVN", "ZIL"
 
     )
     var stableList = arrayListOf(
@@ -40,17 +39,21 @@ class MainActivity : AppCompatActivity() {
     )
 
     var specialList = arrayListOf(
-        "PAI Project Pai"
+        "PAI Project Pai", "BTT", "FET"
     )
 
     var candidateist = arrayListOf(
-        "LINK", "INS", "XLM", "ENJ", "LSK",
-        "HT", "MCO", "THETA", "BAT", "ARK",
-        "ONT", "GXC", "GVT", "RVN", "STORJ",
-        "DASH", "BCH", "BNB", "LOOM", "ENG",
+        "LINK", "XLM", "LSK", "NANO", "ADA",
+        "HT", "THETA", "BAT", "ARK", "PAI Project Pai",
+        "ONT", "GXC", "GVT",
+        "DASH", "BCH", "BNB",
         "ELF", "QKC", "BTM", "OKB", "PIVX",
         "RDN", "NEO", "QTUM", "STEEM", "VET",
-        "ICX", "OST", "LRC", "AION", "WAVES"
+        "ICX", "OST", "LRC", "AION", "POLY",
+        "KNC", "GNT", "MIOTA", "MFT", "MANA",
+        "ZRX", "BNT", "DATA Streamr DATAcoin",
+        "IOST", "TRX", "AE", "BNB"
+
     )
 
     //foreign
@@ -59,7 +62,8 @@ class MainActivity : AppCompatActivity() {
         "OMG", "IGNIS", "EMC2", "COSM", "ETC",
         "PLC", "BEAM", "INB", "NET", "MEDX",
         "MXM", "EDR", "XTZ", "MHC", "LA",
-        "KCS", "VTC", "DGB", "ANKR", "DEX"
+        "KCS", "VTC", "DGB", "ANKR", "DEX",
+        "MONA", "PHX", "BZ", "GRIN", "BIX"
 
     )
 
@@ -77,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         "MKR", "QLC", "XAS", "ADX", "MTH",
         "OAX", "SNGLS", "VIB", "ETHOS", "DLT",
         "TNB", "AMB", "TTC", "LAMB", "TRIO",
-        "SWFTC"
+        "SWFTC", "HPB", "ITC", "LBA", "RNT"
 
     )
 
