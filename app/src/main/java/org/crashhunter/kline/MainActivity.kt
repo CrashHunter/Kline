@@ -23,14 +23,14 @@ import java.io.IOException
 class MainActivity : AppCompatActivity() {
 
 
-    var sortByoneDayPercent = true
+    var sortByType = "oneDay"
 
 
     var holdList = arrayListOf(
-        "SNT", "TRUE", "EOS", "WAVES", "STORJ",
-        "HOT", "DCR", "MCO", "ENJ",
-        "REP", "CELR", "INS", "ENG", "LOOM",
-        "RVN", "ZIL"
+        "ATOM", "BNB", "BTT", "CELR", "DCR",
+        "ENJ", "LSK", "MFT", "MIOTA", "NANO",
+        "NEO", "ONT", "REP", "TRUE", "TRX",
+        "WAVES", "ZRX", "ADA", "IOST"
 
     )
     var stableList = arrayListOf(
@@ -39,20 +39,22 @@ class MainActivity : AppCompatActivity() {
     )
 
     var specialList = arrayListOf(
-        "PAI Project Pai", "BTT", "FET"
+        "PAI Project Pai", "BTT", "FET", "MATIC"
     )
 
     var candidateist = arrayListOf(
         "LINK", "XLM", "LSK", "NANO", "ADA",
         "HT", "THETA", "BAT", "ARK", "PAI Project Pai",
-        "ONT", "GXC", "GVT",
-        "DASH", "BCH", "BNB",
+        "ONT", "GXC", "GVT", "ATOM Cosmos",
+        "DASH", "BCH", "BNB", "XTZ", "MKR",
         "ELF", "QKC", "BTM", "OKB", "PIVX",
         "RDN", "NEO", "QTUM", "STEEM", "VET",
         "ICX", "OST", "LRC", "AION", "POLY",
-        "KNC", "GNT", "MIOTA", "MFT", "MANA",
+        "KNC", "GNT", "MIOTA", "MFT", "XMR",
         "ZRX", "BNT", "DATA Streamr DATAcoin",
-        "IOST", "TRX", "AE", "BNB"
+        "IOST", "TRX", "AE", "BNB", "STORJ",
+        "LOOM", "ZIL", "MANA", "INS", "ABT",
+        "XRP", "HOT", "MCO", "RVN", "SNT"
 
     )
 
@@ -63,25 +65,27 @@ class MainActivity : AppCompatActivity() {
         "PLC", "BEAM", "INB", "NET", "MEDX",
         "MXM", "EDR", "XTZ", "MHC", "LA",
         "KCS", "VTC", "DGB", "ANKR", "DEX",
-        "MONA", "PHX", "BZ", "GRIN", "BIX"
+        "MONA", "PHX", "BZ", "GRIN", "BIX",
+        "SOLVE", "ORBS", "AERGO"
 
     )
 
     //bad code / low avg. volume
     var badCoinList = arrayListOf(
-        "ABBC", "XMR", "DMT", "BTG", "RLC",
+        "ABBC", "DMT", "BTG", "RLC",
         "GRS", "XZC", "CVC", "META", "ETP",
         "AGI", "SPND", "PPT", "CRO", "NEXO",
         "CNX", "VIA", "DENT", "XVG", "KMD",
         "MDA", "NAS", "CMT", "ARN", "WTC",
-        "FUEL", "WAN", "ABT", "WABI", "MTL",
+        "FUEL", "WAN", "WABI", "MTL",
         "SMART", "DTA", "RFR", "MOC", "IQ",
         "STORM", "NULS", "ETN", "MITH", "OCN",
         "GTC", "POWR", "GTO", "EVX", "REN",
-        "MKR", "QLC", "XAS", "ADX", "MTH",
+        "QLC", "XAS", "ADX", "MTH",
         "OAX", "SNGLS", "VIB", "ETHOS", "DLT",
         "TNB", "AMB", "TTC", "LAMB", "TRIO",
-        "SWFTC", "HPB", "ITC", "LBA", "RNT"
+        "SWFTC", "HPB", "ITC", "LBA", "RNT",
+        "BHP", "KCASH", "NEW", "RCN"
 
     )
 
@@ -95,7 +99,7 @@ class MainActivity : AppCompatActivity() {
 
     val capDivider = 100 * 1000000
 
-    val topNum = 5
+    val topNum = 0
 
 
 
@@ -202,13 +206,17 @@ class MainActivity : AppCompatActivity() {
 
                         var iconInfo = CoinInfo()
                         iconInfo.name = name.text()
-                        iconInfo.rank = rank.text()
+                        iconInfo.rank = rank.text().toLong()
                         iconInfo.volume = volumeStr.toLong()
                         iconInfo.cap = capStr.toLong()
                         iconInfo.oneDayPercent =
                             oneDayPercent.text().replace("%", "").replace("?", "").parseDouble()
                         iconInfo.sevenDaysPercent =
-                            sevenDaysPercent.text().replace("%", "").replace("?", "").parseDouble()
+                            sevenDaysPercent.text()
+                                .replace("%", "")
+                                .replace("?", "")
+                                .replace(">", "")
+                                .parseDouble()
                         allCoinList.add(iconInfo)
 
 
@@ -457,15 +465,16 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun filterTop(rank: String): Boolean {
+    private fun filterTop(rank: Long): Boolean {
 
-        return rank.toInt() <= topNum
+        return rank <= topNum
 
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.home_menu, menu)
+        inflater.inflate(R.menu.sort_menu, menu)
         return true
     }
 
@@ -502,6 +511,28 @@ class MainActivity : AppCompatActivity() {
                 showCandidate()
                 return true
             }
+            //SORT BY
+            R.id.name -> {
+                sortByType = "name"
+                return true
+            }
+            R.id.volume -> {
+                sortByType = "volume"
+                return true
+            }
+            R.id.oneDay -> {
+                sortByType = "oneDay"
+                return true
+            }
+            R.id.sevenDay -> {
+                sortByType = "sevenDay"
+                return true
+            }
+            R.id.rank -> {
+                sortByType = "rank"
+                return true
+            }
+
             else -> return super.onOptionsItemSelected(item)
         }
     }
@@ -511,14 +542,7 @@ class MainActivity : AppCompatActivity() {
 
         var list = allCoinList.filter { filterCandidate(it.name) || filterHold(it.name) || filterSpecial(it.name) }
 
-        if (sortByoneDayPercent) {
-            sortByoneDayPercent = false
-            list = list.sortedBy { it.sevenDaysPercent }
-        } else {
-            sortByoneDayPercent = true
-            list = list.sortedBy { it.oneDayPercent }
-        }
-
+        list = sortList(list)
 
         displayCoinList(list)
 
@@ -526,24 +550,36 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
     private fun showMyHolding() {
         contextStr = SpannableStringBuilder()
 
-        var holdingList = allCoinList.filter { filterHold(it.name) }
+        var list = allCoinList.filter { filterHold(it.name) }
 
-        if (sortByoneDayPercent) {
-            sortByoneDayPercent = false
-            holdingList = holdingList.sortedBy { it.sevenDaysPercent }
-        } else {
-            sortByoneDayPercent = true
-            holdingList = holdingList.sortedBy { it.oneDayPercent }
-        }
+        list = sortList(list)
 
-        displayCoinList(holdingList)
+        displayCoinList(list)
 
         refreshUI()
 
     }
+
+    private fun sortList(list: List<CoinInfo>): List<CoinInfo> {
+        var list1 = list
+        if (sortByType == "name") {
+            list1 = list1.sortedBy { it.name }
+        } else if (sortByType == "volume") {
+            list1 = list1.sortedBy { it.volume }
+        } else if (sortByType == "oneDay") {
+            list1 = list1.sortedBy { it.oneDayPercent }
+        } else if (sortByType == "sevenDay") {
+            list1 = list1.sortedBy { it.sevenDaysPercent }
+        } else if (sortByType == "rank") {
+            list1 = list1.sortedBy { it.rank }
+        }
+        return list1
+    }
+
 
     private fun showSmallVolume() {
 
@@ -598,6 +634,9 @@ class MainActivity : AppCompatActivity() {
 
 
         getdiffs(currentCoinList, latestCoinList)
+
+        currentCoinList = sortList(currentCoinList)
+
         displayCoinList(currentCoinList)
         displayDiffs(currentCoinList)
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/sort"
+          android:title="排序方式"
+          app:showAsAction="always"
+    >
+        <menu>
+            <group android:checkableBehavior="all">
+                <item android:id="@+id/name"
+                      android:title="名字"
+                />
+                <item android:id="@+id/volume"
+                      android:title="成交量"
+                />
+                <item android:id="@+id/oneDay"
+                      android:title="单日"
+                />
+                <item android:id="@+id/sevenDay"
+                      android:title="7日"
+                />
+                <item android:id="@+id/rank"
+                      android:title="排名"
+                />
+            </group>
+        </menu>
+
+
+    </item>
+
+</menu>

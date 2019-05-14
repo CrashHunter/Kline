@@ -6,7 +6,7 @@ package org.crashhunter.kline.data
 class CoinInfo {
 
     var name = ""
-    var rank = ""
+    var rank: Long = 0
     var cap: Long = 0
     var volume: Long = 0
     var oneDayPercent: Double = 0.0
