@@ -54,7 +54,8 @@ class MainActivity : AppCompatActivity() {
         "ZRX", "BNT", "DATA Streamr DATAcoin",
         "IOST", "TRX", "AE", "BNB", "STORJ",
         "LOOM", "ZIL", "MANA", "INS", "ABT",
-        "XRP", "HOT", "MCO", "RVN", "SNT"
+        "XRP", "HOT", "MCO", "RVN", "SNT",
+        "HC", "EGT"
 
     )
 
@@ -66,7 +67,8 @@ class MainActivity : AppCompatActivity() {
         "MXM", "EDR", "XTZ", "MHC", "LA",
         "KCS", "VTC", "DGB", "ANKR", "DEX",
         "MONA", "PHX", "BZ", "GRIN", "BIX",
-        "SOLVE", "ORBS", "AERGO"
+        "SOLVE", "ORBS", "AERGO", "CLAM",
+        "AOA"
 
     )
 
@@ -85,7 +87,10 @@ class MainActivity : AppCompatActivity() {
         "OAX", "SNGLS", "VIB", "ETHOS", "DLT",
         "TNB", "AMB", "TTC", "LAMB", "TRIO",
         "SWFTC", "HPB", "ITC", "LBA", "RNT",
-        "BHP", "KCASH", "NEW", "RCN"
+        "BHP", "KCASH", "NEW", "RCN", "FCT",
+        "XPX", "CPT", "ELA", "NPXS", "CTXC",
+        "SKY", "WAX", "REQ", "POE", "LEND",
+        "TNT", "EDO", "POA", "STRAT"
 
     )
 
