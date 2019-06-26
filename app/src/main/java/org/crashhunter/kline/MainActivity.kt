@@ -1,5 +1,6 @@
 package org.crashhunter.kline
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.text.SpannableStringBuilder
@@ -486,6 +487,12 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         when (item.getItemId()) {
+            R.id.count -> {
+
+                var intent = Intent(this, CountActivity::class.java)
+                startActivity(intent)
+                return true
+            }
             R.id.refresh -> {
                 getData()
                 return true
