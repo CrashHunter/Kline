@@ -35,11 +35,33 @@
             app:layout_constraintTop_toBottomOf="@+id/tvTitle"
     >
 
+
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
         >
+
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                          android:orientation="horizontal"
+            >
+                <EditText
+                        android:id="@+id/rate1"
+                        android:inputType="numberDecimal"
+                        android:text="9.5"
+                        android:layout_width="0dp" android:layout_weight="1.0"
+                        android:layout_height="wrap_content"/>
+
+
+                <EditText
+                        android:id="@+id/rate2"
+                        android:text="4.5"
+                        android:layout_width="0dp" android:layout_weight="1.0"
+                        android:inputType="numberDecimal"
+                        android:layout_height="wrap_content"/>
+            </LinearLayout>
+
 
             <EditText
                     android:id="@+id/numEdit"
@@ -57,6 +79,22 @@
 
             <TextView
                     android:id="@+id/down"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+            />
+
+            <TextView
+                    android:id="@+id/up5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+            />
+
+            <TextView
+                    android:id="@+id/down5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
