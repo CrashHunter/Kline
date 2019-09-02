@@ -24,37 +24,36 @@ import java.io.IOException
 class MainActivity : AppCompatActivity() {
 
 
-    var sortByType = "oneDay"
+    var sortByType = "sevenDay"
 
 
     var holdList = arrayListOf(
-        "ATOM", "BNB", "BTT", "CELR", "DCR",
-        "ENJ", "LSK", "MFT", "MIOTA", "NANO",
-        "NEO", "ONT", "REP", "TRUE", "TRX",
-        "WAVES", "ZRX", "ADA", "IOST"
+        "ATOM", "BNB", "ALGO", "EOS", "ZRX",
+        "TRUE", "TRX"
+
 
     )
     var stableList = arrayListOf(
         "USDT", "DAI", "TUSD", "USDC", "BITCNY",
-        "PAX", "GUSD"
+        "PAX", "GUSD", "USDK"
     )
 
     var specialList = arrayListOf(
-        "PAI Project Pai", "BTT", "FET", "MATIC"
+        ""
     )
 
     var candidateist = arrayListOf(
         "LINK", "XLM", "LSK", "NANO", "ADA",
-        "HT", "THETA", "BAT", "ARK", "PAI Project Pai",
-        "ONT", "GXC", "GVT", "ATOM Cosmos",
-        "DASH", "BCH", "BNB", "XTZ", "MKR",
-        "ELF", "QKC", "BTM", "OKB", "PIVX",
-        "RDN", "NEO", "QTUM", "STEEM", "VET",
-        "ICX", "OST", "LRC", "AION", "POLY",
-        "KNC", "GNT", "MIOTA", "MFT", "XMR",
-        "ZRX", "BNT", "DATA Streamr DATAcoin",
-        "IOST", "TRX", "AE", "BNB", "STORJ",
-        "LOOM", "ZIL", "MANA", "INS", "ABT",
+        "HT", "THETA", "BAT", "PAI Project Pai",
+        "ONT", "GXC", "ATOM Cosmos",
+        "DASH", "BCH", "BNB", "XTZ",
+        "ELF", "QKC", "BTM", "OKB",
+        "RDN", "NEO", "QTUM", "VET",
+        "ICX", "LRC", "AION",
+        "KNC", "MIOTA", "MFT", "XMR",
+        "ZRX", "BNT",
+        "IOST", "TRX", "AE", "BNB",
+        "LOOM", "ZIL", "MANA", "ABT",
         "XRP", "HOT", "MCO", "RVN", "SNT",
         "HC", "EGT"
 
@@ -98,10 +97,10 @@ class MainActivity : AppCompatActivity() {
 
     var handler: Handler = Handler()
 
-
-    var volumeMax = 9999 * 1000000
-
-    var volumMin = 8 * 1000000
+    val maximum = 999999999 * 1000000L
+    var volumeMax = maximum
+    val minimum = 8 * 1000000L
+    var volumMin = minimum
 
     val capDivider = 100 * 1000000
 
@@ -212,9 +211,9 @@ class MainActivity : AppCompatActivity() {
 
                         var iconInfo = CoinInfo()
                         iconInfo.name = name.text()
-                        iconInfo.rank = rank.text().toLong()
-                        iconInfo.volume = volumeStr.toLong()
-                        iconInfo.cap = capStr.toLong()
+                        iconInfo.rank = rank.text().parseLong()
+                        iconInfo.volume = volumeStr.parseLong()
+                        iconInfo.cap = capStr.parseLong()
                         iconInfo.oneDayPercent =
                             oneDayPercent.text().replace("%", "").replace("?", "").parseDouble()
                         iconInfo.sevenDaysPercent =
@@ -241,8 +240,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun initData() {
 
-        volumeMax = 9999 * 1000000
-        volumMin = 8 * 1000000
+        volumeMax = maximum
+        volumMin = minimum
 
         allCoinList = ArrayList<CoinInfo>()
         currentCoinList = ArrayList<CoinInfo>()
@@ -486,7 +485,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
-        when (item.getItemId()) {
+        when (item.itemId) {
             R.id.count -> {
 
                 var intent = Intent(this, CountActivity::class.java)
@@ -614,8 +613,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun showAllCap() {
 
-        volumeMax = 9999 * 1000000
-        volumMin = 8 * 1000000
+        volumeMax = maximum
+        volumMin = minimum
 
         titleStr = StringBuffer()
 

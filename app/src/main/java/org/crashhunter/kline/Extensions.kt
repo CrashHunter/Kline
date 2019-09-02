@@ -23,3 +23,14 @@ fun String?.parseDouble(): Double {
     return this!!.toDouble()
 
 }
+
+
+fun String?.parseLong(): Long {
+    if (isNumeric()) {
+        return this!!.toLong()
+    } else {
+        return 0L
+    }
+
+
+}
