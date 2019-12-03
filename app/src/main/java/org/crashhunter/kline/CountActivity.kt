@@ -43,17 +43,47 @@ class CountActivity : AppCompatActivity() {
             }
         }
 
-    }
 
-    private fun checkEmpty(): Boolean {
-        if (numEdit.text.toString().isEmpty() || rate1.text.toString().isEmpty() || rate2.text.toString().isEmpty()) {
-            return false
-        } else {
-            return true
+        high.addTextChangedListener {
+            if (checkEmptyMid()) {
+                countMidValue()
+            }
+        }
+
+        low.addTextChangedListener {
+            if (checkEmptyMid()) {
+                countMidValue()
+            }
+
         }
 
     }
 
+    private fun checkEmptyMid(): Boolean {
+        return !(high.text.toString().isEmpty() || low.text.toString().isEmpty())
+
+    }
+
+    private fun checkEmpty(): Boolean {
+        return !(numEdit.text.toString().isEmpty() || rate1.text.toString().isEmpty() || rate2.text.toString().isEmpty())
+
+    }
+
+
+    private fun countMidValue() {
+
+
+        var highNum = high.text.toString().toFloat()
+        var lowNum = low.text.toString().toFloat()
+
+        var period = highNum - lowNum
+        var midNum = period / 2 + lowNum
+
+        var a = period * 0.75 + lowNum
+        var c = period * 0.25 + lowNum
+
+        mid.text = "75%:$a \n50%:$midNum \n25%$c"
+    }
     private fun countValue() {
 
 
@@ -66,12 +96,12 @@ class CountActivity : AppCompatActivity() {
         var lastUp = num
         var lastDown = num
 
-        for (i in 0..5) {
+        for (i in 1..6) {
             lastUp *= (1 + rate1Num / 100).toFloat()
             lastDown *= (1 - rate1Num / 100).toFloat()
 
-            upStr += "+${(i + 1) * rate1Num}% : ${lastUp} \n"
-            downStr += "-${(i + 1) * rate1Num}% : ${lastDown} \n"
+            upStr += "+${i * rate1Num}% : ${lastUp} \n"
+            downStr += "-${i * rate1Num}% : ${lastDown} \n"
 
         }
 
@@ -80,20 +110,20 @@ class CountActivity : AppCompatActivity() {
         var lastUp5 = num
         var lastDown5 = num
 
-        for (i in 0..5) {
-            lastUp5 *= (1 + rate2Num / 100).toFloat()
-            lastDown5 *= (1 - rate2Num / 100).toFloat()
-            upStr5 += "+${(i + 1) * rate2Num}% : ${lastUp5} \n"
-            downStr5 += "-${(i + 1) * rate2Num}% : ${lastDown5} \n"
+        for (i in 1..6) {
+            lastUp5 = (1 + rate2Num * i / 100) * num
+            lastDown5 = (1 - rate2Num * i / 100) * num
+            upStr5 += "+${i * rate2Num}% : ${lastUp5} \n"
+            downStr5 += "-${i * rate2Num}% : ${lastDown5} \n"
 
         }
 
 
 
-        up.text = upStr
+        up.text = "复利：\n$upStr"
         down.text = downStr
 
-        up5.text = upStr5
+        up5.text = "非复利：\n$upStr5"
         down5.text = downStr5
     }
 }

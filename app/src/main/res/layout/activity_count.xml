@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                   xmlns:tools="http://schemas.android.com/tools"
-                                                   android:layout_width="match_parent"
-                                                   android:layout_height="match_parent"
-                                                   tools:context=".MainActivity"
->
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
 
     <TextView
             android:id="@+id/tvTitle"
@@ -17,8 +16,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-    />
+            app:layout_constraintVertical_bias="0.0" />
 
 
     <androidx.core.widget.NestedScrollView
@@ -27,79 +25,134 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="8dp"
             android:fillViewport="true"
-            android:scrollbarStyle="outsideInset"
-            android:scrollbars="vertical"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
+            android:scrollbarStyle="outsideInset"
+            android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitle"
-    >
+            app:layout_constraintTop_toBottomOf="@+id/tvTitle">
 
 
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-        >
+                android:orientation="vertical">
 
 
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                          android:orientation="horizontal"
-            >
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
                 <EditText
                         android:id="@+id/rate1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.0"
                         android:inputType="numberDecimal"
-                        android:text="9.5"
-                        android:layout_width="0dp" android:layout_weight="1.0"
-                        android:layout_height="wrap_content"/>
+                        android:text="10" />
 
 
                 <EditText
                         android:id="@+id/rate2"
-                        android:text="4.5"
-                        android:layout_width="0dp" android:layout_weight="1.0"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.0"
                         android:inputType="numberDecimal"
-                        android:layout_height="wrap_content"/>
+                        android:text="10" />
             </LinearLayout>
 
 
             <EditText
                     android:id="@+id/numEdit"
-                    android:inputType="numberDecimal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal" />
+
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <EditText
+                        android:id="@+id/high"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.0"
+                        android:hint="high"
+                        android:inputType="numberDecimal" />
+
+
+                <EditText
+                        android:id="@+id/low"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.0"
+                        android:hint="low."
+                        android:inputType="numberDecimal" />
+            </LinearLayout>
 
             <TextView
-                    android:id="@+id/up"
+                    android:id="@+id/mid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-            />
+                    android:textStyle="bold" />
 
-            <TextView
-                    android:id="@+id/down"
+            <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-            />
+                    android:orientation="horizontal">
 
-            <TextView
-                    android:id="@+id/up5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-            />
+                <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.0"
+                        android:orientation="vertical">
 
-            <TextView
-                    android:id="@+id/down5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-            />
+
+                    <TextView
+                            android:id="@+id/up"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                    <TextView
+                            android:id="@+id/down"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.0"
+                        android:orientation="vertical">
+
+
+                    <TextView
+                            android:id="@+id/up5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                    <TextView
+                            android:id="@+id/down5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
         </LinearLayout>
 
 

@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
     //foreign
     var foreignList = arrayListOf(
         "BSV", "BCD", "ZEC", "BTS", "XEM",
-        "OMG", "IGNIS", "EMC2", "COSM", "ETC",
+        "OMG", "IGNIS", "EMC2", "COSM",
         "PLC", "BEAM", "INB", "NET", "MEDX",
         "MXM", "EDR", "XTZ", "MHC", "LA",
         "KCS", "VTC", "DGB", "ANKR", "DEX",

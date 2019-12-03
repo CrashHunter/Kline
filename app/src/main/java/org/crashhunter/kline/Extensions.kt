@@ -8,7 +8,7 @@ fun String?.isNumeric(): Boolean {
         return false
     }
 
-    val pattern = Pattern.compile("[0-9.]*")
+    val pattern = Pattern.compile("-?[0-9.]*")
     val isNum = pattern.matcher(this)
     return isNum.matches()
 
@@ -16,11 +16,11 @@ fun String?.isNumeric(): Boolean {
 
 
 fun String?.parseDouble(): Double {
-    if (isNullOrEmpty()) {
+    if (isNumeric()) {
+        return this!!.toDouble()
+    } else {
         return 0.00
     }
-
-    return this!!.toDouble()
 
 }
 
