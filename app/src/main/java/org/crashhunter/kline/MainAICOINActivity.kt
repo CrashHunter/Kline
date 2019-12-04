@@ -21,42 +21,50 @@ import org.jsoup.Jsoup
 import java.io.IOException
 
 
-class MainActivity : AppCompatActivity() {
+class MainAICOINActivity : AppCompatActivity() {
 
 
-    var sortByType = "volume"
+    var sortByType = "sevenDay"
 
-    var SLevel = arrayListOf(
-        "BTC", "ETH", "BNB", "LTC", "EOS",
-        "XRP", "BCH", "ATOM", "LINK", "XTZ"
+
+    var holdList = arrayListOf(
+        "ATOM", "BNB", "ALGO", "EOS", "ZRX",
+        "TRUE", "TRX"
+
+
     )
-
-    var ALevel = arrayListOf(
-        "VET", "MATIC", "TRX", "IOST", "ONT",
-        "RVN", "ALGO", "BAT", "DASH", "ADA"
-    )
-
-    var BLevel = arrayListOf(
-
-        "ICX", "ENJ", "OMG", "MCO", "ZIL",
-        "CELR", "ZRX"
-    )
-
-
     var stableList = arrayListOf(
         "USDT", "DAI", "TUSD", "USDC", "BITCNY",
         "PAX", "GUSD", "USDK"
     )
 
+    var specialList = arrayListOf(
+        ""
+    )
+
+    var candidateist = arrayListOf(
+        "LINK", "XLM", "LSK", "NANO", "ADA",
+        "HT", "THETA", "BAT", "PAI Project Pai",
+        "ONT", "GXC", "ATOM Cosmos",
+        "DASH", "BCH", "BNB", "XTZ",
+        "ELF", "QKC", "BTM", "OKB",
+        "RDN", "NEO", "QTUM", "VET",
+        "ICX", "LRC", "AION",
+        "KNC", "MIOTA", "MFT", "XMR",
+        "ZRX", "BNT",
+        "IOST", "TRX", "AE", "BNB",
+        "LOOM", "ZIL", "MANA", "ABT",
+        "XRP", "HOT", "MCO", "RVN", "SNT",
+        "HC", "EGT"
+
+    )
 
     //not in binance
     var notBinance = arrayListOf(
 
         "ZB", "HT", "OKB", "SNT", "SEELE",
         "MOF", "XMX", "GRIN", "XEM", "HYC",
-        "YOU", "SXP", "INB", "BSV", "LOOM",
-        "AE", "BTM", "VALOR", "WICC", "TRUE",
-        "BNT", "ELF"
+        "YOU", "SXP", "INB", "BSV"
     )
 
 //    var foreignList = arrayListOf(
@@ -152,51 +160,34 @@ class MainActivity : AppCompatActivity() {
                 try {
 
 
-                    var urlStr = "https://coinmarketcap.com/all/views/all/"
-//                    var urlStr = "https://www.baidu.com"
-                    //                    titleStr.append(urlStr)
-
-
-//                    val httpUtils = HttpUtils.instance
-//                    httpUtils.timeout = 30000
-//                    httpUtils.waitForBackgroundJavaScript = 30000
-//                    val doc = httpUtils.getHtmlPageResponseAsDocument(urlStr)
-
-//                    val webClient = WebClient(BrowserVersion.CHROME)
-//                    val htmlpage: HtmlPage = webClient.getPage(urlStr)
-//
-//                    val pageAsXml = htmlpage.asXml()
-//                    val doc = Jsoup.parse(pageAsXml, urlStr)
-
-//                    val driver = FirefoxDriver()
-//                    driver.get(urlStr)
-//                    var list = driver.findElements("//*[@id=\"id-waves\"]")
+                    var urlStr =
+                        "https://www.aicoin.cn/currencies/all/usd/1/desc?condition=trade24H"
 
                     val doc = Jsoup.connect(urlStr).get()
                     contextStr.append(doc.toString())
 
-                    var icons = doc.select("#currencies-all > tbody > tr")
+                    var icons = doc.select("#value-body > tbody > tr")
                     Log.e("icons size", icons.size.toString())
 
                     for (i in 0 until icons.size) {
 
-                        if (icons[i].select("td").size < 10) {
-                            Log.e("invaild item", icons[i].toString())
-                            //                            titleStr.append("\n invaild item: ${icons[i]} \n")
-                            continue
-                        }
+//                        if (icons[i].select("td").size < 10) {
+//                            Log.e("invaild item", icons[i].toString())
+//                            //                            titleStr.append("\n invaild item: ${icons[i]} \n")
+//                            continue
+//                        }
 
 
                         var rank = icons[i].select("td")[0]
                         //                        Log.e("icon rank", rank.text())
-                        var name = icons[i].select("td")[1]
+                        var name = icons[i].select("td")[1].select("span").select("span")[1]
                         //                        Log.e("icon name", name.text())
 
-                        var cap = icons[i].select("td")[3]
-                        //                        Log.e("icon cap", cap.text())
-                        var capStr = cap.text().replace("$", "").replace(",", "")
+//                        var cap = icons[i].select("td")[3]
+//                        //                        Log.e("icon cap", cap.text())
+//                        var capStr = cap.text().replace("$", "").replace(",", "")
 
-                        var volume = icons[i].select("td")[6].select("a")
+                        var volume = icons[i].select("td")[5].select("span").select("span")[1]
                         //                        Log.e("icon volume", volume.text())
                         var volumeStr = volume.text().replace("$", "").replace(",", "")
 
@@ -212,7 +203,7 @@ class MainActivity : AppCompatActivity() {
                         iconInfo.name = name.text()
                         iconInfo.rank = rank.text().parseLong()
                         iconInfo.volume = volumeStr.parseLong()
-                        iconInfo.cap = capStr.parseLong()
+                        iconInfo.cap = 1L
                         iconInfo.oneDayPercent =
                             oneDayPercent.text().replace("%", "").replace("?", "").parseDouble()
                         iconInfo.sevenDaysPercent =
@@ -443,17 +434,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun filterSpecial(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return SLevel.any { it == symbol || it == name }
+        return specialList.any { it == symbol || it == name }
     }
 
     private fun filterCandidate(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return ALevel.any { it == symbol || it == name }
+        return candidateist.any { it == symbol || it == name }
     }
 
     private fun filterHold(name: String): Boolean {
         var symbol = name.split(" ")[0]
-        return BLevel.any { it == symbol || it == name }
+        return holdList.any { it == symbol || it == name }
     }
 
     private fun filterStable(name: String): Boolean {
