@@ -44,8 +44,8 @@ class MainActivity : AppCompatActivity() {
 
 
     var stableList = arrayListOf(
-        "USDT", "DAI", "TUSD", "USDC", "BITCNY",
-        "PAX", "GUSD", "USDK"
+        "DAI", "TUSD", "USDC", "BITCNY",
+        "PAX", "GUSD", "USDK", "BUSD"
     )
 
 
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         "MOF", "XMX", "GRIN", "XEM", "HYC",
         "YOU", "SXP", "INB", "BSV", "LOOM",
         "AE", "BTM", "VALOR", "WICC", "TRUE",
-        "BNT", "ELF"
+        "BNT", "ELF", "BCV", "EKT", "OCEAN"
     )
 
 //    var foreignList = arrayListOf(
@@ -174,9 +174,10 @@ class MainActivity : AppCompatActivity() {
 
                     val doc = Jsoup.connect(urlStr).get()
                     contextStr.append(doc.toString())
-
-                    var icons = doc.select("#currencies-all > tbody > tr")
-                    Log.e("icons size", icons.size.toString())
+                    Log.e("doc.toString()", doc.toString())
+//                    var icons = doc.select("#currencies-all > tbody > tr")
+                    var icons = doc.select("tr")
+                    Log.e("iconssize", icons.size.toString())
 
                     for (i in 0 until icons.size) {
 
@@ -189,7 +190,8 @@ class MainActivity : AppCompatActivity() {
 
                         var rank = icons[i].select("td")[0]
                         //                        Log.e("icon rank", rank.text())
-                        var name = icons[i].select("td")[1]
+                        var name =
+                            icons[i].select("td")[2].text() + " " + icons[i].select("td")[1].text()
                         //                        Log.e("icon name", name.text())
 
                         var cap = icons[i].select("td")[3]
@@ -209,7 +211,7 @@ class MainActivity : AppCompatActivity() {
 
 
                         var iconInfo = CoinInfo()
-                        iconInfo.name = name.text()
+                        iconInfo.name = name
                         iconInfo.rank = rank.text().parseLong()
                         iconInfo.volume = volumeStr.parseLong()
                         iconInfo.cap = capStr.parseLong()

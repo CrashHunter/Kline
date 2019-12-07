@@ -166,7 +166,7 @@ class MainAICOINActivity : AppCompatActivity() {
                     val doc = Jsoup.connect(urlStr).get()
                     contextStr.append(doc.toString())
 
-                    var icons = doc.select("#value-body > tbody > tr")
+                    var icons = doc.select("tr")
                     Log.e("icons size", icons.size.toString())
 
                     for (i in 0 until icons.size) {
@@ -177,6 +177,9 @@ class MainAICOINActivity : AppCompatActivity() {
 //                            continue
 //                        }
 
+                        if (icons[i].select("td").size <= 0) {
+                            continue
+                        }
 
                         var rank = icons[i].select("td")[0]
                         //                        Log.e("icon rank", rank.text())
