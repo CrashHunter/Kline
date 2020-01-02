@@ -11,5 +11,5 @@ class CoinInfo {
     var volume: Long = 0
     var oneDayPercent: Double = 0.0
     var sevenDaysPercent: Double = 0.0
-
+    var price = ""
 }
