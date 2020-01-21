@@ -19,29 +19,28 @@ import org.crashhunter.kline.data.LATEST_COIN_LIST
 import org.crashhunter.kline.utils.StringUtils
 import org.jsoup.Jsoup
 import java.io.IOException
+import java.math.BigDecimal
 
 
 class MainActivity : AppCompatActivity() {
 
+	val maximum = 999999999 * 1000000L
+	var volumeMax = maximum
+	val minimum = 2000 * 10000L
+	var volumMin = minimum
+
+	val capDivider = 100 * 1000000
+
+	val topNum = 0
 
 	var sortByType = "volume"
 
 	//1 billion
-	var SLevel = arrayListOf(
-		"BTC", "ETH", "LTC", "BCH", "EOS",
-		"XRP", "TRX"
-	)
+	var SLevel = ArrayList<String>()
 	//0.1 billion
-	var ALevel = arrayListOf(
-		"ETC", "NEO", "QTUM", "DASH", "BNB",
-		"XLM", "ATOM", "ZEC"
-
-	)
+	var ALevel = ArrayList<String>()
 	// 10 million top 10
-	var BLevel = arrayListOf(
-		"BTT", "WAVES", "DOGE", "ONT", "XMR",
-		"VET", "LINK", "BAT", "XTZ", "ALGO"
-	)
+	var BLevel = ArrayList<String>()
 
 
 	var stableList = arrayListOf(
@@ -58,7 +57,8 @@ class MainActivity : AppCompatActivity() {
 		"YOU", "SXP", "INB", "BSV", "LOOM",
 		"AE", "BTM", "VALOR", "WICC", "TRUE",
 		"BNT", "ELF", "BCV", "EKT", "OCEAN",
-		"ABBC", "LAMB", "BTG", "CRO"
+		"ABBC", "LAMB", "BTG", "CRO", "KCS",
+		"NEXO", "REP", "BCD"
 	)
 
 //    var foreignList = arrayListOf(
@@ -99,14 +99,6 @@ class MainActivity : AppCompatActivity() {
 
 	var handler: Handler = Handler()
 
-	val maximum = 999999999 * 1000000L
-	var volumeMax = maximum
-	val minimum = 10 * 1000000L
-	var volumMin = minimum
-
-	val capDivider = 100 * 1000000
-
-	val topNum = 0
 
 
 	var allCoinList = ArrayList<CoinInfo>()
@@ -133,6 +125,11 @@ class MainActivity : AppCompatActivity() {
 //        supportActionBar?.hide()
 //        throw NullPointerException()
 
+//		setSLevel()
+//		setALevel()
+//		setBLevel()
+
+
 		setContentView(R.layout.activity_main)
 
 		volumeEnoughNum = 0
@@ -140,6 +137,51 @@ class MainActivity : AppCompatActivity() {
 		Log.e("latestCoinListGet", latestCoinListJsonStr)
 
 		getData()
+
+	}
+
+	private fun setSLevel() {
+
+		SLevel.add("BTC")
+		SLevel.add("ETH")
+		SLevel.add("LTC")
+		SLevel.add("BCH")
+		SLevel.add("EOS")
+		SLevel.add("XRP")
+		SLevel.add("ETC")
+		SLevel.add("DASH")
+		SLevel.add("TRX")
+
+
+	}
+
+	private fun setALevel() {
+
+		ALevel.add("XLM")
+		ALevel.add("NEO")
+		ALevel.add("ZEC")
+		ALevel.add("QTUM")
+		ALevel.add("BNB")
+		ALevel.add("ATOM")
+		ALevel.add("LINK")
+		ALevel.add("ONT")
+		ALevel.add("VET")
+
+
+	}
+
+	private fun setBLevel() {
+
+		BLevel.add("DOGE")
+		BLevel.add("ADA")
+		BLevel.add("BTT")
+		BLevel.add("WAVES")
+		BLevel.add("XMR")
+		BLevel.add("XTZ")
+		BLevel.add("BAT")
+		BLevel.add("OMG")
+		BLevel.add("ALGO")
+		BLevel.add("MCO")
 
 	}
 
@@ -340,6 +382,8 @@ class MainActivity : AppCompatActivity() {
 		for (i in 0 until coinInfos.size) {
 			var item = coinInfos[i]
 
+			setLevel(item)
+
 			var indexStr = "${i}: "
 			if (diffs.contains(item)) {
 				var indexSpan = SpannableStringBuilder(indexStr)
@@ -453,6 +497,18 @@ class MainActivity : AppCompatActivity() {
 				)
 			}
 			contextStr.append(sevenDaysPercentSpan)
+		}
+	}
+
+	private fun setLevel(item: CoinInfo) {
+		if (item.volume.toBigDecimal() >= BigDecimal(10 * 10000 * 10000)) {
+			SLevel.add(item.name)
+		} else if (item.volume.toBigDecimal() >= BigDecimal(1 * 10000 * 10000)) {
+			ALevel.add(item.name)
+		} else if (item.volume.toBigDecimal() >= BigDecimal(2 * 1000 * 10000)) {
+			if (BLevel.size < 10) {
+				BLevel.add(item.name)
+			}
 		}
 	}
 
