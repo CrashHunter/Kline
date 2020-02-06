@@ -631,27 +631,27 @@ class MainActivity : AppCompatActivity() {
 			//SORT BY
 			R.id.name -> {
 				sortByType = "name"
-				showAllCap()
+				sortListRefreshUI()
 				return true
 			}
 			R.id.volume -> {
 				sortByType = "volume"
-				showAllCap()
+				sortListRefreshUI()
 				return true
 			}
 			R.id.oneDay -> {
 				sortByType = "oneDay"
-				showAllCap()
+				sortListRefreshUI()
 				return true
 			}
 			R.id.sevenDay -> {
 				sortByType = "sevenDay"
-				showAllCap()
+				sortListRefreshUI()
 				return true
 			}
 			R.id.rank -> {
 				sortByType = "rank"
-				showAllCap()
+				sortListRefreshUI()
 				return true
 			}
 
@@ -674,18 +674,7 @@ class MainActivity : AppCompatActivity() {
 	}
 
 
-	private fun showLeverList() {
-		contextStr = SpannableStringBuilder()
 
-		var list = allCoinList.filter { filterLeverList(it.name) }
-
-		list = sortList(list)
-
-		displayCoinList(list)
-
-		refreshUI()
-
-	}
 
 	private fun sortList(list: List<CoinInfo>): List<CoinInfo> {
 		var list1 = list
@@ -761,20 +750,27 @@ class MainActivity : AppCompatActivity() {
 		var jsonList = Gson().toJson(currentCoinList)
 		Log.e("jsonListSave", jsonList)
 		latestCoinListJsonStr = jsonList
-
-
-		contextStr = SpannableStringBuilder()
-
-
 		getdiffs(currentCoinList, latestCoinList)
+		sortListRefreshUI()
 
-		currentCoinList = sortList(currentCoinList)
-
-		displayCoinList(currentCoinList)
 		displayDiffs(currentCoinList)
+	}
+
+	private fun showLeverList() {
+
+		currentCoinList = allCoinList.filter { filterLeverList(it.name) }
+
+		sortListRefreshUI()
+
+	}
+
+	private fun sortListRefreshUI() {
+		contextStr = SpannableStringBuilder()
+		var list = sortList(currentCoinList)
+
+		displayCoinList(list)
 
 		refreshUI()
-
 	}
 
 	private fun showSmallCap() {
