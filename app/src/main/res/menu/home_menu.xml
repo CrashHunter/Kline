@@ -1,27 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/count"
-          android:title="计算"
-          app:showAsAction="always"
-    />
-    <item android:id="@+id/refresh"
-          android:title="刷新"
-          app:showAsAction="always"
-    />
-    <item android:id="@+id/allcap"
-          android:title="全部"
-    />
-    <item android:id="@+id/bigcap"
-          android:title="大盘子"
-    />
-    <item android:id="@+id/smallcap"
-          android:title="小盘子"/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+            android:id="@+id/count"
+            android:title="计算"
+            app:showAsAction="always" />
+    <item
+            android:id="@+id/refresh"
+            android:title="刷新"
+            app:showAsAction="always" />
 
-    <item android:id="@+id/smallVolume"
-          android:title="小成交量"/>
 
-    <item android:id="@+id/myHolding"
-          android:title="持有"/>
-    <item android:id="@+id/candidate"
-          android:title="候选"/>
+    <item
+            android:id="@+id/allcap"
+            android:title="全部" />
+
+    <item
+            android:id="@+id/leverList"
+            android:title="杠杆" />
+
+    <item
+            android:id="@+id/bigcap"
+            android:title="大盘子" />
+    <item
+            android:id="@+id/smallcap"
+            android:title="小盘子" />
+
+    <item
+            android:id="@+id/smallVolume"
+            android:title="小成交量" />
+
+
+    <item
+            android:id="@+id/candidate"
+            android:title="候选" />
 </menu>

@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
 	// 10 million top 10
 	var BLevel = ArrayList<String>()
 
+	var leverList = ArrayList<String>()
 
 	var stableList = arrayListOf(
 		"DAI", "TUSD", "USDC", "BITCNY",
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 		"AE", "BTM", "VALOR", "WICC", "TRUE",
 		"BNT", "ELF", "BCV", "EKT", "OCEAN",
 		"ABBC", "LAMB", "BTG", "CRO", "KCS",
-		"NEXO", "REP", "BCD"
+		"NEXO", "REP", "BCD", "XZC", "MONA"
 	)
 
 //    var foreignList = arrayListOf(
@@ -125,10 +126,8 @@ class MainActivity : AppCompatActivity() {
 //        supportActionBar?.hide()
 //        throw NullPointerException()
 
-//		setSLevel()
-//		setALevel()
-//		setBLevel()
 
+		setLever()
 
 		setContentView(R.layout.activity_main)
 
@@ -140,50 +139,82 @@ class MainActivity : AppCompatActivity() {
 
 	}
 
-	private fun setSLevel() {
+	private fun setLever() {
 
-		SLevel.add("BTC")
-		SLevel.add("ETH")
-		SLevel.add("LTC")
-		SLevel.add("BCH")
-		SLevel.add("EOS")
-		SLevel.add("XRP")
-		SLevel.add("ETC")
-		SLevel.add("DASH")
-		SLevel.add("TRX")
-
-
-	}
-
-	private fun setALevel() {
-
-		ALevel.add("XLM")
-		ALevel.add("NEO")
-		ALevel.add("ZEC")
-		ALevel.add("QTUM")
-		ALevel.add("BNB")
-		ALevel.add("ATOM")
-		ALevel.add("LINK")
-		ALevel.add("ONT")
-		ALevel.add("VET")
-
-
-	}
-
-	private fun setBLevel() {
-
-		BLevel.add("DOGE")
-		BLevel.add("ADA")
-		BLevel.add("BTT")
-		BLevel.add("WAVES")
-		BLevel.add("XMR")
-		BLevel.add("XTZ")
-		BLevel.add("BAT")
-		BLevel.add("OMG")
-		BLevel.add("ALGO")
-		BLevel.add("MCO")
+		leverList.add("ADA")
+		leverList.add("ATOM")
+		leverList.add("BAT")
+		leverList.add("BCH")
+		leverList.add("BNB")
+		leverList.add("BTC")
+		leverList.add("DASH")
+		leverList.add("DASH")
+		leverList.add("EOS")
+		leverList.add("ETC")
+		leverList.add("ETH")
+		leverList.add("IOST")
+		leverList.add("IOTA")
+		leverList.add("LINK")
+		leverList.add("LTC")
+		leverList.add("MATIC")
+		leverList.add("NEO")
+		leverList.add("ONT")
+		leverList.add("QTUM")
+		leverList.add("RVN")
+		leverList.add("TRX")
+		leverList.add("VET")
+		leverList.add("XLM")
+		leverList.add("XMR")
+		leverList.add("XRP")
+		leverList.add("XTZ")
+		leverList.add("ZEC")
 
 	}
+
+//	private fun setSLevel() {
+//
+//		SLevel.add("BTC")
+//		SLevel.add("ETH")
+//		SLevel.add("LTC")
+//		SLevel.add("BCH")
+//		SLevel.add("EOS")
+//		SLevel.add("XRP")
+//		SLevel.add("ETC")
+//		SLevel.add("DASH")
+//		SLevel.add("TRX")
+//
+//
+//	}
+//
+//	private fun setALevel() {
+//
+//		ALevel.add("XLM")
+//		ALevel.add("NEO")
+//		ALevel.add("ZEC")
+//		ALevel.add("QTUM")
+//		ALevel.add("BNB")
+//		ALevel.add("ATOM")
+//		ALevel.add("LINK")
+//		ALevel.add("ONT")
+//		ALevel.add("VET")
+//
+//
+//	}
+//
+//	private fun setBLevel() {
+//
+//		BLevel.add("DOGE")
+//		BLevel.add("ADA")
+//		BLevel.add("BTT")
+//		BLevel.add("WAVES")
+//		BLevel.add("XMR")
+//		BLevel.add("XTZ")
+//		BLevel.add("BAT")
+//		BLevel.add("OMG")
+//		BLevel.add("ALGO")
+//		BLevel.add("MCO")
+//
+//	}
 
 	private fun getData() {
 
@@ -527,6 +558,11 @@ class MainActivity : AppCompatActivity() {
 		return BLevel.any { it == symbol || it == name }
 	}
 
+	private fun filterLeverList(name: String): Boolean {
+		var symbol = name.split(" ")[0]
+		return leverList.any { it == symbol || it == name }
+	}
+
 	private fun filterStable(name: String): Boolean {
 		var symbol = name.split(" ")[0]
 		return stableList.any { it == symbol || it == name }
@@ -584,8 +620,8 @@ class MainActivity : AppCompatActivity() {
 				return true
 			}
 
-			R.id.myHolding -> {
-				showMyHolding()
+			R.id.leverList -> {
+				showLeverList()
 				return true
 			}
 			R.id.candidate -> {
@@ -638,10 +674,10 @@ class MainActivity : AppCompatActivity() {
 	}
 
 
-	private fun showMyHolding() {
+	private fun showLeverList() {
 		contextStr = SpannableStringBuilder()
 
-		var list = allCoinList.filter { filterBLevel(it.name) }
+		var list = allCoinList.filter { filterLeverList(it.name) }
 
 		list = sortList(list)
 

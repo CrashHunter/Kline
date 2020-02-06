@@ -507,7 +507,7 @@ class MainAICOINActivity : AppCompatActivity() {
                 return true
             }
 
-            R.id.myHolding -> {
+            R.id.leverList -> {
                 showMyHolding()
                 return true
             }
