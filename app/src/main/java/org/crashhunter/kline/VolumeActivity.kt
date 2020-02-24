@@ -2,6 +2,9 @@ package org.crashhunter.kline
 
 import CoinVolume
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_volume.*
 import retrofit2.Call
@@ -11,6 +14,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -49,7 +53,7 @@ class VolumeActivity : AppCompatActivity() {
         call!!.enqueue(object : Callback<CoinVolume?> {
 
             override fun onResponse(call: Call<CoinVolume?>, response: Response<CoinVolume?>) {
-
+                tvTitle.text = ""
                 var str = StringBuilder()
                 //                str.append(response.raw().body?.string() + " \n")
 
@@ -65,7 +69,35 @@ class VolumeActivity : AppCompatActivity() {
                         var currentValue = volumeStr.toBigDecimal()
 
                         var rate = currentValue / preValue
-                        rateStr = "-- " + rate.toString() + "%"
+
+                        var divide = (rate - BigDecimal.ONE) * BigDecimal(100)
+
+
+                        if (divide > BigDecimal.ZERO) {
+                            var indexSpan = SpannableStringBuilder(divide.toString())
+                            indexSpan.setSpan(
+                                ForegroundColorSpan(getColor(android.R.color.holo_green_dark)),
+                                0,
+                                divide.toString().length - 1,
+                                Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                            )
+
+                            rateStr = " " + indexSpan + "%"
+                        } else {
+                            var indexSpan = SpannableStringBuilder(divide.toString())
+                            indexSpan.setSpan(
+                                ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+                                0,
+                                divide.toString().length - 1,
+                                Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                            )
+
+
+                            rateStr = " " + indexSpan + "%"
+                        }
+
+
+
 
                     }
                     preVolumeStr = volumeStr
@@ -137,6 +169,7 @@ class VolumeActivity : AppCompatActivity() {
 
             if (coin.isNotEmpty()) {
 
+                getFromRetrofit(coin)
             }
 
 
