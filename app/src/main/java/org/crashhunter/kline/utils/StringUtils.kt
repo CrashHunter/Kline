@@ -20,7 +20,7 @@ object StringUtils {
         }
 
         val format = NumberFormat.getNumberInstance(Locale.CHINA)
-        val result = format.format(volume.toLong())
+        val result = format.format(volume.toBigDecimal())
 
         return result
     }

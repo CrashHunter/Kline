@@ -594,6 +594,12 @@ class MainActivity : AppCompatActivity() {
 		when (item.itemId) {
 			R.id.count -> {
 
+				var intent = Intent(this, CountActivity::class.java)
+				startActivity(intent)
+				return true
+			}
+			R.id.volume -> {
+
 				var intent = Intent(this, VolumeActivity::class.java)
 				startActivity(intent)
 				return true

@@ -54,13 +54,15 @@ class VolumeActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call<CoinVolume?>, response: Response<CoinVolume?>) {
                 tvTitle.text = ""
-                var str = StringBuilder()
+                var str = SpannableStringBuilder()
                 //                str.append(response.raw().body?.string() + " \n")
+
+                str.append("$coin: \n")
 
                 var preVolumeStr = ""
 
                 for (data in response.body()?.data!!) {
-                    var rateStr = ""
+                    var rateSpan = SpannableStringBuilder("")
                     var volumeStr = data.topTierVolumeTotal
 
                     if (!preVolumeStr.isEmpty()) {
@@ -72,28 +74,25 @@ class VolumeActivity : AppCompatActivity() {
 
                         var divide = (rate - BigDecimal.ONE) * BigDecimal(100)
 
+                        var divideRate = "  $divide%"
+                        rateSpan = SpannableStringBuilder(divideRate)
 
                         if (divide > BigDecimal.ZERO) {
-                            var indexSpan = SpannableStringBuilder(divide.toString())
-                            indexSpan.setSpan(
+                            rateSpan.setSpan(
                                 ForegroundColorSpan(getColor(android.R.color.holo_green_dark)),
                                 0,
-                                divide.toString().length - 1,
+                                divideRate.length - 1,
                                 Spanned.SPAN_INCLUSIVE_INCLUSIVE
                             )
-
-                            rateStr = " " + indexSpan + "%"
                         } else {
-                            var indexSpan = SpannableStringBuilder(divide.toString())
-                            indexSpan.setSpan(
+                            rateSpan.setSpan(
                                 ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
                                 0,
-                                divide.toString().length - 1,
+                                divideRate.length - 1,
                                 Spanned.SPAN_INCLUSIVE_INCLUSIVE
                             )
 
 
-                            rateStr = " " + indexSpan + "%"
                         }
 
 
@@ -106,8 +105,9 @@ class VolumeActivity : AppCompatActivity() {
                     val format = SimpleDateFormat("yyyy.MM.dd")
                     var day = format.format(date)
 
-                    str.append("${day} : $volumeStr ${rateStr}\n")
-
+                    str.append("${day} : ${volumeStr.getMoneyFormat()} ")
+                    str.append(rateSpan)
+                    str.append("\n")
                 }
 
                 tvTitle.text = str
@@ -180,7 +180,8 @@ class VolumeActivity : AppCompatActivity() {
 
     interface KlineService {
         //https://min-api.cryptocompare.com/data/symbol/histoday?fsym=BTC&tsym=USD&limit=10&api_key=4789529a8c5e2a2e26d4c665fa74c50d497c8971a5f1a6785d2a556da615d57d
-        @GET("symbol/histoday?tsym=USD&limit=20&api_key=4789529a8c5e2a2e26d4c665fa74c50d497c8971a5f1a6785d2a556da615d57d")
+        @GET("symbol/histoday?tsym=USD&limit=30&api_key=4789529a8c5e2a2e26d4c665fa74c50d497c8971a5f1a6785d2a556da615d57d")
         fun queryVolume(@Query("fsym") fsymCoin: String): Call<CoinVolume?>?
     }
 }
+

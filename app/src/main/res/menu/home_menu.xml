@@ -5,6 +5,12 @@
             android:id="@+id/count"
             android:title="计算"
             app:showAsAction="always" />
+
+    <item
+        android:id="@+id/volume"
+        android:title="量历史"
+        app:showAsAction="always" />
+
     <item
             android:id="@+id/refresh"
             android:title="刷新"
