@@ -258,7 +258,7 @@ class MainActivity : AppCompatActivity() {
 					for (i in 0 until icons.size) {
 
 						if (icons[i].select("td").size < 10) {
-							Log.e("invaild item", icons[i].toString())
+							Log.d("invaild item", icons[i].toString())
 							//                            titleStr.append("\n invaild item: ${icons[i]} \n")
 							continue
 						}
@@ -594,7 +594,7 @@ class MainActivity : AppCompatActivity() {
 		when (item.itemId) {
 			R.id.count -> {
 
-				var intent = Intent(this, CountActivity::class.java)
+				var intent = Intent(this, VolumeActivity::class.java)
 				startActivity(intent)
 				return true
 			}
@@ -748,7 +748,7 @@ class MainActivity : AppCompatActivity() {
 
 		//save latestCoinList
 		var jsonList = Gson().toJson(currentCoinList)
-		Log.e("jsonListSave", jsonList)
+		Log.d("jsonListSave", jsonList)
 		latestCoinListJsonStr = jsonList
 		getdiffs(currentCoinList, latestCoinList)
 		sortListRefreshUI()
