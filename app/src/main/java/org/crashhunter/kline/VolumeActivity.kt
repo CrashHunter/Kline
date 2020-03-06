@@ -1,12 +1,16 @@
 package org.crashhunter.kline
 
 import CoinVolume
+import Data
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
+import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_volume.*
+import org.crashhunter.kline.data.SharedPreferenceUtil
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -22,6 +26,7 @@ import java.util.*
 class VolumeActivity : AppCompatActivity() {
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -33,12 +38,61 @@ class VolumeActivity : AppCompatActivity() {
 //        OKHTTPRequest()
 
         tvTitle.text = "loading"
-        getFromRetrofit("USDT")
+        getData("usdt")
 
 
     }
 
-    private fun getFromRetrofit(coin: String) {
+    fun getTodayStartTime(): Long {
+        val calendar = Calendar.getInstance()
+        calendar.time = Date()
+        calendar[Calendar.HOUR_OF_DAY] = 0
+        calendar[Calendar.MINUTE] = 0
+        calendar[Calendar.SECOND] = 0
+        return calendar.time.time
+    }
+
+    private fun getStartTimeOfDay(timeZone: String): Long {
+        val tz = if (TextUtils.isEmpty(timeZone)) "GMT+8" else timeZone
+        val curTimeZone = TimeZone.getTimeZone(tz)
+        val calendar = Calendar.getInstance(curTimeZone)
+        calendar.timeInMillis = System.currentTimeMillis()
+        calendar[Calendar.HOUR_OF_DAY] = 24
+        calendar[Calendar.MINUTE] = 0
+        calendar[Calendar.SECOND] = 0
+        calendar[Calendar.MILLISECOND] = 0
+        return calendar.timeInMillis
+    }
+
+
+    private fun getData(coin: String) {
+        var coinVolumeJsonStr =
+            SharedPreferenceUtil.loadUserToken(AppController.instance.applicationContext, coin)
+        if (coinVolumeJsonStr.isNotEmpty()) {
+            var coinVolumeSpData = Gson().fromJson(
+                coinVolumeJsonStr, CoinVolume::class.java
+            )
+
+
+            val date = Date(coinVolumeSpData.timeTo.toLong() * 1000)
+            val format = SimpleDateFormat("yyyy.MM.dd")
+            var spDayStr = format.format(date)
+
+            val currentDay = Date(getTodayStartTime())
+            var currentDayStr = format.format(currentDay)
+
+
+            if (spDayStr == currentDayStr) {
+                showData(coin, coinVolumeSpData.data)
+                return
+            }
+        }
+
+
+        getFromAPi(coin)
+    }
+
+    private fun getFromAPi(coin: String) {
         tvTitle.text = "loading"
         val retrofit = Retrofit.Builder()
             .baseUrl("https://min-api.cryptocompare.com/data/")
@@ -54,64 +108,14 @@ class VolumeActivity : AppCompatActivity() {
         call!!.enqueue(object : Callback<CoinVolume?> {
 
             override fun onResponse(call: Call<CoinVolume?>, response: Response<CoinVolume?>) {
-                tvTitle.text = ""
-                var str = SpannableStringBuilder()
-                //                str.append(response.raw().body?.string() + " \n")
-
-                str.append("$coin: \n")
-
-                var preVolumeStr = ""
-
-                for (data in response.body()?.data!!) {
-                    var rateSpan = SpannableStringBuilder("")
-                    var volumeStr = data.totalVolumeTotal
-
-                    if (!preVolumeStr.isEmpty()) {
-
-                        var preValue = preVolumeStr.toBigDecimal()
-                        var currentValue = volumeStr.toBigDecimal()
-
-                        var rate = currentValue / preValue
-
-                        var divide = (rate - BigDecimal.ONE) * BigDecimal(100)
-
-                        var divideRate = "  $divide%"
-                        rateSpan = SpannableStringBuilder(divideRate)
-
-                        if (divide > BigDecimal.ZERO) {
-                            rateSpan.setSpan(
-                                ForegroundColorSpan(getColor(android.R.color.holo_green_dark)),
-                                0,
-                                divideRate.length - 1,
-                                Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                            )
-                        } else {
-                            rateSpan.setSpan(
-                                ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
-                                0,
-                                divideRate.length - 1,
-                                Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                            )
-
-
-                        }
-
-
-
-
-                    }
-                    preVolumeStr = volumeStr
-
-                    val date = Date(data.time.toLong() * 1000)
-                    val format = SimpleDateFormat("yyyy.MM.dd")
-                    var day = format.format(date)
-
-                    str.append("${day} : ${volumeStr.getMoneyFormat()} ")
-                    str.append(rateSpan)
-                    str.append("\n")
-                }
-
-                tvTitle.text = str
+                var datas = response.body()?.data!!
+                var coinVolumeJsonStr = Gson().toJson(response.body())
+                SharedPreferenceUtil.saveUserToken(
+                    AppController.instance.applicationContext,
+                    coin,
+                    coinVolumeJsonStr
+                )
+                showData(coin, datas)
 
             }
 
@@ -121,6 +125,65 @@ class VolumeActivity : AppCompatActivity() {
 
             }
         })
+    }
+
+    private fun showData(coin: String, datas: List<Data>) {
+        tvTitle.text = ""
+        var str = SpannableStringBuilder()
+        //                str.append(response.raw().body?.string() + " \n")
+
+        str.append("$coin: \n")
+
+        var preVolumeStr = ""
+
+        for (data in datas!!) {
+            var rateSpan = SpannableStringBuilder("")
+            var volumeStr = data.totalVolumeTotal
+
+            if (!preVolumeStr.isEmpty()) {
+
+                var preValue = preVolumeStr.toBigDecimal()
+                var currentValue = volumeStr.toBigDecimal()
+
+                var rate = currentValue / preValue
+
+                var divide = (rate - BigDecimal.ONE) * BigDecimal(100)
+
+                var divideRate = "  $divide%"
+                rateSpan = SpannableStringBuilder(divideRate)
+
+                if (divide > BigDecimal.ZERO) {
+                    rateSpan.setSpan(
+                        ForegroundColorSpan(getColor(android.R.color.holo_green_dark)),
+                        0,
+                        divideRate.length - 1,
+                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                    )
+                } else {
+                    rateSpan.setSpan(
+                        ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+                        0,
+                        divideRate.length - 1,
+                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                    )
+
+
+                }
+
+
+            }
+            preVolumeStr = volumeStr
+
+            val date = Date(data.time.toLong() * 1000)
+            val format = SimpleDateFormat("yyyy.MM.dd")
+            var day = format.format(date)
+
+            str.append("${day} : ${volumeStr.getMoneyFormat()} ")
+            str.append(rateSpan)
+            str.append("\n")
+        }
+
+        tvTitle.text = str
     }
 
     private fun OKHTTPRequest() {
@@ -170,7 +233,7 @@ class VolumeActivity : AppCompatActivity() {
 
             if (coin.isNotEmpty()) {
 
-                getFromRetrofit(coin)
+                getData(coin)
             }
 
 

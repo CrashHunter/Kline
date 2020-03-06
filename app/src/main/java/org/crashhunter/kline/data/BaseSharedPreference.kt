@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 import kotlin.reflect.KProperty
 
 class BaseSharedPreference<T>(val context: Context, val name: String, private val default: T) {
-    private val prefs: SharedPreferences by lazy { context.getSharedPreferences(name, Context.MODE_PRIVATE) }
+    private val prefs: SharedPreferences by lazy { context.getSharedPreferences("Kline", Context.MODE_PRIVATE) }
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
         return getSharedPreferences(name, default)
