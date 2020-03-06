@@ -32,13 +32,14 @@ class VolumeActivity : AppCompatActivity() {
         initAction()
 //        OKHTTPRequest()
 
-
+        tvTitle.text = "loading"
         getFromRetrofit("USDT")
 
 
     }
 
     private fun getFromRetrofit(coin: String) {
+        tvTitle.text = "loading"
         val retrofit = Retrofit.Builder()
             .baseUrl("https://min-api.cryptocompare.com/data/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -63,7 +64,7 @@ class VolumeActivity : AppCompatActivity() {
 
                 for (data in response.body()?.data!!) {
                     var rateSpan = SpannableStringBuilder("")
-                    var volumeStr = data.topTierVolumeTotal
+                    var volumeStr = data.totalVolumeTotal
 
                     if (!preVolumeStr.isEmpty()) {
 
