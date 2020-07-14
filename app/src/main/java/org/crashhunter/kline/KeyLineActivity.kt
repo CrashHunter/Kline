@@ -30,46 +30,63 @@ class KeyLineActivity : AppCompatActivity() {
 
     var candlestickInterval = CandlestickInterval.DAILY
 
+    var candlestickIntervalList = ArrayList<CandlestickInterval>()
+
+    var refresh = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 
         setContentView(R.layout.activity_key_line)
 
+//        candlestickIntervalList.add(CandlestickInterval.HOURLY)
+//        candlestickIntervalList.add(CandlestickInterval.FOUR_HOURLY)
+//        candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
+        candlestickIntervalList.add(CandlestickInterval.DAILY)
+        candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
+
         initAction()
 
+        getData()
+
+
+    }
+
+    private fun getData() {
         object : Thread() {
             override fun run() {
                 super.run()
 
-                candlestickInterval = CandlestickInterval.FOUR_HOURLY
-                stringBuilder.append("${candlestickInterval.name}: \n")
-                getAllCoins()
-                addDivideLine()
+                //                candlestickInterval = CandlestickInterval.FOUR_HOURLY
+                //                stringBuilder.append("${candlestickInterval.name}: \n")
+                //                getAllCoins()
+                //                addDivideLine()
+                //
+                //                candlestickInterval = CandlestickInterval.TWELVE_HOURLY
+                //                stringBuilder.append("${candlestickInterval.name}: \n")
+                //                getAllCoins()
+                //                addDivideLine()
+                //
+                //                candlestickInterval = CandlestickInterval.DAILY
+                //                stringBuilder.append("${candlestickInterval.name}: \n")
+                //                getAllCoins()
+                //                addDivideLine()
+                //
+                //                candlestickInterval = CandlestickInterval.THREE_DAILY
+                //                stringBuilder.append("${candlestickInterval.name}: \n")
+                //                getAllCoins()
+                //                addDivideLine()
 
-                candlestickInterval = CandlestickInterval.TWELVE_HOURLY
-                stringBuilder.append("${candlestickInterval.name}: \n")
                 getAllCoins()
-                addDivideLine()
-
-                candlestickInterval = CandlestickInterval.DAILY
-                stringBuilder.append("${candlestickInterval.name}: \n")
-                getAllCoins()
-                addDivideLine()
-
-                candlestickInterval = CandlestickInterval.THREE_DAILY
-                stringBuilder.append("${candlestickInterval.name}: \n")
-                getAllCoins()
-                addDivideLine()
 
                 runOnUiThread {
                     tvTitle.text = ""
                     tvTitle.text = stringBuilder
+                    refresh = false
                 }
             }
         }.start()
-
-
     }
 
     private fun addDivideLine() {
@@ -83,6 +100,7 @@ class KeyLineActivity : AppCompatActivity() {
         )
         stringBuilder.append(divideLine)
     }
+
 
     private fun getAllCoins() {
         getCoinInfo("ADAUSDT")
@@ -121,36 +139,44 @@ class KeyLineActivity : AppCompatActivity() {
 
     private fun getCoinInfo(coin: String) {
 
-        var jsonList =
-            SharedPreferenceUtil.loadData(
-                AppController.instance.applicationContext,
-                "KeyLine-${coin}-$candlestickInterval"
-            )
 
-        if (jsonList.isNotEmpty()) {
-            var list = JSON.parseArray(jsonList, Candlestick::class.java)
+        for (item in candlestickIntervalList) {
+            candlestickInterval = item
+            var jsonList =
+                SharedPreferenceUtil.loadData(
+                    AppController.instance.applicationContext,
+                    "KeyLine-${coin}-$candlestickInterval"
+                )
 
-            var endDay = list[list.size - 1]
-            val date = Date(endDay.openTime.toLong())
-            val format = SimpleDateFormat("yyyy.MM.dd")
-            var spDayStr = format.format(date)
+            if (jsonList.isNotEmpty() && !refresh) {
+                var list = JSON.parseArray(jsonList, Candlestick::class.java)
+//
+//                var endDay = list[list.size - 1]
+//                val date = Date(endDay.openTime.toLong())
+//                val format = SimpleDateFormat("yyyy.MM.dd")
+//                var spDayStr = format.format(date)
+//
+//                val currentDay = Date(getTodayStartTime())
+//                var currentDayStr = format.format(currentDay)
+//
+//
+//                if (spDayStr == currentDayStr) {
+//                    parseKLineData(coin, list)
+//                } else {
+//                    var list = getCoinKlineData(coin)
+//                    parseKLineData(coin, list)
+//                }
 
-            val currentDay = Date(getTodayStartTime())
-            var currentDayStr = format.format(currentDay)
-
-
-            if (spDayStr == currentDayStr) {
                 parseKLineData(coin, list)
+
+
             } else {
                 var list = getCoinKlineData(coin)
                 parseKLineData(coin, list)
             }
-
-
-        } else {
-            var list = getCoinKlineData(coin)
-            parseKLineData(coin, list)
         }
+
+        addDivideLine()
 
 
     }
@@ -174,6 +200,7 @@ class KeyLineActivity : AppCompatActivity() {
             val date = Date(item.openTime.toLong())
             val format = SimpleDateFormat("MM.dd HH")
             var day = format.format(date)
+            var str = "${day} open:${item.open} close:${item.close} "
 
 
             var open = item.open
@@ -185,33 +212,43 @@ class KeyLineActivity : AppCompatActivity() {
             var divideRate = "  $divide%"
             var rateSpan = SpannableStringBuilder(divideRate)
 
-            if (divide > BigDecimal.ZERO) {
-                rateSpan.setSpan(
-                    ForegroundColorSpan(getColor(android.R.color.holo_green_dark)),
-                    0,
-                    divideRate.length - 1,
-                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                )
-            } else {
-                rateSpan.setSpan(
-                    ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
-                    0,
-                    divideRate.length - 1,
-                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                )
-            }
+//            if (divide > BigDecimal.ZERO) {
+//                rateSpan.setSpan(
+//                    ForegroundColorSpan(getColor(android.R.color.holo_green_dark)),
+//                    0,
+//                    divideRate.length - 1,
+//                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+//                )
+//            } else {
+//                rateSpan.setSpan(
+//                    ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+//                    0,
+//                    divideRate.length - 1,
+//                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+//                )
+//            }
 
-            if (divide < BigDecimal.ONE && divide > -BigDecimal.ONE) {
+//            if (divide < BigDecimal.ONE && divide > -BigDecimal.ONE) {
+//                rateSpan.setSpan(
+//                    ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
+//                    0,
+//                    divideRate.length - 1,
+//                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+//                )
+//            }
+
+            if (divide < BigDecimal(0.3) && divide > -BigDecimal(0.3)) {
                 rateSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_purple)),
                     0,
                     divideRate.length - 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE
                 )
+//                stringBuilder.append(str)
+//                stringBuilder.append(rateSpan)
+//                stringBuilder.append("\n")
             }
 
-
-            var str = "${day} open:${item.open} close:${item.close} "
             stringBuilder.append(str)
             stringBuilder.append(rateSpan)
             stringBuilder.append("\n")
@@ -224,7 +261,7 @@ class KeyLineActivity : AppCompatActivity() {
             candlestickInterval,
             null,
             null,
-            10
+            5
         )
         Log.d(
             "sss",
@@ -240,7 +277,12 @@ class KeyLineActivity : AppCompatActivity() {
 
 
     private fun initAction() {
+        btnRefresh?.setOnClickListener {
 
+            refresh = true
+            tvTitle.text = "Loading..."
+            getData()
+        }
 
     }
 
