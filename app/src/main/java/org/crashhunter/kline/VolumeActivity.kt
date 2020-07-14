@@ -93,7 +93,7 @@ class VolumeActivity : AppCompatActivity() {
 
     private fun getData(coin: String) {
         var coinVolumeJsonStr =
-            SharedPreferenceUtil.loadUserToken(AppController.instance.applicationContext, coin)
+            SharedPreferenceUtil.loadData(AppController.instance.applicationContext, coin)
         if (coinVolumeJsonStr.isNotEmpty()) {
             var coinVolumeSpData = Gson().fromJson(
                 coinVolumeJsonStr, CoinVolume::class.java
@@ -136,7 +136,7 @@ class VolumeActivity : AppCompatActivity() {
             override fun onResponse(call: Call<CoinVolume?>, response: Response<CoinVolume?>) {
                 var datas = response.body()?.data!!
                 var coinVolumeJsonStr = Gson().toJson(response.body())
-                SharedPreferenceUtil.saveUserToken(
+                SharedPreferenceUtil.saveData(
                     AppController.instance.applicationContext,
                     coin,
                     coinVolumeJsonStr

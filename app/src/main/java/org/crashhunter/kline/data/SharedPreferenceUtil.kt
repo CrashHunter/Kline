@@ -6,11 +6,11 @@ class SharedPreferenceUtil : BaseSP() {
 
     companion object {
 
-        fun saveUserToken(context: Context, key: String, value: String) {
+        fun saveData(context: Context, key: String, value: String) {
             putString(context, key, value)
         }
 
-        fun loadUserToken(context: Context, key: String): String {
+        fun loadData(context: Context, key: String): String {
             return getString(context, key, "")
         }
     }
