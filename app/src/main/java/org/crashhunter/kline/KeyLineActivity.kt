@@ -42,23 +42,23 @@ class KeyLineActivity : AppCompatActivity() {
             override fun run() {
                 super.run()
 
-                stringBuilder.append("${candlestickInterval.name}: \n")
                 candlestickInterval = CandlestickInterval.FOUR_HOURLY
+                stringBuilder.append("${candlestickInterval.name}: \n")
                 getAllCoins()
                 addDivideLine()
 
-                stringBuilder.append("${candlestickInterval.name}: \n")
                 candlestickInterval = CandlestickInterval.TWELVE_HOURLY
+                stringBuilder.append("${candlestickInterval.name}: \n")
                 getAllCoins()
                 addDivideLine()
 
-                stringBuilder.append("${candlestickInterval.name}: \n")
                 candlestickInterval = CandlestickInterval.DAILY
+                stringBuilder.append("${candlestickInterval.name}: \n")
                 getAllCoins()
                 addDivideLine()
 
-                stringBuilder.append("${candlestickInterval.name}: \n")
                 candlestickInterval = CandlestickInterval.THREE_DAILY
+                stringBuilder.append("${candlestickInterval.name}: \n")
                 getAllCoins()
                 addDivideLine()
 
@@ -141,7 +141,9 @@ class KeyLineActivity : AppCompatActivity() {
 
             if (spDayStr == currentDayStr) {
                 parseKLineData(coin, list)
-                return
+            } else {
+                var list = getCoinKlineData(coin)
+                parseKLineData(coin, list)
             }
 
 
@@ -170,7 +172,7 @@ class KeyLineActivity : AppCompatActivity() {
 
         for (item in list) {
             val date = Date(item.openTime.toLong())
-            val format = SimpleDateFormat("yyyy.MM.dd")
+            val format = SimpleDateFormat("MM.dd HH")
             var day = format.format(date)
 
 
