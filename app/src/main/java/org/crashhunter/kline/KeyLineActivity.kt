@@ -33,7 +33,7 @@ class KeyLineActivity : AppCompatActivity() {
     var candlestickIntervalList = ArrayList<CandlestickInterval>()
 
     var refresh = false
-
+    var addTxt = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -138,7 +138,7 @@ class KeyLineActivity : AppCompatActivity() {
     }
 
     private fun getCoinInfo(coin: String) {
-
+        addTxt = false
 
         for (item in candlestickIntervalList) {
             candlestickInterval = item
@@ -176,7 +176,9 @@ class KeyLineActivity : AppCompatActivity() {
             }
         }
 
-        addDivideLine()
+        if (addTxt) {
+            addDivideLine()
+        }
 
 
     }
@@ -194,8 +196,8 @@ class KeyLineActivity : AppCompatActivity() {
         coin: String,
         list: List<Candlestick>
     ) {
-        stringBuilder.append("$coin ${candlestickInterval.name}: \n")
 
+        var itemStr = SpannableStringBuilder()
         for (item in list) {
             val date = Date(item.openTime.toLong())
             val format = SimpleDateFormat("MM.dd HH")
@@ -237,6 +239,7 @@ class KeyLineActivity : AppCompatActivity() {
 //                )
 //            }
 
+
             if (divide < BigDecimal(0.3) && divide > -BigDecimal(0.3)) {
                 rateSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_purple)),
@@ -244,15 +247,18 @@ class KeyLineActivity : AppCompatActivity() {
                     divideRate.length - 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE
                 )
-//                stringBuilder.append(str)
-//                stringBuilder.append(rateSpan)
-//                stringBuilder.append("\n")
+                addTxt = true
             }
+            itemStr.append(str)
+            itemStr.append(rateSpan)
+            itemStr.append("\n")
 
-            stringBuilder.append(str)
-            stringBuilder.append(rateSpan)
-            stringBuilder.append("\n")
         }
+        if (addTxt) {
+            stringBuilder.append("$coin ${candlestickInterval.name}: \n")
+            stringBuilder.append(itemStr)
+        }
+
     }
 
     private fun getCoinKlineData(coin: String): List<Candlestick> {
@@ -261,7 +267,7 @@ class KeyLineActivity : AppCompatActivity() {
             candlestickInterval,
             null,
             null,
-            5
+            2
         )
         Log.d(
             "sss",
@@ -280,6 +286,7 @@ class KeyLineActivity : AppCompatActivity() {
         btnRefresh?.setOnClickListener {
 
             refresh = true
+            stringBuilder = SpannableStringBuilder()
             tvTitle.text = "Loading..."
             getData()
         }
