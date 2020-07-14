@@ -598,6 +598,12 @@ class MainActivity : AppCompatActivity() {
 				startActivity(intent)
 				return true
 			}
+			R.id.Kline -> {
+
+				var intent = Intent(this, KeyLineActivity::class.java)
+				startActivity(intent)
+				return true
+			}
 			R.id.volumeHistory -> {
 
 				var intent = Intent(this, VolumeActivity::class.java)

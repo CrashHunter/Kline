@@ -14,6 +14,8 @@ class AppController : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+
+        CelerExceptionHandler()
     }
 }
 

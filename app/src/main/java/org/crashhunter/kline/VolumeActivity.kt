@@ -171,7 +171,7 @@ class VolumeActivity : AppCompatActivity() {
                 var preValue = preVolumeStr.toBigDecimal()
                 var currentValue = volumeStr.toBigDecimal()
 
-                var rate = currentValue / preValue
+                var rate = preValue.divide(currentValue, 5, BigDecimal.ROUND_HALF_UP)
 
                 var divide = (rate - BigDecimal.ONE) * BigDecimal(100)
 

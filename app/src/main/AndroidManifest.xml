@@ -33,6 +33,7 @@
 
         <activity android:name=".CountActivity"/>
         <activity android:name=".VolumeActivity" />
+        <activity android:name=".KeyLineActivity" />
     </application>
 
 </manifest>
