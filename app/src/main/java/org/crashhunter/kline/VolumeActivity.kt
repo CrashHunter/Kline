@@ -7,7 +7,12 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.binance.client.RequestOptions
+import com.binance.client.SyncRequestClient
+import com.binance.client.examples.constants.PrivateConfig
+import com.binance.client.model.enums.CandlestickInterval
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_volume.*
 import org.crashhunter.kline.data.SharedPreferenceUtil
@@ -39,6 +44,27 @@ class VolumeActivity : AppCompatActivity() {
 
         tvTitle.text = "loading"
         getData("usdt")
+
+        object : Thread() {
+            override fun run() {
+                super.run()
+                val options = RequestOptions()
+                val syncRequestClient = SyncRequestClient.create(
+                    PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
+                    options
+                )
+                Log.d(
+                    "sss",
+                    syncRequestClient.getCandlestick(
+                        "BTCUSDT",
+                        CandlestickInterval.THREE_DAILY,
+                        null,
+                        null,
+                        5
+                    ).toString()
+                )
+            }
+        }.start()
 
 
     }
@@ -186,44 +212,6 @@ class VolumeActivity : AppCompatActivity() {
         tvTitle.text = str
     }
 
-    private fun OKHTTPRequest() {
-        //        var client = OkHttpClient();
-        //        var url =
-        //            "https://min-api.cryptocompare.com/data/symbol/histoday?fsym=USDT&tsym=USD&limit=10&api_key=4789529a8c5e2a2e26d4c665fa74c50d497c8971a5f1a6785d2a556da615d57d"
-        //        var request = Request.Builder()
-        //            .url(url)
-        //            .build();
-        //
-        //        object : Thread() {
-        //            override fun run() {
-        //                super.run()
-        //                var response = client.newCall(request).execute()
-        //                var json = response.body?.string()
-        //                var data = Gson().fromJson(json, CoinVolume::class.java)
-        //
-        //                runOnUiThread {
-        //                    var str = StringBuilder()
-        //
-        //                    str.append("BTC: \n")
-        //
-        //                    str.append(json)
-        //                    str.append(data.toString())
-        ////                    for (data in data.data) {
-        ////
-        ////                        var volume = data.topTierVolumeTotal.toString()
-        ////
-        ////                        str.append("  $volume \n")
-        ////
-        ////
-        ////                    }
-        //
-        //                    tvTitle.text = str
-        //
-        //                }
-        //
-        //            }
-        //        }.start()
-    }
 
     private fun initAction() {
 

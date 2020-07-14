@@ -7,7 +7,7 @@
             app:showAsAction="always" />
 
     <item
-        android:id="@+id/volume"
+        android:id="@+id/volumeHistory"
         android:title="量历史"
         app:showAsAction="always" />
 
