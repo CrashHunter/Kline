@@ -50,13 +50,18 @@ class KeyLineActivity : AppCompatActivity() {
         initAction()
 
 //        candlestickIntervalList.add(CandlestickInterval.HOURLY)
+        getAllInterval()
+
+
+    }
+
+    private fun getAllInterval() {
         candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
         candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
         candlestickIntervalList.add(CandlestickInterval.DAILY)
         candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
+        candlestickIntervalList.add(CandlestickInterval.WEEKLY)
         getData()
-
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -96,14 +101,17 @@ class KeyLineActivity : AppCompatActivity() {
                 getData()
                 return true
             }
-            R.id.refresh -> {
+            R.id.oneWeek -> {
                 candlestickIntervalList.clear()
-                candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
-                candlestickIntervalList.add(CandlestickInterval.DAILY)
-                candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
+                candlestickIntervalList.add(CandlestickInterval.WEEKLY)
 
-                forceRefresh = true
                 getData()
+                return true
+            }
+            R.id.refresh -> {
+                forceRefresh = true
+                candlestickIntervalList.clear()
+                getAllInterval()
                 return true
             }
 

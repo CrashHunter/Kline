@@ -18,6 +18,10 @@
         android:id="@+id/threeDay"
         android:title="3D"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/oneWeek"
+        android:title="1w"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/refresh"
