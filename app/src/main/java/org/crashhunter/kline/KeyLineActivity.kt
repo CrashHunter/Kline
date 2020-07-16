@@ -36,6 +36,12 @@ class KeyLineActivity : AppCompatActivity() {
 
     var forceRefresh = false
     var addTxt = false
+
+    val purplePoint = 0.3
+    val redPoint = 0.1
+
+    val historyRange = 2
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -259,7 +265,7 @@ class KeyLineActivity : AppCompatActivity() {
 //            }
 
 
-            if (divide < BigDecimal(0.3) && divide > -BigDecimal(0.3)) {
+            if (divide < BigDecimal(purplePoint) && divide > -BigDecimal(purplePoint)) {
                 rateSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_purple)),
                     0,
@@ -269,7 +275,7 @@ class KeyLineActivity : AppCompatActivity() {
                 addTxt = true
             }
 
-            if (divide < BigDecimal(0.1) && divide > -BigDecimal(0.1)) {
+            if (divide < BigDecimal(redPoint) && divide > -BigDecimal(redPoint)) {
                 rateSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
                     0,
@@ -297,7 +303,7 @@ class KeyLineActivity : AppCompatActivity() {
             candlestickInterval,
             null,
             null,
-            3
+            historyRange
         )
         Log.d(
             "sss",
@@ -313,9 +319,6 @@ class KeyLineActivity : AppCompatActivity() {
 
 
     private fun initAction() {
-        btnRefresh?.setOnClickListener {
-            getData()
-        }
 
     }
 
