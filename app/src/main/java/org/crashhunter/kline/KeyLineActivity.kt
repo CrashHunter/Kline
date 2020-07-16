@@ -5,6 +5,8 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.alibaba.fastjson.JSON
 import com.binance.client.RequestOptions
@@ -32,58 +34,85 @@ class KeyLineActivity : AppCompatActivity() {
 
     var candlestickIntervalList = ArrayList<CandlestickInterval>()
 
-    var refresh = false
+    var forceRefresh = false
     var addTxt = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 
         setContentView(R.layout.activity_key_line)
+        initAction()
 
 //        candlestickIntervalList.add(CandlestickInterval.HOURLY)
 //        candlestickIntervalList.add(CandlestickInterval.FOUR_HOURLY)
-//        candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
+        candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
         candlestickIntervalList.add(CandlestickInterval.DAILY)
         candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
-
-        initAction()
-
         getData()
 
 
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.keyline_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        when (item.itemId) {
+            R.id.twelveH -> {
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
+
+                getData()
+                return true
+            }
+            R.id.oneDay -> {
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.DAILY)
+
+                getData()
+                return true
+            }
+            R.id.threeDay -> {
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
+
+                getData()
+                return true
+            }
+            R.id.refresh -> {
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
+                candlestickIntervalList.add(CandlestickInterval.DAILY)
+                candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
+
+                forceRefresh = true
+                getData()
+                return true
+            }
+
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+
     private fun getData() {
+        stringBuilder = SpannableStringBuilder()
+        tvTitle.text = "Loading..."
+
         object : Thread() {
             override fun run() {
                 super.run()
-
-                //                candlestickInterval = CandlestickInterval.FOUR_HOURLY
-                //                stringBuilder.append("${candlestickInterval.name}: \n")
-                //                getAllCoins()
-                //                addDivideLine()
-                //
-                //                candlestickInterval = CandlestickInterval.TWELVE_HOURLY
-                //                stringBuilder.append("${candlestickInterval.name}: \n")
-                //                getAllCoins()
-                //                addDivideLine()
-                //
-                //                candlestickInterval = CandlestickInterval.DAILY
-                //                stringBuilder.append("${candlestickInterval.name}: \n")
-                //                getAllCoins()
-                //                addDivideLine()
-                //
-                //                candlestickInterval = CandlestickInterval.THREE_DAILY
-                //                stringBuilder.append("${candlestickInterval.name}: \n")
-                //                getAllCoins()
-                //                addDivideLine()
 
                 getAllCoins()
 
                 runOnUiThread {
                     tvTitle.text = ""
                     tvTitle.text = stringBuilder
-                    refresh = false
+                    forceRefresh = false
                 }
             }
         }.start()
@@ -148,24 +177,8 @@ class KeyLineActivity : AppCompatActivity() {
                     "KeyLine-${coin}-$candlestickInterval"
                 )
 
-            if (jsonList.isNotEmpty() && !refresh) {
+            if (jsonList.isNotEmpty() && !forceRefresh) {
                 var list = JSON.parseArray(jsonList, Candlestick::class.java)
-//
-//                var endDay = list[list.size - 1]
-//                val date = Date(endDay.openTime.toLong())
-//                val format = SimpleDateFormat("yyyy.MM.dd")
-//                var spDayStr = format.format(date)
-//
-//                val currentDay = Date(getTodayStartTime())
-//                var currentDayStr = format.format(currentDay)
-//
-//
-//                if (spDayStr == currentDayStr) {
-//                    parseKLineData(coin, list)
-//                } else {
-//                    var list = getCoinKlineData(coin)
-//                    parseKLineData(coin, list)
-//                }
 
                 parseKLineData(coin, list)
 
@@ -198,7 +211,13 @@ class KeyLineActivity : AppCompatActivity() {
     ) {
 
         var itemStr = SpannableStringBuilder()
-        for (item in list) {
+        for (index in list.indices) {
+
+            if (index == list.size-1){
+                break
+            }
+            var item = list[index]
+
             val date = Date(item.openTime.toLong())
             val format = SimpleDateFormat("MM.dd HH")
             var day = format.format(date)
@@ -249,6 +268,17 @@ class KeyLineActivity : AppCompatActivity() {
                 )
                 addTxt = true
             }
+
+            if (divide < BigDecimal(0.1) && divide > -BigDecimal(0.1)) {
+                rateSpan.setSpan(
+                    ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+                    0,
+                    divideRate.length - 1,
+                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                )
+                addTxt = true
+            }
+
             itemStr.append(str)
             itemStr.append(rateSpan)
             itemStr.append("\n")
@@ -267,7 +297,7 @@ class KeyLineActivity : AppCompatActivity() {
             candlestickInterval,
             null,
             null,
-            2
+            3
         )
         Log.d(
             "sss",
@@ -284,10 +314,6 @@ class KeyLineActivity : AppCompatActivity() {
 
     private fun initAction() {
         btnRefresh?.setOnClickListener {
-
-            refresh = true
-            stringBuilder = SpannableStringBuilder()
-            tvTitle.text = "Loading..."
             getData()
         }
 
