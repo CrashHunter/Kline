@@ -50,7 +50,7 @@ class KeyLineActivity : AppCompatActivity() {
         initAction()
 
 //        candlestickIntervalList.add(CandlestickInterval.HOURLY)
-//        candlestickIntervalList.add(CandlestickInterval.FOUR_HOURLY)
+        candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
         candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
         candlestickIntervalList.add(CandlestickInterval.DAILY)
         candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
@@ -68,6 +68,13 @@ class KeyLineActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         when (item.itemId) {
+            R.id.sixH -> {
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
+
+                getData()
+                return true
+            }
             R.id.twelveH -> {
                 candlestickIntervalList.clear()
                 candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
