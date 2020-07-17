@@ -234,7 +234,7 @@ class KeyLineActivity : AppCompatActivity() {
         var itemStr = SpannableStringBuilder()
         for (index in list.indices) {
 
-            if (index == list.size-1){
+            if (index == list.size - 1) {
                 break
             }
             var item = list[index]
@@ -242,14 +242,18 @@ class KeyLineActivity : AppCompatActivity() {
             val date = Date(item.openTime.toLong())
             val format = SimpleDateFormat("MM.dd HH")
             var day = format.format(date)
-            var str = "${day} open:${item.open} close:${item.close} "
-
 
             var open = item.open
             var close = item.close
+            var diff = close.minus(open)
 
-            var rate = close.divide(open, 5, BigDecimal.ROUND_HALF_UP)
-            var divide = (rate.minus(BigDecimal.ONE)) * BigDecimal(100)
+            var str = "${day} open:${item.open} close:${item.close} diff:${diff}"
+
+
+            // 默认行业是涨幅计算公式是=（今收-昨收）/昨收  但我是(close-open)/open 来计算单个k柱的涨跌幅  当前一个close和当前open有偏差时会不一样
+
+            var divide = diff.divide(open, 4, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
+
 
             var divideRate = "  $divide%"
             var rateSpan = SpannableStringBuilder(divideRate)

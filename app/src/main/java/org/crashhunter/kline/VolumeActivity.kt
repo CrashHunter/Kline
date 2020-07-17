@@ -171,9 +171,10 @@ class VolumeActivity : AppCompatActivity() {
                 var preValue = preVolumeStr.toBigDecimal()
                 var currentValue = volumeStr.toBigDecimal()
 
-                var rate = preValue.divide(currentValue, 5, BigDecimal.ROUND_HALF_UP)
+                var diff = currentValue.minus(preValue)
 
-                var divide = (rate - BigDecimal.ONE) * BigDecimal(100)
+
+                var divide = diff.divide(preValue, 4, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
 
                 var divideRate = "  $divide%"
                 rateSpan = SpannableStringBuilder(divideRate)
