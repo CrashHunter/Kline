@@ -24,8 +24,8 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/refresh"
-        android:title="刷新"
+        android:id="@+id/all"
+        android:title="All"
         app:showAsAction="always" />
 
 

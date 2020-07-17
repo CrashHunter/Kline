@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.alibaba.fastjson.JSON
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
@@ -21,7 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class KeyLineActivity : AppCompatActivity() {
+class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     val options = RequestOptions()
     val syncRequestClient = SyncRequestClient.create(
@@ -42,16 +43,28 @@ class KeyLineActivity : AppCompatActivity() {
 
     val historyRange = 2
 
+    var currentItemId = R.id.refresh
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 
         setContentView(R.layout.activity_key_line)
+
+        swipeRefresh.setOnRefreshListener(this)
+
         initAction()
 
 //        candlestickIntervalList.add(CandlestickInterval.HOURLY)
         getAllInterval()
 
+
+    }
+
+    override fun onRefresh() {
+
+        forceRefresh = true
+        routeItem()
 
     }
 
@@ -72,50 +85,51 @@ class KeyLineActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
-        when (item.itemId) {
+
+        currentItemId = item.itemId
+        routeItem()
+        return true
+    }
+
+    private fun routeItem() {
+        when (currentItemId) {
             R.id.sixH -> {
                 candlestickIntervalList.clear()
                 candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
 
                 getData()
-                return true
             }
             R.id.twelveH -> {
                 candlestickIntervalList.clear()
                 candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
 
                 getData()
-                return true
             }
             R.id.oneDay -> {
                 candlestickIntervalList.clear()
                 candlestickIntervalList.add(CandlestickInterval.DAILY)
 
                 getData()
-                return true
             }
             R.id.threeDay -> {
                 candlestickIntervalList.clear()
                 candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
 
                 getData()
-                return true
             }
             R.id.oneWeek -> {
                 candlestickIntervalList.clear()
                 candlestickIntervalList.add(CandlestickInterval.WEEKLY)
 
                 getData()
-                return true
             }
-            R.id.refresh -> {
-                forceRefresh = true
+            R.id.all -> {
                 candlestickIntervalList.clear()
                 getAllInterval()
-                return true
             }
 
-            else -> return super.onOptionsItemSelected(item)
+            else -> {
+            }
         }
     }
 
@@ -134,6 +148,7 @@ class KeyLineActivity : AppCompatActivity() {
                     tvTitle.text = ""
                     tvTitle.text = stringBuilder
                     forceRefresh = false
+                    swipeRefresh.isRefreshing = false
                 }
             }
         }.start()
