@@ -2,6 +2,7 @@ package org.crashhunter.kline
 
 import android.os.Process
 import android.util.Log
+import org.crashhunter.app_record.AppRecord
 
 /**
  * Created by CrashHunter on 2020/7/10.
@@ -22,9 +23,9 @@ class CelerExceptionHandler : Thread.UncaughtExceptionHandler {
         )
 
 
-//        if (BuildConfig.DEBUG) {
-//            AppRecord.showCrashReport(CelerXSDK.application, t, e)
-//        }
+        if (BuildConfig.DEBUG) {
+            AppRecord.showCrashReport(AppController.instance, t, e)
+        }
 
         if (originalDefaultExceptionHandler != null) {
             // completed exception processing. Invoking default exception handler.

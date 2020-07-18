@@ -38,8 +38,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     var forceRefresh = false
     var addTxt = false
 
-    val purplePoint = 0.3
-    val redPoint = 0.1
+    var purplePoint = 0.3
+    var redPoint = 0.1
 
     val historyRange = 2
 
@@ -48,14 +48,12 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         setContentView(R.layout.activity_key_line)
 
         swipeRefresh.setOnRefreshListener(this)
 
         initAction()
 
-//        candlestickIntervalList.add(CandlestickInterval.HOURLY)
         getAllInterval()
 
 
@@ -216,12 +214,12 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             if (jsonList.isNotEmpty() && !forceRefresh) {
                 var list = JSON.parseArray(jsonList, Candlestick::class.java)
 
-                parseKLineData(coin, list)
+                parseKLineData(coin, list, candlestickInterval)
 
 
             } else {
                 var list = getCoinKlineData(coin)
-                parseKLineData(coin, list)
+                parseKLineData(coin, list, candlestickInterval)
             }
         }
 
@@ -243,8 +241,18 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     private fun parseKLineData(
         coin: String,
-        list: List<Candlestick>
+        list: List<Candlestick>,
+        candlestickInterval: CandlestickInterval
     ) {
+
+        if (candlestickInterval == CandlestickInterval.THREE_DAILY || candlestickInterval == CandlestickInterval.WEEKLY) {
+            purplePoint = 1.0
+            redPoint = 0.5
+        } else {
+            purplePoint = 0.3
+            redPoint = 0.1
+        }
+
 
         var itemStr = SpannableStringBuilder()
         for (index in list.indices) {
@@ -273,32 +281,6 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var divideRate = "  $divide%"
             var rateSpan = SpannableStringBuilder(divideRate)
 
-//            if (divide > BigDecimal.ZERO) {
-//                rateSpan.setSpan(
-//                    ForegroundColorSpan(getColor(android.R.color.holo_green_dark)),
-//                    0,
-//                    divideRate.length - 1,
-//                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
-//                )
-//            } else {
-//                rateSpan.setSpan(
-//                    ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
-//                    0,
-//                    divideRate.length - 1,
-//                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
-//                )
-//            }
-
-//            if (divide < BigDecimal.ONE && divide > -BigDecimal.ONE) {
-//                rateSpan.setSpan(
-//                    ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
-//                    0,
-//                    divideRate.length - 1,
-//                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
-//                )
-//            }
-
-
             if (divide < BigDecimal(purplePoint) && divide > -BigDecimal(purplePoint)) {
                 rateSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_purple)),
@@ -325,7 +307,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
         }
         if (addTxt) {
-            stringBuilder.append("$coin ${candlestickInterval.name}: \n")
+            stringBuilder.append("$coin ${this.candlestickInterval.name}: \n")
             stringBuilder.append(itemStr)
         }
 
