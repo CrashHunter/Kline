@@ -92,36 +92,42 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     private fun routeItem() {
         when (currentItemId) {
             R.id.sixH -> {
+                header.text = "SIX_HOURLY"
                 candlestickIntervalList.clear()
                 candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
 
                 getData()
             }
             R.id.twelveH -> {
+                header.text = "TWELVE_HOURLY"
                 candlestickIntervalList.clear()
                 candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
 
                 getData()
             }
             R.id.oneDay -> {
+                header.text = "DAILY"
                 candlestickIntervalList.clear()
                 candlestickIntervalList.add(CandlestickInterval.DAILY)
 
                 getData()
             }
             R.id.threeDay -> {
+                header.text = "THREE_DAILY"
                 candlestickIntervalList.clear()
                 candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
 
                 getData()
             }
             R.id.oneWeek -> {
+                header.text = "WEEKLY"
                 candlestickIntervalList.clear()
                 candlestickIntervalList.add(CandlestickInterval.WEEKLY)
 
                 getData()
             }
             R.id.all -> {
+                header.text = "All"
                 candlestickIntervalList.clear()
                 getAllInterval()
             }
@@ -188,6 +194,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         getCoinInfo("OMGUSDT")
         getCoinInfo("ONTUSDT")
         getCoinInfo("QTUMUSDT")
+        getCoinInfo("SXPUSDT")
         getCoinInfo("THETAUSDT")
         getCoinInfo("TRXUSDT")
         getCoinInfo("VETUSDT")
@@ -245,13 +252,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         candlestickInterval: CandlestickInterval
     ) {
 
-        if (candlestickInterval == CandlestickInterval.THREE_DAILY || candlestickInterval == CandlestickInterval.WEEKLY) {
-            purplePoint = 1.0
-            redPoint = 0.5
-        } else {
-            purplePoint = 0.3
-            redPoint = 0.1
-        }
+        setPoint(candlestickInterval)
 
 
         var itemStr = SpannableStringBuilder()
@@ -311,6 +312,16 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             stringBuilder.append(itemStr)
         }
 
+    }
+
+    private fun setPoint(candlestickInterval: CandlestickInterval) {
+        if (candlestickInterval == CandlestickInterval.THREE_DAILY || candlestickInterval == CandlestickInterval.WEEKLY) {
+            purplePoint = 1.0
+            redPoint = 0.5
+        } else {
+            purplePoint = 0.5
+            redPoint = 0.25
+        }
     }
 
     private fun getCoinKlineData(coin: String): List<Candlestick> {
