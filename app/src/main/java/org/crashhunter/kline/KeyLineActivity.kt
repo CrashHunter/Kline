@@ -188,6 +188,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         getCoinInfo("IOSTUSDT")
         getCoinInfo("IOTAUSDT")
         getCoinInfo("KNCUSDT")
+        getCoinInfo("LENDUSDT")
         getCoinInfo("LINKUSDT")
         getCoinInfo("LTCUSDT")
         getCoinInfo("NEOUSDT")
@@ -263,8 +264,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             }
             var item = list[index]
 
-            val date = Date(item.openTime.toLong())
-            val format = SimpleDateFormat("MM.dd HH")
+            val date = Date(item.closeTime.toLong())
+            val format = SimpleDateFormat("MM.dd HH:mm")
             var day = format.format(date)
 
             var open = item.open
