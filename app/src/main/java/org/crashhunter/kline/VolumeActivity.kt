@@ -9,6 +9,7 @@ import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.alibaba.fastjson.JSON
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
@@ -31,7 +32,6 @@ import java.util.*
 class VolumeActivity : AppCompatActivity() {
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,28 +44,6 @@ class VolumeActivity : AppCompatActivity() {
 
         tvTitle.text = "loading"
         getData("usdt")
-
-        object : Thread() {
-            override fun run() {
-                super.run()
-                val options = RequestOptions()
-                val syncRequestClient = SyncRequestClient.create(
-                    PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
-                    options
-                )
-                Log.d(
-                    "sss",
-                    syncRequestClient.getCandlestick(
-                        "BTCUSDT",
-                        CandlestickInterval.THREE_DAILY,
-                        null,
-                        null,
-                        5
-                    ).toString()
-                )
-            }
-        }.start()
-
 
     }
 
@@ -160,11 +138,62 @@ class VolumeActivity : AppCompatActivity() {
 
         str.append("$coin: \n")
 
+        var lastMaxStr = SharedPreferenceUtil.loadData(
+            AppController.instance.applicationContext,
+            "${coin}-Max"
+        )
+        var lastMinStr = SharedPreferenceUtil.loadData(
+            AppController.instance.applicationContext,
+            "${coin}-Min"
+        )
+
+        if (lastMaxStr.isNotEmpty() && lastMinStr.isNotEmpty()) {
+            var lastMax = Gson().fromJson(lastMaxStr, Data::class.java)
+            var lastMin = Gson().fromJson(lastMinStr, Data::class.java)
+
+            val date = Date(lastMax.time.toLong() * 1000)
+            val format = SimpleDateFormat("yyyy.MM.dd")
+            var day = format.format(date)
+
+            str.append("Max: ${day} : ${lastMax.totalVolumeTotal.getMoneyFormat()} \n")
+
+            val date2 = Date(lastMin.time.toLong() * 1000)
+            var day2 = format.format(date2)
+
+            str.append("Min: ${day2} : ${lastMin.totalVolumeTotal.getMoneyFormat()} \n")
+        }
+
+
         var preVolumeStr = ""
+
 
         for (data in datas!!) {
             var rateSpan = SpannableStringBuilder("")
             var volumeStr = data.totalVolumeTotal
+
+            if (lastMaxStr.isEmpty()) {
+                lastMaxStr = Gson().toJson(data)
+
+            } else {
+                var lastMax = Gson().fromJson(lastMaxStr, Data::class.java)
+
+                if (BigDecimal(lastMax.totalVolumeTotal) < BigDecimal(volumeStr)) {
+                    lastMaxStr = Gson().toJson(data)
+                }
+
+            }
+
+            if (lastMinStr.isEmpty()) {
+                lastMinStr = Gson().toJson(data)
+
+            } else {
+                var lastMin = Gson().fromJson(lastMinStr, Data::class.java)
+
+                if (BigDecimal(lastMin.totalVolumeTotal) > BigDecimal(volumeStr)) {
+                    lastMinStr = Gson().toJson(data)
+                }
+            }
+
 
             if (!preVolumeStr.isEmpty()) {
 
@@ -210,7 +239,42 @@ class VolumeActivity : AppCompatActivity() {
             str.append("\n")
         }
 
+
+        SharedPreferenceUtil.saveData(
+            AppController.instance.applicationContext,
+            "${coin}-Max", lastMaxStr
+        )
+        SharedPreferenceUtil.saveData(
+            AppController.instance.applicationContext,
+            "${coin}-Min", lastMinStr
+        )
+
         tvTitle.text = str
+    }
+
+    private fun findMaxAndMin(coin: String, volumeStr: String) {
+        var lastMax = SharedPreferenceUtil.loadData(
+            AppController.instance.applicationContext,
+            "${coin}-Max", "0"
+        )
+        var lastMin = SharedPreferenceUtil.loadData(
+            AppController.instance.applicationContext,
+            "${coin}-Min", "9999"
+        )
+
+        if (BigDecimal(lastMax) < BigDecimal(volumeStr)) {
+            SharedPreferenceUtil.saveData(
+                AppController.instance.applicationContext,
+                "${coin}-Max", volumeStr
+            )
+        }
+
+        if (BigDecimal(lastMin) > BigDecimal(volumeStr)) {
+            SharedPreferenceUtil.saveData(
+                AppController.instance.applicationContext,
+                "${coin}-Min", volumeStr
+            )
+        }
     }
 
 
@@ -233,7 +297,7 @@ class VolumeActivity : AppCompatActivity() {
 
     interface KlineService {
         //https://min-api.cryptocompare.com/data/symbol/histoday?fsym=BTC&tsym=USD&limit=10&api_key=4789529a8c5e2a2e26d4c665fa74c50d497c8971a5f1a6785d2a556da615d57d
-        @GET("symbol/histoday?tsym=USD&limit=30&api_key=4789529a8c5e2a2e26d4c665fa74c50d497c8971a5f1a6785d2a556da615d57d")
+        @GET("symbol/histoday?tsym=USD&limit=90&api_key=4789529a8c5e2a2e26d4c665fa74c50d497c8971a5f1a6785d2a556da615d57d")
         fun queryVolume(@Query("fsym") fsymCoin: String): Call<CoinVolume?>?
     }
 }

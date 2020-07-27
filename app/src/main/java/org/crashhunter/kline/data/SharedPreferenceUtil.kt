@@ -13,6 +13,10 @@ class SharedPreferenceUtil : BaseSP() {
         fun loadData(context: Context, key: String): String {
             return getString(context, key, "")
         }
+
+        fun loadData(context: Context, key: String, default: String): String {
+            return getString(context, key, default)
+        }
     }
 
 }
