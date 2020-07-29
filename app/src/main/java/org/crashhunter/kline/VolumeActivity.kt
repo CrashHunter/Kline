@@ -167,32 +167,36 @@ class VolumeActivity : AppCompatActivity() {
         var preVolumeStr = ""
 
 
-        for (data in datas!!) {
+        for (index in datas.indices) {
+            var data = datas.get(index)
             var rateSpan = SpannableStringBuilder("")
             var volumeStr = data.totalVolumeTotal
 
-            if (lastMaxStr.isEmpty()) {
-                lastMaxStr = Gson().toJson(data)
-
-            } else {
-                var lastMax = Gson().fromJson(lastMaxStr, Data::class.java)
-
-                if (BigDecimal(lastMax.totalVolumeTotal) < BigDecimal(volumeStr)) {
+            if (index < datas.size - 1) {
+                if (lastMaxStr.isEmpty()) {
                     lastMaxStr = Gson().toJson(data)
+
+                } else {
+                    var lastMax = Gson().fromJson(lastMaxStr, Data::class.java)
+
+                    if (BigDecimal(lastMax.totalVolumeTotal) < BigDecimal(volumeStr)) {
+                        lastMaxStr = Gson().toJson(data)
+                    }
+
                 }
-
-            }
-
-            if (lastMinStr.isEmpty()) {
-                lastMinStr = Gson().toJson(data)
-
-            } else {
-                var lastMin = Gson().fromJson(lastMinStr, Data::class.java)
-
-                if (BigDecimal(lastMin.totalVolumeTotal) > BigDecimal(volumeStr)) {
+                if (lastMinStr.isEmpty()) {
                     lastMinStr = Gson().toJson(data)
+
+                } else {
+                    var lastMin = Gson().fromJson(lastMinStr, Data::class.java)
+
+                    if (BigDecimal(lastMin.totalVolumeTotal) > BigDecimal(volumeStr)) {
+                        lastMinStr = Gson().toJson(data)
+                    }
                 }
             }
+
+
 
 
             if (!preVolumeStr.isEmpty()) {
