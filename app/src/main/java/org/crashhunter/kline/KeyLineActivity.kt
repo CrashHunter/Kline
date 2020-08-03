@@ -43,7 +43,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     val historyRange = 2
 
-    var currentItemId = R.id.refresh
+    var currentItemId = R.id.all
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -197,6 +197,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         getCoinInfo("OMGUSDT")
         getCoinInfo("ONTUSDT")
         getCoinInfo("QTUMUSDT")
+        getCoinInfo("RLCUSDT")
         getCoinInfo("SXPUSDT")
         getCoinInfo("THETAUSDT")
         getCoinInfo("TRXUSDT")

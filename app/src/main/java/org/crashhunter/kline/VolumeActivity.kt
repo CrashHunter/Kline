@@ -199,7 +199,7 @@ class VolumeActivity : AppCompatActivity() {
 
 
 
-            if (!preVolumeStr.isEmpty()) {
+            if (!preVolumeStr.isEmpty() && preVolumeStr.toBigDecimal() > BigDecimal.ZERO) {
 
                 var preValue = preVolumeStr.toBigDecimal()
                 var currentValue = volumeStr.toBigDecimal()
