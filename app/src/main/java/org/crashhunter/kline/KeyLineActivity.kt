@@ -67,7 +67,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     }
 
     private fun getAllInterval() {
-        candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
+//        candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
         candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
         candlestickIntervalList.add(CandlestickInterval.DAILY)
         candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
@@ -91,13 +91,13 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     private fun routeItem() {
         when (currentItemId) {
-            R.id.sixH -> {
-                header.text = "SIX_HOURLY"
-                candlestickIntervalList.clear()
-                candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
-
-                getData()
-            }
+//            R.id.sixH -> {
+//                header.text = "SIX_HOURLY"
+//                candlestickIntervalList.clear()
+//                candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
+//
+//                getData()
+//            }
             R.id.twelveH -> {
                 header.text = "TWELVE_HOURLY"
                 candlestickIntervalList.clear()

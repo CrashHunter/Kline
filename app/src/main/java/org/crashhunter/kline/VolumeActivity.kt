@@ -301,7 +301,7 @@ class VolumeActivity : AppCompatActivity() {
 
     interface KlineService {
         //https://min-api.cryptocompare.com/data/symbol/histoday?fsym=BTC&tsym=USD&limit=10&api_key=4789529a8c5e2a2e26d4c665fa74c50d497c8971a5f1a6785d2a556da615d57d
-        @GET("symbol/histoday?tsym=USD&limit=90&api_key=4789529a8c5e2a2e26d4c665fa74c50d497c8971a5f1a6785d2a556da615d57d")
+        @GET("symbol/histoday?tsym=USD&limit=90&api_key=e607037237ae0f8fce5397d2dd69253d0321f07a05aa88c0206bd36b5e3fbec7")
         fun queryVolume(@Query("fsym") fsymCoin: String): Call<CoinVolume?>?
     }
 }
