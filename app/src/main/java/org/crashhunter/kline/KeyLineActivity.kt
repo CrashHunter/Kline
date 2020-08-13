@@ -38,8 +38,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     var forceRefresh = false
     var addTxt = false
 
-    var purplePoint = 0.3
-    var redPoint = 0.1
+    var purplePointBase = 0.5
+    var redPointBase = 0.25
+    var rate = 1
 
     val historyRange = 2
 
@@ -67,7 +68,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     }
 
     private fun getAllInterval() {
-//        candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
+        candlestickIntervalList.add(CandlestickInterval.HOURLY)
+        candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
         candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
         candlestickIntervalList.add(CandlestickInterval.DAILY)
         candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
@@ -91,13 +93,20 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     private fun routeItem() {
         when (currentItemId) {
-//            R.id.sixH -> {
-//                header.text = "SIX_HOURLY"
-//                candlestickIntervalList.clear()
-//                candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
-//
-//                getData()
-//            }
+            R.id.oneH -> {
+                header.text = "ONE_HOURLY"
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.HOURLY)
+
+                getData()
+            }
+            R.id.sixH -> {
+                header.text = "SIX_HOURLY"
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
+
+                getData()
+            }
             R.id.twelveH -> {
                 header.text = "TWELVE_HOURLY"
                 candlestickIntervalList.clear()
@@ -193,6 +202,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         getCoinInfo("LENDUSDT")
         getCoinInfo("LINKUSDT")
         getCoinInfo("LTCUSDT")
+        getCoinInfo("MKRUSDT")
         getCoinInfo("NEOUSDT")
         getCoinInfo("OMGUSDT")
         getCoinInfo("ONTUSDT")
@@ -202,6 +212,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         getCoinInfo("THETAUSDT")
         getCoinInfo("TRXUSDT")
         getCoinInfo("VETUSDT")
+        getCoinInfo("WAVESUSDT")
         getCoinInfo("XLMUSDT")
         getCoinInfo("XMRUSDT")
         getCoinInfo("XRPUSDT")
@@ -213,9 +224,14 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     private fun getCoinInfo(coin: String) {
         addTxt = false
-
         for (item in candlestickIntervalList) {
             candlestickInterval = item
+
+
+            runOnUiThread {
+                tvTitle.text = "Loading... $coin $candlestickInterval"
+            }
+
             var jsonList =
                 SharedPreferenceUtil.loadData(
                     AppController.instance.applicationContext,
@@ -286,6 +302,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var divideRate = "  $divide%"
             var rateSpan = SpannableStringBuilder(divideRate)
 
+            var purplePoint = purplePointBase * rate
+            var redPoint = redPointBase * rate
+
             if (divide < BigDecimal(purplePoint) && divide > -BigDecimal(purplePoint)) {
                 rateSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_purple)),
@@ -319,12 +338,26 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     }
 
     private fun setPoint(candlestickInterval: CandlestickInterval) {
-        if (candlestickInterval == CandlestickInterval.THREE_DAILY || candlestickInterval == CandlestickInterval.WEEKLY) {
-            purplePoint = 1.0
-            redPoint = 0.5
-        } else {
-            purplePoint = 0.5
-            redPoint = 0.25
+        when (candlestickInterval) {
+            CandlestickInterval.HOURLY -> {
+                rate = 1
+            }
+            CandlestickInterval.SIX_HOURLY -> {
+                rate = 1
+            }
+            CandlestickInterval.TWELVE_HOURLY -> {
+                rate = 1
+            }
+            CandlestickInterval.DAILY -> {
+                rate = 2
+            }
+            CandlestickInterval.THREE_DAILY -> {
+                rate = 3
+            }
+            CandlestickInterval.WEEKLY -> {
+                rate = 4
+            }
+
         }
     }
 

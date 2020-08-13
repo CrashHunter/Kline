@@ -1,30 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-<!--    <item-->
-<!--        android:id="@+id/sixH"-->
-<!--        android:title="6H"-->
-<!--        app:showAsAction="always" />-->
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <item
+        android:id="@+id/oneH"
+        android:title="1H"
+        android:visible="true"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/sixH"
+        android:title="6H"
+        android:visible="true"
+        app:showAsAction="always"
+        />
     <item
         android:id="@+id/twelveH"
         android:title="12H"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        />
     <item
         android:id="@+id/oneDay"
         android:title="1D"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        />
     <item
         android:id="@+id/threeDay"
         android:title="3D"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        />
     <item
         android:id="@+id/oneWeek"
         android:title="1w"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        />
     <item
         android:id="@+id/all"
         android:title="All"
-        app:showAsAction="always" />
-
-
+        app:showAsAction="always"
+        />
 </menu>
