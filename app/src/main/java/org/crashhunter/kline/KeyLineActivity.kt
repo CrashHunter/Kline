@@ -16,8 +16,10 @@ import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
 import kotlinx.android.synthetic.main.activity_key_line.*
+import org.crashhunter.kline.data.KeyLineCoin
 import org.crashhunter.kline.data.SharedPreferenceUtil
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -45,6 +47,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     var historyRange = 2
 
     var currentItemId = R.id.all
+
+    var lastestCoinsRange = ArrayList<KeyLineCoin>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -158,11 +162,16 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         stringBuilder = SpannableStringBuilder()
         tvTitle.text = "Loading..."
 
+        lastestCoinsRange.clear()
         object : Thread() {
             override fun run() {
                 super.run()
 
                 getAllCoins()
+
+                getRank()
+
+
 
                 runOnUiThread {
                     tvTitle.text = ""
@@ -172,6 +181,22 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 }
             }
         }.start()
+    }
+
+    private fun getRank() {
+
+        lastestCoinsRange.sortByDescending { it.divide }
+        var itemStr = SpannableStringBuilder()
+        for (coin in lastestCoinsRange){
+            var divideRate = "  ${coin.divide.setScale(2, RoundingMode.HALF_UP)}%"
+
+            itemStr.append("${coin.name} $divideRate \n")
+
+        }
+
+        stringBuilder.append(itemStr)
+
+
     }
 
     private fun addDivideLine() {
@@ -281,6 +306,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
 
         var itemStr = SpannableStringBuilder()
+        var lastComboIndex = 0
         for (index in list.indices) {
             var isLineInFilter = false
 
@@ -290,22 +316,40 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var item = list[index]
 
             val date = Date(item.closeTime.toLong())
-            val format = SimpleDateFormat("MM.dd HH:mm")
+            var format = SimpleDateFormat("MM.dd HH:mm")
+            if (candlestickInterval == CandlestickInterval.ONE_MINUTE) {
+                format = SimpleDateFormat("HH:mm")
+            } else {
+                format = SimpleDateFormat("MM.dd HH:mm")
+            }
             var day = format.format(date)
 
             var open = item.open
             var close = item.close
             var diff = close.minus(open)
 
-            var str = "${day} open:${item.open} close:${item.close} diff:${diff}"
+            var str = ""
 
+//            if (candlestickInterval == CandlestickInterval.ONE_MINUTE) {
+//                str = "${day} O:${item.open} C:${item.close}"
+//            } else {
+//                str = "${day} O:${item.open} C:${item.close} diff:${diff}"
+//            }
+            str = "${day} O:${item.open} C:${item.close}"
 
             // 默认行业是涨幅计算公式是=（今收-昨收）/昨收  但我是(close-open)/open 来计算单个k柱的涨跌幅  当前一个close和当前open有偏差时会不一样
 
-            var divide = diff.divide(open, 4, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
+            var divide = diff.divide(open, 6, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
+
+            if (index == list.size-2){
+                var coinrange = KeyLineCoin()
+                coinrange.name = coin
+                coinrange.divide = divide
+                lastestCoinsRange.add(coinrange)
+            }
 
 
-            var divideRate = "  $divide%"
+            var divideRate = "  ${divide.setScale(2, RoundingMode.HALF_UP)}%"
             var rateSpan = SpannableStringBuilder(divideRate)
 
             var purplePoint = purplePointBase * rate
@@ -331,6 +375,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 )
                 isCoinInFilter = true
                 isLineInFilter = true
+
+
             }
 
             if (!isLineInFilter) {
@@ -338,6 +384,14 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             }
             itemStr.append(str)
             itemStr.append(rateSpan)
+
+            if (lastComboIndex == index - 1) {
+                var tagSpan = setTextColor(" Combo ", android.R.color.holo_orange_dark)
+                itemStr.append(tagSpan)
+
+            }
+            lastComboIndex = index
+
             if (index == list.size - 2) {
                 var tagSpan = setTextColor(" -- UP TO DATE ", android.R.color.holo_orange_dark)
                 itemStr.append(tagSpan)
