@@ -36,13 +36,13 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     var candlestickIntervalList = ArrayList<CandlestickInterval>()
 
     var forceRefresh = false
-    var addTxt = false
+    var isCoinInFilter = false
 
     var purplePointBase = 0.5
     var redPointBase = 0.25
     var rate = 1
 
-    val historyRange = 2
+    var historyRange = 2
 
     var currentItemId = R.id.all
 
@@ -93,6 +93,13 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     private fun routeItem() {
         when (currentItemId) {
+            R.id.oneM -> {
+                header.text = "ONE_MINUTE"
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.ONE_MINUTE)
+
+                getData()
+            }
             R.id.oneH -> {
                 header.text = "ONE_HOURLY"
                 candlestickIntervalList.clear()
@@ -208,6 +215,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         getCoinInfo("ONTUSDT")
         getCoinInfo("QTUMUSDT")
         getCoinInfo("RLCUSDT")
+        getCoinInfo("SNXUSDT")
         getCoinInfo("SXPUSDT")
         getCoinInfo("THETAUSDT")
         getCoinInfo("TRXUSDT")
@@ -223,11 +231,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     }
 
     private fun getCoinInfo(coin: String) {
-        addTxt = false
+        isCoinInFilter = false
         for (item in candlestickIntervalList) {
             candlestickInterval = item
-
-
+            setPointAndRange(candlestickInterval)
             runOnUiThread {
                 tvTitle.text = "Loading... $coin $candlestickInterval"
             }
@@ -250,7 +257,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             }
         }
 
-        if (addTxt) {
+        if (isCoinInFilter) {
             addDivideLine()
         }
 
@@ -272,11 +279,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         candlestickInterval: CandlestickInterval
     ) {
 
-        setPoint(candlestickInterval)
-
 
         var itemStr = SpannableStringBuilder()
         for (index in list.indices) {
+            var isLineInFilter = false
 
             if (index == list.size - 1) {
                 break
@@ -305,14 +311,15 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var purplePoint = purplePointBase * rate
             var redPoint = redPointBase * rate
 
-            if (divide < BigDecimal(purplePoint) && divide > -BigDecimal(purplePoint)) {
+            if (divide < BigDecimal(purplePoint) && divide > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
                 rateSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_purple)),
                     0,
                     divideRate.length - 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE
                 )
-                addTxt = true
+                isCoinInFilter = true
+                isLineInFilter = true
             }
 
             if (divide < BigDecimal(redPoint) && divide > -BigDecimal(redPoint)) {
@@ -322,40 +329,73 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                     divideRate.length - 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE
                 )
-                addTxt = true
+                isCoinInFilter = true
+                isLineInFilter = true
             }
 
+            if (!isLineInFilter) {
+                continue
+            }
             itemStr.append(str)
             itemStr.append(rateSpan)
+            if (index == list.size - 2) {
+                var tagSpan = setTextColor(" -- UP TO DATE ", android.R.color.holo_orange_dark)
+                itemStr.append(tagSpan)
+            }
             itemStr.append("\n")
 
         }
-        if (addTxt) {
+        if (isCoinInFilter) {
             stringBuilder.append("$coin ${this.candlestickInterval.name}: \n")
             stringBuilder.append(itemStr)
         }
 
     }
 
-    private fun setPoint(candlestickInterval: CandlestickInterval) {
+    private fun setTextColor(txt: String, color: Int): SpannableStringBuilder {
+        var tagSpan = SpannableStringBuilder(txt)
+        tagSpan.setSpan(
+            ForegroundColorSpan(getColor(color)),
+            0,
+            txt.length - 1,
+            Spanned.SPAN_INCLUSIVE_INCLUSIVE
+        )
+        return tagSpan
+    }
+
+    private fun setPointAndRange(candlestickInterval: CandlestickInterval) {
+        purplePointBase = 0.5
+        redPointBase = 0.25
+        rate = 1
         when (candlestickInterval) {
+            CandlestickInterval.ONE_MINUTE -> {
+                purplePointBase = 0.03
+                redPointBase = 0.01
+                historyRange = 60
+            }
             CandlestickInterval.HOURLY -> {
                 rate = 1
+                historyRange = 7
             }
             CandlestickInterval.SIX_HOURLY -> {
                 rate = 1
+                historyRange = 7
             }
             CandlestickInterval.TWELVE_HOURLY -> {
                 rate = 1
+                historyRange = 7
             }
             CandlestickInterval.DAILY -> {
                 rate = 2
+                historyRange = 7
             }
             CandlestickInterval.THREE_DAILY -> {
                 rate = 3
+                historyRange = 7
             }
             CandlestickInterval.WEEKLY -> {
                 rate = 4
+                historyRange = 2
             }
 
         }

@@ -4,6 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
     <item
+        android:id="@+id/oneM"
+        android:title="1M"
+        android:visible="true"
+        app:showAsAction="always"
+        />
+    <item
         android:id="@+id/oneH"
         android:title="1H"
         android:visible="true"
