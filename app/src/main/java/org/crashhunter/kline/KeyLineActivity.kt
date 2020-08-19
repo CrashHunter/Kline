@@ -393,7 +393,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             lastComboIndex = index
 
             if (index == list.size - 2) {
-                var tagSpan = setTextColor(" -- UP TO DATE ", android.R.color.holo_orange_dark)
+                var tagSpan = setTextColor(" -- UP TO DATE ", android.R.color.holo_green_dark)
                 itemStr.append(tagSpan)
             }
             itemStr.append("\n")
