@@ -6,6 +6,7 @@ class KeyLineCoin {
 
     var name = ""
     var divide = BigDecimal(0)
+    var openTime = 0L
     var closeTime = 0L
     var candlestickInterval = CandlestickInterval.DAILY
 }

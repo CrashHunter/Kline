@@ -52,7 +52,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     var lastestCoinsRange = ArrayList<KeyLineCoin>()
 
 
-    var closeTimeList = ArrayList<Long>()
+    var openTimeList = ArrayList<Long>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -166,14 +166,14 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         tvTitle.text = "Loading..."
 
         lastestCoinsRange.clear()
-        closeTimeList.clear()
+        openTimeList.clear()
         object : Thread() {
             override fun run() {
                 super.run()
 
                 getAllCoins()
 
-                if (currentItemId!=R.id.all){
+                if (currentItemId != R.id.all) {
                     getRank()
                 }
 
@@ -190,19 +190,19 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     private fun getRank() {
 
-        for (closeTime in closeTimeList) {
+        for (openTime in openTimeList.sortedDescending()) {
 
-            var filterList = lastestCoinsRange.filter { it.closeTime == closeTime }
+            var filterList = lastestCoinsRange.filter { it.openTime == openTime }
             var list = ArrayList(filterList)
 
             list.sortByDescending { it.divide }
             var itemStr = SpannableStringBuilder()
 
-            val date = Date(closeTime.toLong())
+            val date = Date(openTime.toLong())
             var format = SimpleDateFormat("MM.dd HH:mm")
-            var day = format.format(date)
+            var openTimeStr = format.format(date)
 
-            itemStr.append("${day} \n")
+            itemStr.append("${openTimeStr} \n")
             for (coin in list) {
                 var divideRate = "  ${coin.divide.setScale(2, RoundingMode.HALF_UP)}%"
 
@@ -364,11 +364,12 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             coinrange.name = coin
             coinrange.divide = divide
             coinrange.candlestickInterval = candlestickInterval
+            coinrange.openTime = item.openTime
             coinrange.closeTime = item.closeTime
             lastestCoinsRange.add(coinrange)
 //            }
-            if (!closeTimeList.contains(item.closeTime)) {
-                closeTimeList.add(item.closeTime)
+            if (!openTimeList.contains(item.openTime)) {
+                openTimeList.add(item.openTime)
             }
 
 
@@ -468,7 +469,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             }
             CandlestickInterval.DAILY -> {
                 rate = 2
-                historyRange = 7
+                historyRange = 30
             }
             CandlestickInterval.THREE_DAILY -> {
                 rate = 3
