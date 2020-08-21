@@ -22,6 +22,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
@@ -50,6 +51,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     var lastestCoinsRange = ArrayList<KeyLineCoin>()
 
+
+    var closeTimeList = ArrayList<Long>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -72,12 +75,12 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     }
 
     private fun getAllInterval() {
-        candlestickIntervalList.add(CandlestickInterval.HOURLY)
-        candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
-        candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
-        candlestickIntervalList.add(CandlestickInterval.DAILY)
-        candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
         candlestickIntervalList.add(CandlestickInterval.WEEKLY)
+        candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
+        candlestickIntervalList.add(CandlestickInterval.DAILY)
+        candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
+        candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
+        candlestickIntervalList.add(CandlestickInterval.HOURLY)
         getData()
     }
 
@@ -163,14 +166,16 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         tvTitle.text = "Loading..."
 
         lastestCoinsRange.clear()
+        closeTimeList.clear()
         object : Thread() {
             override fun run() {
                 super.run()
 
                 getAllCoins()
 
-                getRank()
-
+                if (currentItemId!=R.id.all){
+                    getRank()
+                }
 
 
                 runOnUiThread {
@@ -185,16 +190,29 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     private fun getRank() {
 
-        lastestCoinsRange.sortByDescending { it.divide }
-        var itemStr = SpannableStringBuilder()
-        for (coin in lastestCoinsRange){
-            var divideRate = "  ${coin.divide.setScale(2, RoundingMode.HALF_UP)}%"
+        for (closeTime in closeTimeList) {
 
-            itemStr.append("${coin.name} $divideRate \n")
+            var filterList = lastestCoinsRange.filter { it.closeTime == closeTime }
+            var list = ArrayList(filterList)
 
+            list.sortByDescending { it.divide }
+            var itemStr = SpannableStringBuilder()
+
+            val date = Date(closeTime.toLong())
+            var format = SimpleDateFormat("MM.dd HH:mm")
+            var day = format.format(date)
+
+            itemStr.append("${day} \n")
+            for (coin in list) {
+                var divideRate = "  ${coin.divide.setScale(2, RoundingMode.HALF_UP)}%"
+
+                itemStr.append("${coin.name} $divideRate \n")
+
+            }
+
+            stringBuilder.append(itemStr)
+            addDivideLine()
         }
-
-        stringBuilder.append(itemStr)
 
 
     }
@@ -341,11 +359,16 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
             var divide = diff.divide(open, 6, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
 
-            if (index == list.size-2){
-                var coinrange = KeyLineCoin()
-                coinrange.name = coin
-                coinrange.divide = divide
-                lastestCoinsRange.add(coinrange)
+//            if (index == list.size - 2) {
+            var coinrange = KeyLineCoin()
+            coinrange.name = coin
+            coinrange.divide = divide
+            coinrange.candlestickInterval = candlestickInterval
+            coinrange.closeTime = item.closeTime
+            lastestCoinsRange.add(coinrange)
+//            }
+            if (!closeTimeList.contains(item.closeTime)) {
+                closeTimeList.add(item.closeTime)
             }
 
 
@@ -378,6 +401,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
 
             }
+
+
+
+
 
             if (!isLineInFilter) {
                 continue

@@ -6,7 +6,7 @@
     <item
         android:id="@+id/oneM"
         android:title="1M"
-        android:visible="true"
+        android:visible="false"
         app:showAsAction="always"
         />
     <item
