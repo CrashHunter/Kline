@@ -18,6 +18,7 @@ import com.binance.client.model.market.Candlestick
 import kotlinx.android.synthetic.main.activity_key_line.*
 import org.crashhunter.kline.data.KeyLineCoin
 import org.crashhunter.kline.data.SharedPreferenceUtil
+import org.crashhunter.kline.utils.TimeUtils
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
@@ -53,6 +54,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
 
     var openTimeList = ArrayList<Long>()
+
+
+    var coinList = ArrayList<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -62,9 +66,58 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
         initAction()
 
+        setCoinList()
+
+
+
         getAllInterval()
 
 
+    }
+
+    private fun setCoinList() {
+
+        coinList.add("ADAUSDT")
+        coinList.add("ALGOUSDT")
+        coinList.add("ATOMUSDT")
+        coinList.add("BANDUSDT")
+        coinList.add("BATUSDT")
+        coinList.add("BCHUSDT")
+        coinList.add("BNBUSDT")
+        coinList.add("BTCUSDT")
+        coinList.add("COMPUSDT")
+        coinList.add("DASHUSDT")
+        coinList.add("DOGEUSDT")
+        coinList.add("DOTUSDT")
+        coinList.add("EOSUSDT")
+        coinList.add("ETCUSDT")
+        coinList.add("ETHUSDT")
+        coinList.add("IOSTUSDT")
+        coinList.add("IOTAUSDT")
+        coinList.add("KAVAUSDT")
+        coinList.add("KNCUSDT")
+        coinList.add("LENDUSDT")
+        coinList.add("LINKUSDT")
+        coinList.add("LTCUSDT")
+        coinList.add("MKRUSDT")
+        coinList.add("NEOUSDT")
+        coinList.add("OMGUSDT")
+        coinList.add("ONTUSDT")
+        coinList.add("QTUMUSDT")
+        coinList.add("RLCUSDT")
+        coinList.add("SNXUSDT")
+        coinList.add("SXPUSDT")
+        coinList.add("THETAUSDT")
+        coinList.add("TRXUSDT")
+        coinList.add("VETUSDT")
+        coinList.add("WAVESUSDT")
+        coinList.add("XLMUSDT")
+        coinList.add("XMRUSDT")
+        coinList.add("XRPUSDT")
+        coinList.add("XTZUSDT")
+        coinList.add("ZECUSDT")
+        coinList.add("ZILUSDT")
+        coinList.add("ZRXUSDT")
     }
 
     override fun onRefresh() {
@@ -231,46 +284,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
 
     private fun getAllCoins() {
-        getCoinInfo("ADAUSDT")
-        getCoinInfo("ALGOUSDT")
-        getCoinInfo("ATOMUSDT")
-        getCoinInfo("BANDUSDT")
-        getCoinInfo("BATUSDT")
-        getCoinInfo("BCHUSDT")
-        getCoinInfo("BNBUSDT")
-        getCoinInfo("BTCUSDT")
-        getCoinInfo("COMPUSDT")
-        getCoinInfo("DASHUSDT")
-        getCoinInfo("DOGEUSDT")
-        getCoinInfo("EOSUSDT")
-        getCoinInfo("ETCUSDT")
-        getCoinInfo("ETHUSDT")
-        getCoinInfo("IOSTUSDT")
-        getCoinInfo("IOTAUSDT")
-        getCoinInfo("KAVAUSDT")
-        getCoinInfo("KNCUSDT")
-        getCoinInfo("LENDUSDT")
-        getCoinInfo("LINKUSDT")
-        getCoinInfo("LTCUSDT")
-        getCoinInfo("MKRUSDT")
-        getCoinInfo("NEOUSDT")
-        getCoinInfo("OMGUSDT")
-        getCoinInfo("ONTUSDT")
-        getCoinInfo("QTUMUSDT")
-        getCoinInfo("RLCUSDT")
-        getCoinInfo("SNXUSDT")
-        getCoinInfo("SXPUSDT")
-        getCoinInfo("THETAUSDT")
-        getCoinInfo("TRXUSDT")
-        getCoinInfo("VETUSDT")
-        getCoinInfo("WAVESUSDT")
-        getCoinInfo("XLMUSDT")
-        getCoinInfo("XMRUSDT")
-        getCoinInfo("XRPUSDT")
-        getCoinInfo("XTZUSDT")
-        getCoinInfo("ZECUSDT")
-        getCoinInfo("ZILUSDT")
-        getCoinInfo("ZRXUSDT")
+        for (coin in coinList) {
+            getCoinInfo(coin)
+        }
     }
 
     private fun getCoinInfo(coin: String) {
@@ -469,7 +485,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             }
             CandlestickInterval.DAILY -> {
                 rate = 2
-                historyRange = 30
+                historyRange = 7
             }
             CandlestickInterval.THREE_DAILY -> {
                 rate = 3
@@ -477,17 +493,26 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             }
             CandlestickInterval.WEEKLY -> {
                 rate = 4
-                historyRange = 2
+                historyRange = 7
             }
 
         }
     }
 
     private fun getCoinKlineData(coin: String): List<Candlestick> {
+        TimeUtils.stringToLong("2020-7-27 08:00", "yyyy-MM-dd HH:mm")
+
+        var startTimeLong: Long? = null
+        var startTimeStr = startTime.text.toString()
+        if (startTimeStr.isNotEmpty() && !startTimeStr.contains("XX")) {
+            startTimeLong = TimeUtils.stringToLong(startTimeStr, "yyyy-MM-dd HH:mm")
+        }
+
+
         var list = syncRequestClient.getCandlestick(
             coin,
             candlestickInterval,
-            null,
+            startTimeLong,
             null,
             historyRange
         )
