@@ -68,8 +68,6 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
         setCoinList()
 
-
-
         getAllInterval()
 
 
@@ -226,9 +224,13 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
                 getAllCoins()
 
+                getOX()
+
                 if (currentItemId != R.id.all) {
                     getRank()
                 }
+
+
 
 
                 runOnUiThread {
@@ -239,6 +241,44 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 }
             }
         }.start()
+    }
+
+    private fun getOX() {
+
+        var OXbase = ArrayList<Int>()
+
+        var btcCoin = lastestCoinsRange.filter { it.name == "BTCUSDT" }
+        for (item in btcCoin) {
+            if (item.divide >= BigDecimal.ZERO) {
+                OXbase.add(1)
+            } else {
+                OXbase.add(-1)
+            }
+        }
+        var itemStr = SpannableStringBuilder()
+        for (coin in coinList){
+
+            var coinHistory = lastestCoinsRange.filter { it.name == coin }
+
+            itemStr.append("${coin} ")
+            for (index in coinHistory.indices){
+                var history = coinHistory[index]
+                var base = OXbase[index]
+
+                if (base==1&&history.divide>= BigDecimal.ZERO||base==-1&&history.divide< BigDecimal.ZERO){
+                    itemStr.append("-")
+
+                }else{
+                    itemStr.append("X")
+                }
+            }
+
+            itemStr.append("\n")
+
+
+        }
+        stringBuilder.append(itemStr)
+        addDivideLine()
     }
 
     private fun getRank() {
@@ -259,7 +299,14 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             for (coin in list) {
                 var divideRate = "  ${coin.divide.setScale(2, RoundingMode.HALF_UP)}%"
 
-                itemStr.append("${coin.name} $divideRate \n")
+                if (coin.name == "BTCUSDT") {
+                    var str =
+                        setTextColor("${coin.name} $divideRate \n", android.R.color.holo_red_light)
+                    itemStr.append(str)
+                } else {
+                    itemStr.append("${coin.name} $divideRate \n")
+                }
+
 
             }
 
@@ -344,12 +391,18 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         for (index in list.indices) {
             var isLineInFilter = false
 
-            if (index == list.size - 1) {
-                break
-            }
+//            if (index == list.size - 1) {
+//                break
+//            }
             var item = list[index]
 
             val date = Date(item.closeTime.toLong())
+            if (candlestickInterval == CandlestickInterval.THREE_DAILY || candlestickInterval == CandlestickInterval.WEEKLY) {
+                date.time = item.closeTime
+            } else {
+                date.time = item.openTime
+            }
+
             var format = SimpleDateFormat("MM.dd HH:mm")
             if (candlestickInterval == CandlestickInterval.ONE_MINUTE) {
                 format = SimpleDateFormat("HH:mm")
