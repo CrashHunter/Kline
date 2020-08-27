@@ -256,20 +256,26 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             }
         }
         var itemStr = SpannableStringBuilder()
-        for (coin in coinList){
+        for (coin in coinList) {
 
             var coinHistory = lastestCoinsRange.filter { it.name == coin }
 
             itemStr.append("${coin} ")
-            for (index in coinHistory.indices){
+            for (index in coinHistory.indices) {
                 var history = coinHistory[index]
                 var base = OXbase[index]
 
-                if (base==1&&history.divide>= BigDecimal.ZERO||base==-1&&history.divide< BigDecimal.ZERO){
+                if (base == 1 && history.divide >= BigDecimal.ZERO || base == -1 && history.divide < BigDecimal.ZERO) {
                     itemStr.append("-")
 
-                }else{
-                    itemStr.append("X")
+                } else {
+                    if (history.divide >= BigDecimal.ZERO ){
+                        itemStr.append("O")
+                    }else {
+                        itemStr.append("X")
+                    }
+
+
                 }
             }
 
