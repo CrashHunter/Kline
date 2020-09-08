@@ -256,7 +256,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
         var btcCoin = lastestCoinsRange.filter { it.name == "BTCUSDT" }
         for (item in btcCoin) {
-            if (item.divide >= BigDecimal.ZERO) {
+            if (item.rateInc >= BigDecimal.ZERO) {
                 OXbase.add(1)
             } else {
                 OXbase.add(-1)
@@ -272,13 +272,13 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 var history = coinHistory[index]
                 var base = OXbase[index]
 
-                if (base == 1 && history.divide >= BigDecimal.ZERO || base == -1 && history.divide < BigDecimal.ZERO) {
+                if (base == 1 && history.rateInc >= BigDecimal.ZERO || base == -1 && history.rateInc < BigDecimal.ZERO) {
                     itemStr.append("-")
 
                 } else {
-                    if (history.divide >= BigDecimal.ZERO ){
+                    if (history.rateInc >= BigDecimal.ZERO) {
                         itemStr.append("O")
-                    }else {
+                    } else {
                         itemStr.append("X")
                     }
 
@@ -301,7 +301,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var filterList = lastestCoinsRange.filter { it.openTime == openTime }
             var list = ArrayList(filterList)
 
-            list.sortByDescending { it.divide }
+            list.sortByDescending { it.rangeInc }
             var itemStr = SpannableStringBuilder()
 
             val date = Date(openTime.toLong())
@@ -310,14 +310,39 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
             itemStr.append("${openTimeStr} \n")
             for (coin in list) {
-                var divideRate = "  ${coin.divide.setScale(2, RoundingMode.HALF_UP)}%"
+                var rateInc = coin.rateInc
+                var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
+                var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
 
                 if (coin.name == "BTCUSDT") {
                     var str =
-                        setTextColor("${coin.name} $divideRate \n", android.R.color.holo_red_light)
+                        setTextColor(
+                            "${coin.name} $rangePrec $ratePrec \n",
+                            android.R.color.holo_red_light
+                        )
                     itemStr.append(str)
                 } else {
-                    itemStr.append("${coin.name} $divideRate \n")
+                    var str = SpannableStringBuilder()
+                    var purplePoint = purplePointBase * rate
+                    var redPoint = redPointBase * rate
+                    str.append("${coin.name} $rangePrec $ratePrec \n")
+
+
+                    if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
+                        str = setTextColor(
+                            "${coin.name} $rangePrec $ratePrec \n",
+                            android.R.color.holo_purple
+                        )
+                    }
+
+                    if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
+                        str = setTextColor(
+                            "${coin.name} $rangePrec $ratePrec \n",
+                            android.R.color.holo_red_light
+                        )
+                    }
+
+                    itemStr.append(str)
                 }
 
 
@@ -428,6 +453,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var close = item.close
             var diff = close.minus(open)
 
+            var high = item.high
+            var low = item.low
+            var rangeDiff = high.minus(low)
+
             var str = ""
 
 //            if (candlestickInterval == CandlestickInterval.ONE_MINUTE) {
@@ -439,12 +468,14 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
             // 默认行业是涨幅计算公式是=（今收-昨收）/昨收  但我是(close-open)/open 来计算单个k柱的涨跌幅  当前一个close和当前open有偏差时会不一样
 
-            var divide = diff.divide(open, 6, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
+            var rateInc = diff.divide(open, 6, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
+            var rangeInc = rangeDiff.divide(low, 6, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
 
 //            if (index == list.size - 2) {
             var coinrange = KeyLineCoin()
             coinrange.name = coin
-            coinrange.divide = divide
+            coinrange.rateInc = rateInc
+            coinrange.rangeInc = rangeInc
             coinrange.candlestickInterval = candlestickInterval
             coinrange.openTime = item.openTime
             coinrange.closeTime = item.closeTime
@@ -455,28 +486,29 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             }
 
 
-            var divideRate = "  ${divide.setScale(2, RoundingMode.HALF_UP)}%"
-            var rateSpan = SpannableStringBuilder(divideRate)
+            var ratePrec = "  ${rateInc.setScale(2, RoundingMode.HALF_UP)}%"
+            var rangePrec = "  ${rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
+            var rateSpan = SpannableStringBuilder(ratePrec)
 
             var purplePoint = purplePointBase * rate
             var redPoint = redPointBase * rate
 
-            if (divide < BigDecimal(purplePoint) && divide > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
+            if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
                 rateSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_purple)),
                     0,
-                    divideRate.length - 1,
+                    ratePrec.length - 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE
                 )
                 isCoinInFilter = true
                 isLineInFilter = true
             }
 
-            if (divide < BigDecimal(redPoint) && divide > -BigDecimal(redPoint)) {
+            if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
                 rateSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
                     0,
-                    divideRate.length - 1,
+                    ratePrec.length - 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE
                 )
                 isCoinInFilter = true
@@ -494,6 +526,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             }
             itemStr.append(str)
             itemStr.append(rateSpan)
+            itemStr.append("${rangePrec}")
 
             if (lastComboIndex == index - 1) {
                 var tagSpan = setTextColor(" Combo ", android.R.color.holo_orange_dark)
