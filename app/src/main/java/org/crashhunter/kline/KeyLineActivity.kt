@@ -230,7 +230,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 super.run()
 
                 getAllCoins()
-
+//                getCoinFilter()
 
                 getLastestRank()
 
@@ -503,21 +503,44 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             if (jsonList.isNotEmpty() && !forceRefresh) {
                 var list = JSON.parseArray(jsonList, Candlestick::class.java)
 
-                parseKLineData(coin, list, candlestickInterval)
+//                parseKLineData(coin, list, candlestickInterval)
 
 
             } else {
                 var list = getCoinKlineData(coin)
-                parseKLineData(coin, list, candlestickInterval)
+//                parseKLineData(coin, list, candlestickInterval)
             }
         }
 
-        if (isCoinInFilter) {
-            addDivideLine()
+//        if (isCoinInFilter) {
+//            addDivideLine()
+//        }
+
+
+    }
+
+    private fun getCoinFilter() {
+
+        for (coin in coinList) {
+            isCoinInFilter = false
+            var jsonList =
+                SharedPreferenceUtil.loadData(
+                    AppController.instance.applicationContext,
+                    "KeyLine-${coin}-$candlestickInterval"
+                )
+            var list = JSON.parseArray(jsonList, Candlestick::class.java)
+            parseKLineData(coin, list, candlestickInterval)
+
+            if (isCoinInFilter) {
+                addDivideLine()
+            }
         }
 
 
     }
+
+
+
 
     fun getTodayStartTime(): Long {
         val calendar = Calendar.getInstance()
