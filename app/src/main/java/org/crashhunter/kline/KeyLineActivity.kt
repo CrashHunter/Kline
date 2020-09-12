@@ -231,7 +231,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
                 getAllCoins()
 
-                getOX()
+
+                getLastestRank()
+
+//                getOX()
 
                 if (currentItemId != R.id.all) {
                     getRank()
@@ -248,6 +251,114 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 }
             }
         }.start()
+    }
+
+    private fun getLastestRank() {
+
+        var sorted = openTimeList.sortedDescending()
+        for (index in sorted.indices) {
+            var openTime = sorted[index]
+            var filterList = lastestCoinsRange.filter { it.openTime == openTime }
+            var list = ArrayList(filterList)
+
+            list.sortBy { it.rangeInc }
+            var itemStr = SpannableStringBuilder()
+
+            val date = Date(openTime.toLong())
+            var format = SimpleDateFormat("MM.dd HH:mm")
+            var openTimeStr = format.format(date)
+
+            itemStr.append("${openTimeStr} \n")
+            for (index in list.indices) {
+                var coin = list[index]
+
+
+                var rateInc = coin.rateInc
+                var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
+                var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
+
+                if (coin.name == "BTCUSDT") {
+                    var str =
+                        setTextColor(
+                            "${coin.name} $rangePrec $ratePrec \n",
+                            android.R.color.holo_red_light
+                        )
+                    itemStr.append(str)
+                } else {
+                    var str = SpannableStringBuilder()
+                    var purplePoint = purplePointBase * rate
+                    var redPoint = redPointBase * rate
+                    str.append("${coin.name} $rangePrec $ratePrec \n")
+
+
+                    if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
+                        str = setTextColor(
+                            "${coin.name} $rangePrec $ratePrec \n",
+                            android.R.color.holo_purple
+                        )
+                    }
+
+                    if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
+                        str = setTextColor(
+                            "${coin.name} $rangePrec $ratePrec \n",
+                            android.R.color.holo_red_light
+                        )
+                    }
+
+                    itemStr.append(str)
+                }
+
+
+            }
+
+            itemStr.append("---- rateInc sorted ---- \n")
+
+            list.sortByDescending { it.rateInc }
+            for (index in list.indices) {
+                var coin = list[index]
+
+                var rateInc = coin.rateInc
+                var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
+                var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
+
+                if (coin.name == "BTCUSDT") {
+                    var str =
+                        setTextColor(
+                            "${coin.name} $rangePrec $ratePrec \n",
+                            android.R.color.holo_red_light
+                        )
+                    itemStr.append(str)
+                } else {
+                    var str = SpannableStringBuilder()
+                    var purplePoint = purplePointBase * rate
+                    var redPoint = redPointBase * rate
+                    str.append("${coin.name} $rangePrec $ratePrec \n")
+
+
+                    if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
+                        str = setTextColor(
+                            "${coin.name} $rangePrec $ratePrec \n",
+                            android.R.color.holo_purple
+                        )
+                    }
+
+                    if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
+                        str = setTextColor(
+                            "${coin.name} $rangePrec $ratePrec \n",
+                            android.R.color.holo_red_light
+                        )
+                    }
+
+                    itemStr.append(str)
+                }
+
+
+            }
+            stringBuilder.append(itemStr)
+            addDivideLine()
+        }
+
+
     }
 
     private fun getOX() {
@@ -301,7 +412,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var filterList = lastestCoinsRange.filter { it.openTime == openTime }
             var list = ArrayList(filterList)
 
-            list.sortByDescending { it.rangeInc }
+            list.sortBy { it.rangeInc }
             var itemStr = SpannableStringBuilder()
 
             val date = Date(openTime.toLong())
