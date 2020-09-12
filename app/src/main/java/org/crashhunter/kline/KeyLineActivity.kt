@@ -240,9 +240,6 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                     getRank()
                 }
 
-
-
-
                 runOnUiThread {
                     tvTitle.text = ""
                     tvTitle.text = stringBuilder
@@ -272,7 +269,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             for (index in list.indices) {
                 var coin = list[index]
 
-
+                var close = coin.close
                 var rateInc = coin.rateInc
                 var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
                 var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
@@ -293,14 +290,14 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
                     if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
                         str = setTextColor(
-                            "${coin.name} $rangePrec $ratePrec \n",
+                            "${coin.name} $rangePrec $ratePrec $close \n",
                             android.R.color.holo_purple
                         )
                     }
 
                     if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
                         str = setTextColor(
-                            "${coin.name} $rangePrec $ratePrec \n",
+                            "${coin.name} $rangePrec $ratePrec $close \n",
                             android.R.color.holo_red_light
                         )
                     }
@@ -316,7 +313,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             list.sortByDescending { it.rateInc }
             for (index in list.indices) {
                 var coin = list[index]
-
+                var close = coin.close
                 var rateInc = coin.rateInc
                 var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
                 var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
@@ -337,14 +334,14 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
                     if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
                         str = setTextColor(
-                            "${coin.name} $rangePrec $ratePrec \n",
+                            "${coin.name} $rangePrec $ratePrec $close \n",
                             android.R.color.holo_purple
                         )
                     }
 
                     if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
                         str = setTextColor(
-                            "${coin.name} $rangePrec $ratePrec \n",
+                            "${coin.name} $rangePrec $ratePrec $close \n",
                             android.R.color.holo_red_light
                         )
                     }
@@ -486,7 +483,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     }
 
     private fun getCoinInfo(coin: String) {
-        isCoinInFilter = false
+//        isCoinInFilter = false
         for (item in candlestickIntervalList) {
             candlestickInterval = item
             setPointAndRange(candlestickInterval)
@@ -504,11 +501,12 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 var list = JSON.parseArray(jsonList, Candlestick::class.java)
 
 //                parseKLineData(coin, list, candlestickInterval)
-
+                collectCoinInfo(coin, list, candlestickInterval)
 
             } else {
                 var list = getCoinKlineData(coin)
 //                parseKLineData(coin, list, candlestickInterval)
+                collectCoinInfo(coin, list, candlestickInterval)
             }
         }
 
@@ -549,6 +547,73 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         calendar[Calendar.MINUTE] = 0
         calendar[Calendar.SECOND] = 0
         return calendar.time.time
+    }
+
+
+    private fun collectCoinInfo(
+        coin: String,
+        list: List<Candlestick>,
+        candlestickInterval: CandlestickInterval
+    ) {
+
+        for (index in list.indices) {
+            var item = list[index]
+
+            val date = Date(item.closeTime.toLong())
+            if (candlestickInterval == CandlestickInterval.THREE_DAILY || candlestickInterval == CandlestickInterval.WEEKLY) {
+                date.time = item.closeTime
+            } else {
+                date.time = item.openTime
+            }
+
+            var format = SimpleDateFormat("MM.dd HH:mm")
+            if (candlestickInterval == CandlestickInterval.ONE_MINUTE) {
+                format = SimpleDateFormat("HH:mm")
+            } else {
+                format = SimpleDateFormat("MM.dd HH:mm")
+            }
+            var day = format.format(date)
+
+            var open = item.open
+            var close = item.close
+            var diff = close.minus(open)
+
+            var high = item.high
+            var low = item.low
+            var rangeDiff = high.minus(low)
+
+            var str = ""
+
+//            if (candlestickInterval == CandlestickInterval.ONE_MINUTE) {
+//                str = "${day} O:${item.open} C:${item.close}"
+//            } else {
+//                str = "${day} O:${item.open} C:${item.close} diff:${diff}"
+//            }
+            str = "${day} O:${item.open} C:${item.close}"
+
+            // 默认行业是涨幅计算公式是=（今收-昨收）/昨收  但我是(close-open)/open 来计算单个k柱的涨跌幅  当前一个close和当前open有偏差时会不一样
+
+            var rateInc = diff.divide(open, 6, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
+            var rangeInc = rangeDiff.divide(low, 6, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
+
+//            if (index == list.size - 2) {
+            var coinrange = KeyLineCoin()
+            coinrange.name = coin
+            coinrange.close = item.close
+            coinrange.rateInc = rateInc
+            coinrange.rangeInc = rangeInc
+            coinrange.candlestickInterval = candlestickInterval
+            coinrange.openTime = item.openTime
+            coinrange.closeTime = item.closeTime
+            lastestCoinsRange.add(coinrange)
+//            }
+            if (!openTimeList.contains(item.openTime)) {
+                openTimeList.add(item.openTime)
+            }
+
+
+        }
+
     }
 
     private fun parseKLineData(
@@ -650,9 +715,6 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
 
             }
-
-
-
 
 
             if (!isLineInFilter) {

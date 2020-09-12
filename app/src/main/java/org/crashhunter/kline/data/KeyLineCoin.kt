@@ -5,6 +5,7 @@ import java.math.BigDecimal
 class KeyLineCoin {
 
     var name = ""
+    var close = BigDecimal(0)
     var rateInc = BigDecimal(0)
     var rangeInc = BigDecimal(0)
     var openTime = 0L
