@@ -48,7 +48,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     var historyRange = 2
 
-    var currentItemId = R.id.all
+    var currentItemId = R.id.oneDay
 
     var lastestCoinsRange = ArrayList<KeyLineCoin>()
 
@@ -64,12 +64,13 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
         swipeRefresh.setOnRefreshListener(this)
 
+
+
         initAction()
 
         setCoinList()
 
         getAllInterval()
-
 
     }
 
@@ -232,12 +233,15 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 getAllCoins()
 //                getCoinFilter()
 
-                getLastestRank()
 
 //                getOX()
 
                 if (currentItemId != R.id.all) {
-                    getRank()
+                    getLastestRank("Range")
+                    stringBuilder.append("-------------- Rate --------------\n")
+                    getLastestRank("Rate")
+
+//                    getRank()
                 }
 
                 runOnUiThread {
@@ -250,15 +254,26 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         }.start()
     }
 
-    private fun getLastestRank() {
+
+    private fun getLastestRank(type: String) {
 
         var sorted = openTimeList.sortedDescending()
         for (index in sorted.indices) {
+
+            if (index > 1) {
+                break
+            }
+
             var openTime = sorted[index]
             var filterList = lastestCoinsRange.filter { it.openTime == openTime }
             var list = ArrayList(filterList)
 
-            list.sortBy { it.rangeInc }
+            if (type == "Range") {
+                list.sortBy { it.rangeInc }
+            } else if (type == "Rate") {
+                list.sortBy { it.rateInc }
+            }
+
             var itemStr = SpannableStringBuilder()
 
             val date = Date(openTime.toLong())
@@ -266,96 +281,61 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var openTimeStr = format.format(date)
 
             itemStr.append("${openTimeStr} \n")
-            for (index in list.indices) {
-                var coin = list[index]
+            printSortedCoinList(list, itemStr)
 
-                var close = coin.close
-                var rateInc = coin.rateInc
-                var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
-                var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
-
-                if (coin.name == "BTCUSDT") {
-                    var str =
-                        setTextColor(
-                            "${coin.name} $rangePrec $ratePrec \n",
-                            android.R.color.holo_red_light
-                        )
-                    itemStr.append(str)
-                } else {
-                    var str = SpannableStringBuilder()
-                    var purplePoint = purplePointBase * rate
-                    var redPoint = redPointBase * rate
-                    str.append("${coin.name} $rangePrec $ratePrec \n")
-
-
-                    if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
-                        str = setTextColor(
-                            "${coin.name} $rangePrec $ratePrec $close \n",
-                            android.R.color.holo_purple
-                        )
-                    }
-
-                    if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
-                        str = setTextColor(
-                            "${coin.name} $rangePrec $ratePrec $close \n",
-                            android.R.color.holo_red_light
-                        )
-                    }
-
-                    itemStr.append(str)
-                }
-
-
-            }
-
-            itemStr.append("---- rateInc sorted ---- \n")
-
-            list.sortByDescending { it.rateInc }
-            for (index in list.indices) {
-                var coin = list[index]
-                var close = coin.close
-                var rateInc = coin.rateInc
-                var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
-                var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
-
-                if (coin.name == "BTCUSDT") {
-                    var str =
-                        setTextColor(
-                            "${coin.name} $rangePrec $ratePrec \n",
-                            android.R.color.holo_red_light
-                        )
-                    itemStr.append(str)
-                } else {
-                    var str = SpannableStringBuilder()
-                    var purplePoint = purplePointBase * rate
-                    var redPoint = redPointBase * rate
-                    str.append("${coin.name} $rangePrec $ratePrec \n")
-
-
-                    if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
-                        str = setTextColor(
-                            "${coin.name} $rangePrec $ratePrec $close \n",
-                            android.R.color.holo_purple
-                        )
-                    }
-
-                    if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
-                        str = setTextColor(
-                            "${coin.name} $rangePrec $ratePrec $close \n",
-                            android.R.color.holo_red_light
-                        )
-                    }
-
-                    itemStr.append(str)
-                }
-
-
-            }
             stringBuilder.append(itemStr)
             addDivideLine()
         }
 
 
+    }
+
+
+    private fun printSortedCoinList(
+        list: ArrayList<KeyLineCoin>,
+        itemStr: SpannableStringBuilder
+    ) {
+        for (index in list.indices) {
+            var coin = list[index]
+
+            var close = coin.close
+            var rateInc = coin.rateInc
+            var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
+            var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
+
+            if (coin.name == "BTCUSDT") {
+                var str =
+                    setTextColor(
+                        "${coin.name} $rangePrec $ratePrec \n",
+                        android.R.color.holo_red_light
+                    )
+                itemStr.append(str)
+            } else {
+                var str = SpannableStringBuilder()
+                var purplePoint = purplePointBase * rate
+                var redPoint = redPointBase * rate
+                str.append("${coin.name} $rangePrec $ratePrec \n")
+
+
+                if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
+                    str = setTextColor(
+                        "${coin.name} $rangePrec $ratePrec --$close \n",
+                        android.R.color.holo_purple
+                    )
+                }
+
+                if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
+                    str = setTextColor(
+                        "${coin.name} $rangePrec $ratePrec --$close \n",
+                        android.R.color.holo_red_light
+                    )
+                }
+
+                itemStr.append(str)
+            }
+
+
+        }
     }
 
     private fun getOX() {
@@ -536,8 +516,6 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
 
     }
-
-
 
 
     fun getTodayStartTime(): Long {
