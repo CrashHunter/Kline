@@ -8,6 +8,9 @@ class KeyLineCoin {
     var close = BigDecimal(0)
     var rateInc = BigDecimal(0)
     var rangeInc = BigDecimal(0)
+    var quoteAssetVolume = BigDecimal(0)
+    var takerBuyBaseAssetVolume = BigDecimal(0)
+    var takerBuyQuoteAssetVolume = BigDecimal(0)
     var openTime = 0L
     var closeTime = 0L
     var candlestickInterval = CandlestickInterval.DAILY

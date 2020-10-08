@@ -91,9 +91,12 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         coinList.add("DASHUSDT")
         coinList.add("DOGEUSDT")
         coinList.add("DOTUSDT")
+        coinList.add("EGLDUSDT")
         coinList.add("EOSUSDT")
         coinList.add("ETCUSDT")
         coinList.add("ETHUSDT")
+        coinList.add("FTMUSDT")
+        coinList.add("HNTUSDT")
         coinList.add("IOSTUSDT")
         coinList.add("IOTAUSDT")
         coinList.add("KAVAUSDT")
@@ -108,11 +111,13 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         coinList.add("QTUMUSDT")
         coinList.add("RLCUSDT")
         coinList.add("SNXUSDT")
+        coinList.add("SOLUSDT")
         coinList.add("SRMUSDT")
         coinList.add("SXPUSDT")
         coinList.add("THETAUSDT")
         coinList.add("TRBUSDT")
         coinList.add("TRXUSDT")
+        coinList.add("UNIUSDT")
         coinList.add("VETUSDT")
         coinList.add("WAVESUSDT")
         coinList.add("XLMUSDT")
@@ -134,6 +139,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     }
 
     private fun getAllInterval() {
+        candlestickIntervalList.add(CandlestickInterval.MONTHLY)
         candlestickIntervalList.add(CandlestickInterval.WEEKLY)
         candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
         candlestickIntervalList.add(CandlestickInterval.DAILY)
@@ -205,6 +211,13 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 header.text = "WEEKLY"
                 candlestickIntervalList.clear()
                 candlestickIntervalList.add(CandlestickInterval.WEEKLY)
+
+                getData()
+            }
+            R.id.oneMonth -> {
+                header.text = "WEEKLY"
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.MONTHLY)
 
                 getData()
             }
@@ -306,7 +319,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             if (coin.name == "BTCUSDT") {
                 var str =
                     setTextColor(
-                        "${coin.name} $rangePrec $ratePrec \n",
+                        "${coin.name} $rangePrec $ratePrec ${coin.quoteAssetVolume} ${coin.takerBuyQuoteAssetVolume} ${coin.takerBuyBaseAssetVolume}\n",
                         android.R.color.holo_red_light
                     )
                 itemStr.append(str)
@@ -314,7 +327,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 var str = SpannableStringBuilder()
                 var purplePoint = purplePointBase * rate
                 var redPoint = redPointBase * rate
-                str.append("${coin.name} $rangePrec $ratePrec \n")
+                var str2 = "${coin.name} $rangePrec $ratePrec --$close ${coin.quoteAssetVolume} ${coin.takerBuyQuoteAssetVolume} ${coin.takerBuyBaseAssetVolume}\n"
+                str.append(str2)
 
 
                 if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
@@ -656,6 +670,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             coinrange.candlestickInterval = candlestickInterval
             coinrange.openTime = item.openTime
             coinrange.closeTime = item.closeTime
+            coinrange.quoteAssetVolume = item.quoteAssetVolume
+            coinrange.takerBuyQuoteAssetVolume = item.takerBuyQuoteAssetVolume
+            coinrange.takerBuyBaseAssetVolume = item.takerBuyBaseAssetVolume
             lastestCoinsRange.add(coinrange)
 //            }
             if (!openTimeList.contains(item.openTime)) {

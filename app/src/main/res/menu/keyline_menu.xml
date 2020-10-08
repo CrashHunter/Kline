@@ -41,9 +41,16 @@
         android:title="1w"
         app:showAsAction="always"
         />
+
+    <item
+        android:id="@+id/oneMonth"
+        android:title="1M"
+        app:showAsAction="always"
+        />
     <item
         android:id="@+id/all"
         android:title="All"
+        android:visible="false"
         app:showAsAction="always"
         />
 </menu>
