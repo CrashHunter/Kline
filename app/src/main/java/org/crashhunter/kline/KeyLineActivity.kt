@@ -18,6 +18,7 @@ import com.binance.client.model.market.Candlestick
 import kotlinx.android.synthetic.main.activity_key_line.*
 import org.crashhunter.kline.data.KeyLineCoin
 import org.crashhunter.kline.data.SharedPreferenceUtil
+import org.crashhunter.kline.utils.StringUtils
 import org.crashhunter.kline.utils.TimeUtils
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -27,6 +28,9 @@ import kotlin.collections.ArrayList
 
 
 class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
+
+    val minimum = 2000 * 10000L
+    var volumMin = minimum
 
     val options = RequestOptions()
     val syncRequestClient = SyncRequestClient.create(
@@ -79,6 +83,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         coinList.add("ADAUSDT")
         coinList.add("ALGOUSDT")
         coinList.add("ATOMUSDT")
+        coinList.add("AVAXUSDT")
         coinList.add("BALUSDT")
         coinList.add("BANDUSDT")
         coinList.add("BATUSDT")
@@ -89,14 +94,17 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         coinList.add("COMPUSDT")
         coinList.add("CRVUSDT")
         coinList.add("DASHUSDT")
+        coinList.add("DEFIUSDT")
         coinList.add("DOGEUSDT")
         coinList.add("DOTUSDT")
         coinList.add("EGLDUSDT")
         coinList.add("EOSUSDT")
         coinList.add("ETCUSDT")
         coinList.add("ETHUSDT")
+        coinList.add("FLMUSDT")
         coinList.add("FTMUSDT")
         coinList.add("HNTUSDT")
+        coinList.add("ICXUSDT")
         coinList.add("IOSTUSDT")
         coinList.add("IOTAUSDT")
         coinList.add("KAVAUSDT")
@@ -109,12 +117,17 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         coinList.add("OMGUSDT")
         coinList.add("ONTUSDT")
         coinList.add("QTUMUSDT")
+        coinList.add("RENUSDT")
         coinList.add("RLCUSDT")
+        coinList.add("RUNEUSDT")
         coinList.add("SNXUSDT")
         coinList.add("SOLUSDT")
         coinList.add("SRMUSDT")
+        coinList.add("STORJUSDT")
+        coinList.add("SUSHIUSDT")
         coinList.add("SXPUSDT")
         coinList.add("THETAUSDT")
+        coinList.add("TOMOUSDT")
         coinList.add("TRBUSDT")
         coinList.add("TRXUSDT")
         coinList.add("UNIUSDT")
@@ -215,7 +228,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 getData()
             }
             R.id.oneMonth -> {
-                header.text = "WEEKLY"
+                header.text = "MONTHLY"
                 candlestickIntervalList.clear()
                 candlestickIntervalList.add(CandlestickInterval.MONTHLY)
 
@@ -308,6 +321,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         list: ArrayList<KeyLineCoin>,
         itemStr: SpannableStringBuilder
     ) {
+        var i = 0;
         for (index in list.indices) {
             var coin = list[index]
 
@@ -316,37 +330,46 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
             var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
 
-            if (coin.name == "BTCUSDT") {
-                var str =
-                    setTextColor(
-                        "${coin.name} $rangePrec $ratePrec ${coin.quoteAssetVolume} ${coin.takerBuyQuoteAssetVolume} ${coin.takerBuyBaseAssetVolume}\n",
-                        android.R.color.holo_red_light
-                    )
+            if (coin.quoteAssetVolume.toLong() < volumMin && candlestickInterval == CandlestickInterval.DAILY) {
+                continue
+            }
+            i++;
+
+            var header = "No.${i} ${coin.name} $rangePrec $ratePrec\n"
+            var purplePoint = purplePointBase * rate
+            var redPoint = redPointBase * rate
+
+
+
+            if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
+                var str = setTextColor(
+                    "$header",
+                    android.R.color.holo_red_light
+                )
+                itemStr.append(str)
+            } else if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
+                var str = setTextColor(
+                    "$header",
+                    android.R.color.holo_purple
+                )
                 itemStr.append(str)
             } else {
-                var str = SpannableStringBuilder()
-                var purplePoint = purplePointBase * rate
-                var redPoint = redPointBase * rate
-                var str2 = "${coin.name} $rangePrec $ratePrec --$close ${coin.quoteAssetVolume} ${coin.takerBuyQuoteAssetVolume} ${coin.takerBuyBaseAssetVolume}\n"
-                str.append(str2)
-
-
-                if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
-                    str = setTextColor(
-                        "${coin.name} $rangePrec $ratePrec --$close \n",
-                        android.R.color.holo_purple
-                    )
-                }
-
-                if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
-                    str = setTextColor(
-                        "${coin.name} $rangePrec $ratePrec --$close \n",
-                        android.R.color.holo_red_light
-                    )
-                }
-
-                itemStr.append(str)
+                itemStr.append(header)
             }
+
+//            var volumeStr = StringUtils.getFormattedVolume(coin.takerBuyBaseAssetVolume.toString()) + "\n"
+//            if (coin.quoteAssetVolume.toLong() < volumMin) {
+//                var str = setTextColor(
+//                    "$volumeStr",
+//                    android.R.color.darker_gray
+//                )
+//                itemStr.append(str)
+//            } else {
+//                itemStr.append(volumeStr)
+//            }
+            var volumeStr2 =
+                "           --$close | " + StringUtils.getFormattedVolume(coin.quoteAssetVolume.toString()) + "\n "
+            itemStr.append(volumeStr2)
 
 
         }
@@ -597,6 +620,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             coinrange.candlestickInterval = candlestickInterval
             coinrange.openTime = item.openTime
             coinrange.closeTime = item.closeTime
+            coinrange.quoteAssetVolume = item.quoteAssetVolume
+            coinrange.takerBuyQuoteAssetVolume = item.takerBuyQuoteAssetVolume
+            coinrange.takerBuyBaseAssetVolume = item.takerBuyBaseAssetVolume
             lastestCoinsRange.add(coinrange)
 //            }
             if (!openTimeList.contains(item.openTime)) {
@@ -783,6 +809,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             }
             CandlestickInterval.WEEKLY -> {
                 rate = 4
+                historyRange = 7
+            }
+            CandlestickInterval.MONTHLY -> {
+                rate = 5
                 historyRange = 7
             }
 
