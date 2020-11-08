@@ -29,7 +29,7 @@ import kotlin.collections.ArrayList
 
 class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
-    val minimum = 2000 * 10000L
+    val minimum = 10_000_000L
     var volumMin = minimum
 
     val options = RequestOptions()
@@ -79,11 +79,12 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     }
 
     private fun setCoinList() {
-
+        coinList.add("AAVEUSDT")
         coinList.add("ADAUSDT")
         coinList.add("ALGOUSDT")
         coinList.add("ATOMUSDT")
         coinList.add("AVAXUSDT")
+
         coinList.add("BALUSDT")
         coinList.add("BANDUSDT")
         coinList.add("BATUSDT")
@@ -91,54 +92,77 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         coinList.add("BNBUSDT")
         coinList.add("BTCUSDT")
         coinList.add("BZRXUSDT")
+
         coinList.add("COMPUSDT")
         coinList.add("CRVUSDT")
+
         coinList.add("DASHUSDT")
         coinList.add("DEFIUSDT")
         coinList.add("DOGEUSDT")
         coinList.add("DOTUSDT")
+
         coinList.add("EGLDUSDT")
         coinList.add("EOSUSDT")
         coinList.add("ETCUSDT")
         coinList.add("ETHUSDT")
+
+        coinList.add("FILUSDT")
         coinList.add("FLMUSDT")
         coinList.add("FTMUSDT")
+
         coinList.add("HNTUSDT")
+
         coinList.add("ICXUSDT")
         coinList.add("IOSTUSDT")
         coinList.add("IOTAUSDT")
+
         coinList.add("KAVAUSDT")
         coinList.add("KNCUSDT")
-        coinList.add("LENDUSDT")
+
         coinList.add("LINKUSDT")
+        coinList.add("LRCUSDT")
         coinList.add("LTCUSDT")
+
         coinList.add("MKRUSDT")
+
         coinList.add("NEOUSDT")
+
         coinList.add("OMGUSDT")
         coinList.add("ONTUSDT")
+
         coinList.add("QTUMUSDT")
+
         coinList.add("RENUSDT")
         coinList.add("RLCUSDT")
+        coinList.add("RSRUSDT")
         coinList.add("RUNEUSDT")
+
         coinList.add("SNXUSDT")
         coinList.add("SOLUSDT")
         coinList.add("SRMUSDT")
         coinList.add("STORJUSDT")
         coinList.add("SUSHIUSDT")
         coinList.add("SXPUSDT")
+
         coinList.add("THETAUSDT")
         coinList.add("TOMOUSDT")
         coinList.add("TRBUSDT")
         coinList.add("TRXUSDT")
+
         coinList.add("UNIUSDT")
+
         coinList.add("VETUSDT")
+
         coinList.add("WAVESUSDT")
+
         coinList.add("XLMUSDT")
         coinList.add("XMRUSDT")
         coinList.add("XRPUSDT")
         coinList.add("XTZUSDT")
+
         coinList.add("YFIUSDT")
         coinList.add("YFIIUSDT")
+
         coinList.add("ZECUSDT")
         coinList.add("ZILUSDT")
         coinList.add("ZRXUSDT")
@@ -263,9 +287,13 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 //                getOX()
 
                 if (currentItemId != R.id.all) {
-                    getLastestRank("Range")
+                    stringBuilder.append("-------------- Volume --------------\n")
+                    getLastestRank("Volume")
                     stringBuilder.append("-------------- Rate --------------\n")
                     getLastestRank("Rate")
+                    stringBuilder.append("-------------- Range --------------\n")
+                    getLastestRank("Range")
+
 
 //                    getRank()
                 }
@@ -298,6 +326,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 list.sortBy { it.rangeInc }
             } else if (type == "Rate") {
                 list.sortBy { it.rateInc }
+            } else if (type == "Volume") {
+                list.sortByDescending { it.quoteAssetVolume }
             }
 
             var itemStr = SpannableStringBuilder()
@@ -307,7 +337,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var openTimeStr = format.format(date)
 
             itemStr.append("${openTimeStr} \n")
-            printSortedCoinList(list, itemStr)
+            printSortedCoinList(list, itemStr, type)
 
             stringBuilder.append(itemStr)
             addDivideLine()
@@ -319,7 +349,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     private fun printSortedCoinList(
         list: ArrayList<KeyLineCoin>,
-        itemStr: SpannableStringBuilder
+        itemStr: SpannableStringBuilder,
+        type: String
     ) {
         var i = 0;
         for (index in list.indices) {
@@ -330,9 +361,24 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
             var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
 
-            if (coin.quoteAssetVolume.toLong() < volumMin && candlestickInterval == CandlestickInterval.DAILY) {
-                continue
+
+            if (type == "Volume") {
+                if (index != 0) {
+                    if (coin.quoteAssetVolume.toLong() < 1_000_000 && list[index - 1].quoteAssetVolume.toLong() >= 1_000_000) {
+                        itemStr.append("-----------------------1_000_000-------------------------------\n")
+                    }
+                    if (coin.quoteAssetVolume.toLong() < 10_000_000 && list[index - 1].quoteAssetVolume.toLong() >= 10_000_000) {
+                        itemStr.append("------------------------10_000_000------------------------------\n")
+                    }
+                    if (coin.quoteAssetVolume.toLong() < 100_000_000 && list[index - 1].quoteAssetVolume.toLong() >= 100_000_000) {
+                        itemStr.append("------------------------100_000_000------------------------------\n")
+                    }
+                }
             }
+
+//            if (coin.quoteAssetVolume.toLong() < volumMin && candlestickInterval == CandlestickInterval.DAILY) {
+//                continue
+//            }
             i++;
 
             var header = "No.${i} ${coin.name} $rangePrec $ratePrec\n"
@@ -341,7 +387,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
 
 
-            if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
+            if (coin.name == "BTCUSDT" || rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(
+                    redPoint
+                )
+            ) {
                 var str = setTextColor(
                     "$header",
                     android.R.color.holo_red_light
@@ -354,7 +403,13 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 )
                 itemStr.append(str)
             } else {
-                itemStr.append(header)
+                if (type == "Volume") {
+                    continue
+                } else {
+                    itemStr.append(header)
+                }
+
+
             }
 
 //            var volumeStr = StringUtils.getFormattedVolume(coin.takerBuyBaseAssetVolume.toString()) + "\n"
@@ -368,7 +423,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 //                itemStr.append(volumeStr)
 //            }
             var volumeStr2 =
-                "           --$close | " + StringUtils.getFormattedVolume(coin.quoteAssetVolume.toString()) + "\n "
+                "           --$close | " + StringUtils.getFormattedVolume(coin.quoteAssetVolume.toString()) + "\n"
             itemStr.append(volumeStr2)
 
 

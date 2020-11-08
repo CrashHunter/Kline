@@ -184,16 +184,16 @@ class VolumeActivity : AppCompatActivity() {
                     }
 
                 }
-                if (lastMinStr.isEmpty() && BigDecimal(volumeStr) > BigDecimal.ZERO
-                ) {
-                    lastMinStr = Gson().toJson(data)
-
-                } else {
-                    var lastMin = Gson().fromJson(lastMinStr, Data::class.java)
-
-                    if (BigDecimal(lastMin.totalVolumeTotal) > BigDecimal(volumeStr) && BigDecimal(volumeStr) > BigDecimal.ZERO
-                    ) {
+                if (BigDecimal(volumeStr) > BigDecimal.ZERO) {
+                    if (lastMinStr.isEmpty()) {
                         lastMinStr = Gson().toJson(data)
+
+                    } else {
+                        var lastMin = Gson().fromJson(lastMinStr, Data::class.java)
+
+                        if (BigDecimal(lastMin.totalVolumeTotal) > BigDecimal(volumeStr)) {
+                            lastMinStr = Gson().toJson(data)
+                        }
                     }
                 }
             }
