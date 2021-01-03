@@ -82,19 +82,24 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         coinList.add("AAVEUSDT")
         coinList.add("ADAUSDT")
         coinList.add("ALGOUSDT")
+        coinList.add("ALPHAUSDT")
         coinList.add("ATOMUSDT")
         coinList.add("AVAXUSDT")
+        coinList.add("AXSUSDT")
 
         coinList.add("BALUSDT")
         coinList.add("BANDUSDT")
         coinList.add("BATUSDT")
         coinList.add("BCHUSDT")
+        coinList.add("BELUSDT")
         coinList.add("BNBUSDT")
         coinList.add("BTCUSDT")
         coinList.add("BZRXUSDT")
 
         coinList.add("COMPUSDT")
         coinList.add("CRVUSDT")
+        coinList.add("CTKUSDT")
+        coinList.add("CVCUSDT")
 
         coinList.add("DASHUSDT")
         coinList.add("DEFIUSDT")
@@ -123,10 +128,12 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         coinList.add("LRCUSDT")
         coinList.add("LTCUSDT")
 
+        coinList.add("MATICUSDT")
         coinList.add("MKRUSDT")
 
         coinList.add("NEOUSDT")
 
+        coinList.add("OCEANUSDT")
         coinList.add("OMGUSDT")
         coinList.add("ONTUSDT")
 
@@ -164,6 +171,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         coinList.add("YFIIUSDT")
 
         coinList.add("ZECUSDT")
+        coinList.add("ZENUSDT")
         coinList.add("ZILUSDT")
         coinList.add("ZRXUSDT")
     }

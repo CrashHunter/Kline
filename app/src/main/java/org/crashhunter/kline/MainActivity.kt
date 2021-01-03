@@ -56,13 +56,14 @@ class MainActivity : AppCompatActivity() {
     //not in binance
     var notBinance = arrayListOf(
 
-        "ZB", "HT", "OKB", "SNT", "SEELE",
-        "MOF", "XMX", "GRIN", "XEM", "HYC",
-        "YOU", "SXP", "INB", "BSV", "LOOM",
-        "AE", "BTM", "VALOR", "WICC", "TRUE",
-        "BNT", "ELF", "BCV", "EKT", "OCEAN",
-        "ABBC", "LAMB", "BTG", "CRO", "KCS",
-        "NEXO", "REP", "BCD", "XZC", "MONA"
+//        "ZB", "HT", "OKB", "SNT", "SEELE",
+//        "MOF", "XMX", "GRIN", "XEM", "HYC",
+//        "YOU", "INB", "BSV", "LOOM",
+//        "AE", "BTM", "VALOR", "WICC", "TRUE",
+//        "BNT", "ELF", "BCV", "EKT", "OCEAN",
+//        "ABBC", "LAMB", "BTG", "CRO", "KCS",
+//        "NEXO", "REP", "BCD", "XZC", "MONA"
+    ""
     )
 
 //    var foreignList = arrayListOf(
