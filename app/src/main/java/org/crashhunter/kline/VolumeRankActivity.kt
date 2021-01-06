@@ -16,6 +16,7 @@ import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.enums.CandlestickInterval
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_volume.*
+import kotlinx.coroutines.*
 import org.crashhunter.kline.data.SharedPreferenceUtil
 import retrofit2.Call
 import retrofit2.Callback
@@ -27,6 +28,7 @@ import retrofit2.http.Query
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.system.measureTimeMillis
 
 
 class VolumeRankActivity : AppCompatActivity() {
@@ -48,16 +50,38 @@ class VolumeRankActivity : AppCompatActivity() {
         tvTitle.text = "loading"
 
         setCoinList()
-        getAllData()
+
+        GlobalScope.launch {
+
+            async {
 
 
-    }
+            }
+            val time = measureTimeMillis {
+                withContext(Dispatchers.IO) {
+                    for (coin in coinList) {
+                        async {
+                            getData(coin)
+                        }
+                    }
+                }
+            }
+            runOnUiThread {
 
-    private fun getAllData() {
+                tvTitle.text = time.toString()
+            }
 
-        for (coin in coinList){
-            getData(coin)
+
         }
+
+//        object : Thread() {
+//            override fun run() {
+//                super.run()
+//                getAllData()
+//            }
+//        }.start()
+
+
     }
 
     private fun setCoinList() {
@@ -150,6 +174,18 @@ class VolumeRankActivity : AppCompatActivity() {
         coinList.add("ZRX")
     }
 
+    private fun getAllData() {
+
+        for (coin in coinList) {
+            getData(coin)
+        }
+
+        runOnUiThread {
+            tvTitle.text = allStr
+        }
+    }
+
+
     fun getTodayStartTime(): Long {
         val calendar = Calendar.getInstance()
         calendar.time = Date()
@@ -172,7 +208,7 @@ class VolumeRankActivity : AppCompatActivity() {
     }
 
 
-    private fun getData(coin: String) {
+    private  fun getData(coin: String): Int {
 
 //        var coinVolumeJsonStr =
 //            SharedPreferenceUtil.loadData(AppController.instance.applicationContext, coin)
@@ -198,10 +234,13 @@ class VolumeRankActivity : AppCompatActivity() {
 
 
         getFromAPi(coin)
+        return 0
     }
 
     private fun getFromAPi(coin: String) {
-        tvTitle.text = "loading"
+        runOnUiThread {
+            tvTitle.text = "loading $coin"
+        }
         val retrofit = Retrofit.Builder()
             .baseUrl("https://min-api.cryptocompare.com/data/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -211,8 +250,10 @@ class VolumeRankActivity : AppCompatActivity() {
 
 
         val call: Call<CoinVolume?>? = service.queryVolume2(coin)
-
-
+//        var response = call!!.execute()
+//        var datas = response.body()?.data!!
+//        var coinVolumeJsonStr = Gson().toJson(response.body())
+//        showData(coin, datas)
         call!!.enqueue(object : Callback<CoinVolume?> {
 
             override fun onResponse(call: Call<CoinVolume?>, response: Response<CoinVolume?>) {
@@ -362,7 +403,7 @@ class VolumeRankActivity : AppCompatActivity() {
         )
 
         allStr.append(str)
-        tvTitle.text = allStr
+
     }
 
     private fun findMaxAndMin(coin: String, volumeStr: String) {

@@ -542,7 +542,7 @@ class MainActivity : AppCompatActivity() {
         } else if (item.volume.toBigDecimal() >= BigDecimal(1 * 10000 * 10000)) {
             ALevel.add(item.name)
         } else if (item.volume.toBigDecimal() >= BigDecimal(2 * 1000 * 10000)) {
-            if (BLevel.size < 10) {
+            if (BLevel.size < 20) {
                 BLevel.add(item.name)
             }
         }
