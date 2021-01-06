@@ -51,35 +51,35 @@ class VolumeRankActivity : AppCompatActivity() {
 
         setCoinList()
 
-        GlobalScope.launch {
-
-            async {
-
-
-            }
-            val time = measureTimeMillis {
-                withContext(Dispatchers.IO) {
-                    for (coin in coinList) {
-                        async {
-                            getData(coin)
-                        }
-                    }
-                }
-            }
-            runOnUiThread {
-
-                tvTitle.text = time.toString()
-            }
-
-
-        }
-
-//        object : Thread() {
-//            override fun run() {
-//                super.run()
-//                getAllData()
+//        GlobalScope.launch {
+//
+//            async {
+//
+//
 //            }
-//        }.start()
+//            val time = measureTimeMillis {
+//                withContext(Dispatchers.IO) {
+//                    for (coin in coinList) {
+//                        async {
+//                            getData(coin)
+//                        }
+//                    }
+//                }
+//            }
+//            runOnUiThread {
+//
+//                tvTitle.text = time.toString()
+//            }
+
+
+//        }
+
+        object : Thread() {
+            override fun run() {
+                super.run()
+                getAllData()
+            }
+        }.start()
 
 
     }
@@ -292,28 +292,30 @@ class VolumeRankActivity : AppCompatActivity() {
             "${coin}-Min"
         )
 
-        if (lastMaxStr.isNotEmpty() && lastMinStr.isNotEmpty()) {
-            var lastMax = Gson().fromJson(lastMaxStr, Data::class.java)
-            var lastMin = Gson().fromJson(lastMinStr, Data::class.java)
-
-            val date = Date(lastMax.time.toLong() * 1000)
-            val format = SimpleDateFormat("yyyy.MM.dd")
-            var day = format.format(date)
-
-            str.append("Max: ${day} : ${lastMax.totalVolumeTotal.getMoneyFormat()} \n")
-
-            val date2 = Date(lastMin.time.toLong() * 1000)
-            var day2 = format.format(date2)
-
-            str.append("Min: ${day2} : ${lastMin.totalVolumeTotal.getMoneyFormat()} \n")
-        }
+//        if (lastMaxStr.isNotEmpty() && lastMinStr.isNotEmpty()) {
+//            var lastMax = Gson().fromJson(lastMaxStr, Data::class.java)
+//            var lastMin = Gson().fromJson(lastMinStr, Data::class.java)
+//
+//            val date = Date(lastMax.time.toLong() * 1000)
+//            val format = SimpleDateFormat("yyyy.MM.dd")
+//            var day = format.format(date)
+//
+//            str.append("Max: ${day} : ${lastMax.totalVolumeTotal.getMoneyFormat()} \n")
+//
+//            val date2 = Date(lastMin.time.toLong() * 1000)
+//            var day2 = format.format(date2)
+//
+//            str.append("Min: ${day2} : ${lastMin.totalVolumeTotal.getMoneyFormat()} \n")
+//        }
 
 
         var preVolumeStr = ""
 
 
         for (index in datas.indices) {
-
+            if (index==datas.size-1){
+                return
+            }
 
             var data = datas.get(index)
             var rateSpan = SpannableStringBuilder("")
@@ -403,6 +405,9 @@ class VolumeRankActivity : AppCompatActivity() {
         )
 
         allStr.append(str)
+        runOnUiThread {
+            tvTitle.text = allStr
+        }
 
     }
 
