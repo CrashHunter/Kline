@@ -5,22 +5,14 @@ import Data
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.alibaba.fastjson.JSON
-import com.binance.client.RequestOptions
-import com.binance.client.SyncRequestClient
-import com.binance.client.examples.constants.PrivateConfig
-import com.binance.client.model.enums.CandlestickInterval
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_volume.*
 import kotlinx.coroutines.*
 import org.crashhunter.kline.data.SharedPreferenceUtil
 import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -35,7 +27,7 @@ import kotlin.system.measureTimeMillis
 class VolumeRankActivity : AppCompatActivity() {
 
     var coinList = ArrayList<String>()
-
+    var coinsVolume = ArrayList<CoinVolume>()
     var allStr = SpannableStringBuilder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,55 +47,69 @@ class VolumeRankActivity : AppCompatActivity() {
         GlobalScope.launch {
 
 
-
             val time = measureTimeMillis {
-                val sum =  withContext(Dispatchers.IO) {
+                val sum = withContext(Dispatchers.IO) {
                     var amount = 0
-                    var n  = ArrayList<Deferred<Int>>(10)
-                    n.add(Deferred)
+//                    var n  = ArrayList<Deferred<Int>>(10)
+//                    n.add(Deferred)
                     for (index in coinList.indices) {
-                         n[index] = async {
+                        var n = async {
                             getData2(coinList[index])
                         }
                     }
-                    for(x in n){
-                        amount+=x.await()
-                    }
+//                    for(x in n){
+//                        amount+=x.await()
+//                    }
+//                    amount+=x.await()
                     amount
                 }
-                Log.d("sss",sum.toString())
+                Log.d("sss", sum.toString())
             }
-            Log.d("sss",time.toString())
+            Log.d("sss", time.toString())
             runOnUiThread {
 
+                coinsVolume.sortByDescending {
+                    if (it.data.size > 2) {
+                        it.data[it.data.size - 2].divide
+                    }else{
+                        it.data[it.data.size - 1].divide
+                    }
+                }
+
+                for (coin in coinsVolume) {
+                    Log.d("sss", "${coin.coinName} ${coin.data.size}")
+                    showData(coin.coinName, coin)
+                }
+                Log.d("sss", " tvTitle.text = allStr")
                 tvTitle.text = allStr
             }
 
 
         }
 
-        //object : Thread() {
-        //    override fun run() {
-        //        super.run()
-        //        getAllData()
-        //    }
-        //}.start()
-
 
     }
 
-    suspend fun getData2(coin: String): Int {
-        val retrofit = Retrofit.Builder()
+    private suspend fun getData2(coinName: String): Int {
+        try {
+            val retrofit = Retrofit.Builder()
                 .baseUrl("https://min-api.cryptocompare.com/data/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
 
-        val service = retrofit.create(KlineService::class.java)
-        val call: Call<CoinVolume?>? = service.queryVolume2(coin)
-        var response = call!!.execute()
-        var datas = response.body()?.data!!
-        Log.d("sss","showData:$coin")
-        showData(coin, datas)
+            val service = retrofit.create(KlineService::class.java)
+            val call: Call<CoinVolume?>? = service.queryVolume2(coinName)
+            var response = call!!.execute()
+            var datas = response.body()?.data!!
+            Log.d("sss", "showData:$coinName")
+            var coin = response.body()
+            coin!!.coinName = coinName
+            coinsVolume.add(coin)
+            calculateDivide(coinName, coin)
+        } catch (e: Exception) {
+            Log.e("sss", coinName + ":" + e.localizedMessage)
+        }
+
         return 1
     }
 
@@ -198,109 +204,43 @@ class VolumeRankActivity : AppCompatActivity() {
         coinList.add("ZRX")
     }
 
-    private fun getAllData() {
-
-        for (coin in coinList) {
-            getData(coin)
-        }
-
-        runOnUiThread {
-            tvTitle.text = allStr
-        }
-    }
+    private fun calculateDivide(coin: String, coinVolume: CoinVolume) {
 
 
-    fun getTodayStartTime(): Long {
-        val calendar = Calendar.getInstance()
-        calendar.time = Date()
-        calendar[Calendar.HOUR_OF_DAY] = 0
-        calendar[Calendar.MINUTE] = 0
-        calendar[Calendar.SECOND] = 0
-        return calendar.time.time
-    }
+        var preVolumeStr = ""
+        var datas = coinVolume.data
 
-    private fun getStartTimeOfDay(timeZone: String): Long {
-        val tz = if (TextUtils.isEmpty(timeZone)) "GMT+8" else timeZone
-        val curTimeZone = TimeZone.getTimeZone(tz)
-        val calendar = Calendar.getInstance(curTimeZone)
-        calendar.timeInMillis = System.currentTimeMillis()
-        calendar[Calendar.HOUR_OF_DAY] = 24
-        calendar[Calendar.MINUTE] = 0
-        calendar[Calendar.SECOND] = 0
-        calendar[Calendar.MILLISECOND] = 0
-        return calendar.timeInMillis
-    }
-
-
-    private  fun getData(coin: String): Int {
-
-//        var coinVolumeJsonStr =
-//            SharedPreferenceUtil.loadData(AppController.instance.applicationContext, coin)
-//        if (coinVolumeJsonStr.isNotEmpty()) {
-//            var coinVolumeSpData = Gson().fromJson(
-//                coinVolumeJsonStr, CoinVolume::class.java
-//            )
-//
-//
-//            val date = Date(coinVolumeSpData.timeTo.toLong() * 1000)
-//            val format = SimpleDateFormat("yyyy.MM.dd")
-//            var spDayStr = format.format(date)
-//
-//            val currentDay = Date(getTodayStartTime())
-//            var currentDayStr = format.format(currentDay)
-//
-//
-//            if (spDayStr == currentDayStr) {
-//                showData(coin, coinVolumeSpData.data)
-//                return
-//            }
-//        }
-
-
-        getFromAPi(coin)
-        return 0
-    }
-
-    private fun getFromAPi(coin: String) {
-        runOnUiThread {
-            tvTitle.text = "loading $coin"
-        }
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://min-api.cryptocompare.com/data/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val service = retrofit.create(KlineService::class.java)
-
-
-        val call: Call<CoinVolume?>? = service.queryVolume2(coin)
-//        var response = call!!.execute()
-//        var datas = response.body()?.data!!
-//        var coinVolumeJsonStr = Gson().toJson(response.body())
-//        showData(coin, datas)
-        call!!.enqueue(object : Callback<CoinVolume?> {
-
-            override fun onResponse(call: Call<CoinVolume?>, response: Response<CoinVolume?>) {
-                var datas = response.body()?.data!!
-                var coinVolumeJsonStr = Gson().toJson(response.body())
-//                SharedPreferenceUtil.saveData(
-//                    AppController.instance.applicationContext,
-//                    coin,
-//                    coinVolumeJsonStr
-//                )
-                showData(coin, datas)
-
+        for (index in datas.indices) {
+            if (index == datas.size - 1) {
+                break
             }
 
-            override fun onFailure(call: Call<CoinVolume?>, t: Throwable) {
+            var data = datas.get(index)
+            var volumeStr = data.totalVolumeTotal
 
-                tvTitle.text = t.localizedMessage
+
+            if (!preVolumeStr.isEmpty() && preVolumeStr.toBigDecimal() > BigDecimal.ZERO) {
+
+                var preValue = preVolumeStr.toBigDecimal()
+                var currentValue = volumeStr.toBigDecimal()
+
+                var diff = currentValue.minus(preValue)
+
+
+                var divide = diff.divide(preValue, 4, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
+
+                data.divide = divide
+
 
             }
-        })
+            preVolumeStr = volumeStr
+
+        }
+
+
     }
 
-    private fun showData(coin: String, datas: List<Data>) {
+    private fun showData(coin: String, coinVolume: CoinVolume) {
 //        tvTitle.text = ""
         var str = SpannableStringBuilder()
         //                str.append(response.raw().body?.string() + " \n")
@@ -334,11 +274,11 @@ class VolumeRankActivity : AppCompatActivity() {
 
 
         var preVolumeStr = ""
-
+        var datas = coinVolume.data
 
         for (index in datas.indices) {
-            if (index==datas.size-1){
-                return
+            if (index == datas.size - 1) {
+                break
             }
 
             var data = datas.get(index)
@@ -429,9 +369,6 @@ class VolumeRankActivity : AppCompatActivity() {
         )
 
         allStr.append(str)
-        runOnUiThread {
-            tvTitle.text = allStr
-        }
 
     }
 
@@ -463,17 +400,6 @@ class VolumeRankActivity : AppCompatActivity() {
 
     private fun initAction() {
 
-        request.setOnClickListener {
-
-            var coin = etCoin.text.toString()
-
-            if (coin.isNotEmpty()) {
-
-                getData(coin)
-            }
-
-
-        }
 
     }
 

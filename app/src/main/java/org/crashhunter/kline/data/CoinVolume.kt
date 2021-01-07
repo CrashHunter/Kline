@@ -1,12 +1,14 @@
 import android.annotation.SuppressLint
-import android.icu.math.BigDecimal
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
+import java.math.BigDecimal
 
 @SuppressLint("ParcelCreator")
 @Parcelize
 data class CoinVolume(
+    var coinName: String = "",
+
     @SerializedName("ConversionType")
     var conversionType: String = "", // direct
     @SerializedName("Data")
@@ -30,6 +32,7 @@ data class CoinVolume(
 @SuppressLint("ParcelCreator")
 @Parcelize
 data class Data(
+    var divide: BigDecimal = BigDecimal.ZERO,
     @SerializedName("cccagg_volume_base")
     var cccaggVolumeBase: String = "", // 952775.38
     @SerializedName("cccagg_volume_quote")
