@@ -28,6 +28,7 @@ import retrofit2.http.Query
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.system.measureTimeMillis
 
 
@@ -51,38 +52,61 @@ class VolumeRankActivity : AppCompatActivity() {
 
         setCoinList()
 
-//        GlobalScope.launch {
-//
-//            async {
-//
-//
-//            }
-//            val time = measureTimeMillis {
-//                withContext(Dispatchers.IO) {
-//                    for (coin in coinList) {
-//                        async {
-//                            getData(coin)
-//                        }
-//                    }
-//                }
-//            }
-//            runOnUiThread {
-//
-//                tvTitle.text = time.toString()
-//            }
+        GlobalScope.launch {
 
 
-//        }
 
-        object : Thread() {
-            override fun run() {
-                super.run()
-                getAllData()
+            val time = measureTimeMillis {
+                val sum =  withContext(Dispatchers.IO) {
+                    var amount = 0
+                    var n  = ArrayList<Deferred<Int>>(10)
+                    n.add(Deferred)
+                    for (index in coinList.indices) {
+                         n[index] = async {
+                            getData2(coinList[index])
+                        }
+                    }
+                    for(x in n){
+                        amount+=x.await()
+                    }
+                    amount
+                }
+                Log.d("sss",sum.toString())
             }
-        }.start()
+            Log.d("sss",time.toString())
+            runOnUiThread {
+
+                tvTitle.text = allStr
+            }
+
+
+        }
+
+        //object : Thread() {
+        //    override fun run() {
+        //        super.run()
+        //        getAllData()
+        //    }
+        //}.start()
 
 
     }
+
+    suspend fun getData2(coin: String): Int {
+        val retrofit = Retrofit.Builder()
+                .baseUrl("https://min-api.cryptocompare.com/data/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+
+        val service = retrofit.create(KlineService::class.java)
+        val call: Call<CoinVolume?>? = service.queryVolume2(coin)
+        var response = call!!.execute()
+        var datas = response.body()?.data!!
+        Log.d("sss","showData:$coin")
+        showData(coin, datas)
+        return 1
+    }
+
 
     private fun setCoinList() {
         coinList.add("AAVE")
