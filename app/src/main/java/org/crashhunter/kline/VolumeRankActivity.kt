@@ -45,8 +45,6 @@ class VolumeRankActivity : AppCompatActivity() {
         setCoinList()
 
         GlobalScope.launch {
-
-
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
                     var amount = 0
@@ -102,6 +100,11 @@ class VolumeRankActivity : AppCompatActivity() {
             var response = call!!.execute()
             var datas = response.body()?.data!!
             Log.d("sss", "showData:$coinName")
+            runOnUiThread {
+
+                tvTitle.text = "Got $coinName"
+
+            }
             var coin = response.body()
             coin!!.coinName = coinName
             coinsVolume.add(coin)
