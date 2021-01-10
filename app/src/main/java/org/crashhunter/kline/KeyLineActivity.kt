@@ -549,7 +549,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 //                    var n  = ArrayList<Deferred<Int>>(10)
 //                    n.add(Deferred)
                     for (coin in coinList) {
-                        var n = getCoinInfo(coin)
+                        var n = async{
+                            getCoinInfo(coin)
+                        }
                     }
 //                    for(x in n){
 //                        amount+=x.await()

@@ -2,6 +2,7 @@ package org.crashhunter.kline
 
 import CoinVolume
 import Data
+import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -10,6 +11,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_volume.*
+import kotlinx.android.synthetic.main.activity_volume.tvTitle
+import kotlinx.android.synthetic.main.activity_volume_rank.*
 import kotlinx.coroutines.*
 import org.crashhunter.kline.data.SharedPreferenceUtil
 import retrofit2.Call
@@ -34,7 +37,7 @@ class VolumeRankActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
 
-        setContentView(R.layout.activity_volume)
+        setContentView(R.layout.activity_volume_rank)
 
 
         initAction()
@@ -402,7 +405,11 @@ class VolumeRankActivity : AppCompatActivity() {
 
 
     private fun initAction() {
+        Single?.setOnClickListener {
 
+            startActivity(Intent(this,VolumeActivity::class.java))
+
+        }
 
     }
 
