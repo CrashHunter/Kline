@@ -53,4 +53,10 @@
         android:visible="false"
         app:showAsAction="always"
         />
+
+    <item
+        android:id="@+id/DA"
+        android:title="DA"
+        app:showAsAction="always"
+        />
 </menu>

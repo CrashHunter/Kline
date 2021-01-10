@@ -1,5 +1,6 @@
 package org.crashhunter.kline
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -78,7 +79,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
         setCoinList()
 
-        getAllInterval()
+//        getAllInterval()
 
     }
 
@@ -274,6 +275,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 header.text = "All"
                 candlestickIntervalList.clear()
                 getAllInterval()
+            }
+            R.id.DA -> {
+                startActivity(Intent(this,DataAnalysisActivity::class.java))
             }
 
             else -> {
