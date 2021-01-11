@@ -88,12 +88,13 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
                 Log.d("sss", sum.toString())
             }
             Log.d("sss", time.toString())
-
-            stringBuilder.append("Total $total  Win $positive  Rate: ${positive / total.toDouble()}")
-
+            var finabuild = SpannableStringBuilder()
+            finabuild.append("Total $total  Win $winCount  Rate: ${winCount / total.toDouble()}\n")
+            finabuild.append("Avg.Win ${totalWinRate / BigDecimal(winCount)}%  Avg.Lose: ${totalLoseRate / BigDecimal(loseCount)}%\n\n")
+            finabuild.append(stringBuilder)
             runOnUiThread {
                 tvTitle.text = ""
-                tvTitle.text = stringBuilder
+                tvTitle.text = finabuild
                 forceRefresh = false
                 swipeRefresh.isRefreshing = false
             }
@@ -229,7 +230,12 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
 
     var total = 0;
-    var positive = 0;
+    var winCount = 0;
+    var totalWinRate = BigDecimal.ZERO;
+
+    var loseCount = 0;
+    var totalLoseRate = BigDecimal.ZERO;
+
     private fun getTarget(list: ArrayList<KeyLineCoin>) {
 
         for (index in list.indices) {
@@ -283,7 +289,16 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
             var nextCoin = list[index + 1]
             var nextRateInc = list[index + 1].rateInc
             if (nextRateInc > BigDecimal.ZERO) {
-                positive++
+                winCount++
+                totalWinRate += nextRateInc
+                var itemStr = buildTxt(nextCoin)
+
+                stringBuilder.append("      ")
+                stringBuilder.append(itemStr)
+                stringBuilder.append("\n")
+            } else {
+                loseCount++
+                totalLoseRate += nextRateInc
 
                 var itemStr = buildTxt(nextCoin)
 
@@ -371,7 +386,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
             }
             CandlestickInterval.WEEKLY -> {
                 rate = 4
-                historyRange = 7
+                historyRange = 24
             }
             CandlestickInterval.MONTHLY -> {
                 rate = 5
