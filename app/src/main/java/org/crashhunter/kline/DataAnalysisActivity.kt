@@ -13,9 +13,7 @@ import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
-import kotlinx.android.synthetic.main.activity_data_analysis.startTime
-import kotlinx.android.synthetic.main.activity_data_analysis.swipeRefresh
-import kotlinx.android.synthetic.main.activity_data_analysis.tvTitle
+import kotlinx.android.synthetic.main.activity_data_analysis.*
 import kotlinx.coroutines.*
 import org.crashhunter.kline.data.KeyLineCoin
 import org.crashhunter.kline.data.SharedPreferenceUtil
@@ -46,14 +44,26 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
         swipeRefresh.setOnRefreshListener(this)
 
         candlestickIntervalList.add(CandlestickInterval.MONTHLY)
+        setPointAndRange(candlestickInterval)
+        initAction()
 
         getData()
 
     }
 
+    private fun initAction() {
+        request.setOnClickListener {
+
+            getData()
+
+        }
+    }
+
     private fun getData() {
         stringBuilder = SpannableStringBuilder()
         tvTitle.text = "Loading..."
+
+        rate = tvRate.text.toString().toInt()
 
         object : Thread() {
             override fun run() {
@@ -66,6 +76,12 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
     }
 
     private fun getAllCoins() {
+        total = 0;
+        winCount = 0;
+        totalWinRate = BigDecimal.ZERO;
+
+        loseCount = 0;
+        totalLoseRate = BigDecimal.ZERO;
 
         GlobalScope.launch {
             val time = measureTimeMillis {
@@ -126,7 +142,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
         for (item in candlestickIntervalList) {
             candlestickInterval = item
-            setPointAndRange(candlestickInterval)
+
             runOnUiThread {
                 tvTitle.text = "Loading... $coin $candlestickInterval"
             }
@@ -325,17 +341,17 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
     private fun getCoinKlineData(coin: String): List<Candlestick> {
         TimeUtils.stringToLong("2020-7-27 08:00", "yyyy-MM-dd HH:mm")
 
-        var startTimeLong: Long? = null
-        var startTimeStr = startTime.text.toString()
-        if (startTimeStr.isNotEmpty() && !startTimeStr.contains("XX")) {
-            startTimeLong = TimeUtils.stringToLong(startTimeStr, "yyyy-MM-dd HH:mm")
-        }
+        //var startTimeLong: Long? = null
+        //var startTimeStr = startTime.text.toString()
+        //if (startTimeStr.isNotEmpty() && !startTimeStr.contains("XX")) {
+        //    startTimeLong = TimeUtils.stringToLong(startTimeStr, "yyyy-MM-dd HH:mm")
+        //}
 
         try {
             var list = syncRequestClient.getCandlestick(
                     coin,
                     candlestickInterval,
-                    startTimeLong,
+                    null,
                     null,
                     historyRange
             )
