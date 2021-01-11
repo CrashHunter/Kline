@@ -29,7 +29,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
     var candlestickIntervalList = ArrayList<CandlestickInterval>()
     var stringBuilder =
-        SpannableStringBuilder()
+            SpannableStringBuilder()
     var candlestickInterval = CandlestickInterval.DAILY
     var purplePointBase = 0.5
     var redPointBase = 0.25
@@ -71,9 +71,10 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 //                    var n  = ArrayList<Deferred<Int>>(10)
 //                    n.add(Deferred)
                     for (coin in Constant.coinList) {
-                        var n = async {
-                            getCoinInfo(coin)
-                        }
+                        //var n = async {
+                        //    getCoinInfo(coin)
+                        //}
+                        getCoinInfo(coin)
                     }
 //                    for(x in n){
 //                        amount+=x.await()
@@ -85,9 +86,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
             }
             Log.d("sss", time.toString())
 
-            stringBuilder.append("-------------- Volume --------------\n")
-            getLastestRank("Volume")
-
+            stringBuilder.append("Total $total  Win $positive  Rate: ${positive / total.toDouble()}")
 
             runOnUiThread {
                 tvTitle.text = ""
@@ -100,144 +99,27 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
     }
 
-    private fun getLastestRank(type: String) {
-
-        lastestCoinsRange.sortBy { it.name }
-        var itemStr = SpannableStringBuilder()
-        printSortedCoinList(lastestCoinsRange, itemStr, type)
-        stringBuilder.append(itemStr)
-
-    }
-
 
     private fun addDivideLine() {
         var divideLine =
-            SpannableStringBuilder("------------------------------------------------------------------------\n")
+                SpannableStringBuilder("------------------------------------------------------------------------\n")
         divideLine.setSpan(
-            ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
-            0,
-            divideLine.length - 1,
-            Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
+                0,
+                divideLine.length - 1,
+                Spanned.SPAN_INCLUSIVE_INCLUSIVE
         )
         stringBuilder.append(divideLine)
     }
 
-    private fun printSortedCoinList(
-        list: ArrayList<KeyLineCoin>,
-        itemStrBuild: SpannableStringBuilder,
-        type: String
-    ) {
-        var i = 0;
-
-        var total = 0;
-        var positive = 0;
-
-        for (index in list.indices) {
-            var coin = list[index]
-
-            var close = coin.close
-            var rateInc = coin.rateInc
-
-
-            var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
-            var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
-
-
-            val date = Date(coin.openTime.toLong())
-            var format = SimpleDateFormat("MM.dd HH:mm")
-            var openTimeStr = format.format(date)
-
-            var itemStr = "No.${i} ${coin.name} $rangePrec $ratePrec  $openTimeStr\n"
-            var purplePoint = purplePointBase * rate
-            var redPoint = redPointBase * rate
-
-
-
-            if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
-                var str = setTextColor(
-                    "$itemStr",
-                    android.R.color.holo_red_light
-                )
-                itemStrBuild.append(str)
-
-                i++;
-                total++
-
-                if (index != 0) {
-                    var nextCoin = list[index-1]
-                    var nextRateInc = list[index - 1].rateInc
-                    if (nextRateInc > BigDecimal.ZERO) {
-                        positive++
-
-
-                        var ratePrec = "  ${nextCoin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
-                        var rangePrec = "  ${nextCoin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
-
-
-                        val date = Date(nextCoin.openTime.toLong())
-                        var format = SimpleDateFormat("MM.dd HH:mm")
-                        var openTimeStr = format.format(date)
-
-                        var itemStr = "No.${i} ${coin.name} $rangePrec $ratePrec  $openTimeStr\n"
-
-                        itemStrBuild.append(itemStr)
-                    }
-                }
-
-            } else if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
-                var str = setTextColor(
-                    "$itemStr",
-                    android.R.color.holo_purple
-                )
-                itemStrBuild.append(str)
-
-                i++;
-                total++
-
-                if (index != 0) {
-                    var nextCoin = list[index-1]
-                    var nextRateInc = list[index - 1].rateInc
-                    if (nextRateInc > BigDecimal.ZERO) {
-                        positive++
-
-
-                        var ratePrec = "  ${nextCoin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
-                        var rangePrec = "  ${nextCoin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
-
-
-                        val date = Date(nextCoin.openTime.toLong())
-                        var format = SimpleDateFormat("MM.dd HH:mm")
-                        var openTimeStr = format.format(date)
-
-                        var itemStr = "No.${i} ${coin.name} $rangePrec $ratePrec  $openTimeStr\n"
-
-                        itemStrBuild.append(itemStr)
-                    }
-                }
-
-
-            } else {
-                if (type == "Volume") {
-                    continue
-                } else {
-                    itemStrBuild.append(itemStr)
-                }
-
-
-            }
-
-        }
-
-        itemStrBuild.append("Total $total  Win $positive  Rate: ${positive / total.toDouble()}")
-    }
 
     private fun setTextColor(txt: String, color: Int): SpannableStringBuilder {
         var tagSpan = SpannableStringBuilder(txt)
         tagSpan.setSpan(
-            ForegroundColorSpan(getColor(color)),
-            0,
-            txt.length - 1,
-            Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                ForegroundColorSpan(getColor(color)),
+                0,
+                txt.length - 1,
+                Spanned.SPAN_INCLUSIVE_INCLUSIVE
         )
         return tagSpan
     }
@@ -245,8 +127,8 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
     var forceRefresh = false
     val options = RequestOptions()
     val syncRequestClient = SyncRequestClient.create(
-        PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
-        options
+            PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
+            options
     )
 
     private suspend fun getCoinInfo(coin: String) {
@@ -260,15 +142,16 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
             }
 
             var jsonList =
-                SharedPreferenceUtil.loadData(
-                    AppController.instance.applicationContext,
-                    "KeyLine-${coin}-$candlestickInterval"
-                )
+                    SharedPreferenceUtil.loadData(
+                            AppController.instance.applicationContext,
+                            "KeyLine-${coin}-$candlestickInterval"
+                    )
 
             if (jsonList.isNotEmpty() && !forceRefresh) {
                 var list = JSON.parseArray(jsonList, Candlestick::class.java)
 
                 collectCoinInfo(coin, list, candlestickInterval)
+
 
             } else {
                 var list = getCoinKlineData(coin)
@@ -283,11 +166,12 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
     var openTimeList = ArrayList<Long>()
 
     private fun collectCoinInfo(
-        coin: String,
-        list: List<Candlestick>,
-        candlestickInterval: CandlestickInterval
+            coin: String,
+            list: List<Candlestick>,
+            candlestickInterval: CandlestickInterval
     ) {
 
+        var keyLineCoins = ArrayList<KeyLineCoin>()
         for (index in list.indices) {
             var item = list[index]
 
@@ -346,9 +230,88 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
                 openTimeList.add(item.openTime)
             }
 
+            keyLineCoins.add(coinrange);
 
         }
 
+        getTarget(keyLineCoins)
+
+    }
+
+
+    var total = 0;
+    var positive = 0;
+    private fun getTarget(list: ArrayList<KeyLineCoin>) {
+
+        for (index in list.indices) {
+
+            if (index==list.size-1){
+                break
+            }
+
+            var coin = list[index]
+
+            var rateInc = coin.rateInc
+
+            var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
+            var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
+
+
+            val date = Date(coin.openTime.toLong())
+            var format = SimpleDateFormat("MM.dd HH:mm")
+            var openTimeStr = format.format(date)
+
+            var itemStr = " ${coin.name} $rangePrec $ratePrec  $openTimeStr\n"
+            var purplePoint = purplePointBase * rate
+            var redPoint = redPointBase * rate
+
+
+
+            if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
+                var str = setTextColor(
+                        "$itemStr",
+                        android.R.color.holo_red_light
+                )
+                stringBuilder.append(str)
+
+                total++
+
+                compareNext(index, list, coin)
+
+            } else if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
+                var str = setTextColor(
+                        "$itemStr",
+                        android.R.color.holo_purple
+                )
+                stringBuilder.append(str)
+
+                total++
+
+                compareNext(index, list, coin)
+            }
+        }
+    }
+
+    private fun compareNext(index: Int, list: ArrayList<KeyLineCoin>, coin: KeyLineCoin) {
+        if (index != list.size - 1) {
+            var nextCoin = list[index + 1]
+            var nextRateInc = list[index + 1].rateInc
+            if (nextRateInc > BigDecimal.ZERO) {
+                positive++
+
+                var ratePrec = "  ${nextCoin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
+                var rangePrec = "  ${nextCoin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
+
+
+                val date = Date(nextCoin.openTime.toLong())
+                var format = SimpleDateFormat("MM.dd HH:mm")
+                var openTimeStr = format.format(date)
+
+                var itemStr = "No.${total} ${coin.name} $rangePrec $ratePrec  $openTimeStr\n"
+
+                stringBuilder.append(itemStr)
+            }
+        }
     }
 
     private fun getCoinKlineData(coin: String): List<Candlestick> {
@@ -362,19 +325,19 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
         try {
             var list = syncRequestClient.getCandlestick(
-                coin,
-                candlestickInterval,
-                startTimeLong,
-                null,
-                historyRange
+                    coin,
+                    candlestickInterval,
+                    startTimeLong,
+                    null,
+                    historyRange
             )
             Log.d("sss", "showData:$coin")
 
             //Log.d("sss", list.toString())
             SharedPreferenceUtil.saveData(
-                AppController.instance.applicationContext,
-                "KeyLine-${coin}-$candlestickInterval",
-                JSON.toJSONString(list)
+                    AppController.instance.applicationContext,
+                    "KeyLine-${coin}-$candlestickInterval",
+                    JSON.toJSONString(list)
             )
             return list
         } catch (e: Exception) {
@@ -419,7 +382,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
             }
             CandlestickInterval.MONTHLY -> {
                 rate = 5
-                historyRange = 7
+                historyRange = 24
             }
 
         }
