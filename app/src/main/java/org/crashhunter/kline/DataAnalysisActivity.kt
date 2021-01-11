@@ -14,6 +14,10 @@ import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
 import kotlinx.android.synthetic.main.activity_data_analysis.*
+import kotlinx.android.synthetic.main.activity_data_analysis.startTime
+import kotlinx.android.synthetic.main.activity_data_analysis.swipeRefresh
+import kotlinx.android.synthetic.main.activity_data_analysis.tvTitle
+import kotlinx.android.synthetic.main.activity_key_line.*
 import kotlinx.coroutines.*
 import org.crashhunter.kline.data.KeyLineCoin
 import org.crashhunter.kline.data.SharedPreferenceUtil
@@ -26,6 +30,8 @@ import kotlin.collections.ArrayList
 import kotlin.system.measureTimeMillis
 
 class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
+
+    var forceRefresh = false
 
     var candlestickIntervalList = ArrayList<CandlestickInterval>()
     var stringBuilder =
@@ -40,7 +46,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_data_analysis)
-
+        swipeRefresh.setOnRefreshListener(this)
 
         candlestickIntervalList.add(CandlestickInterval.MONTHLY)
 
@@ -124,7 +130,6 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
         return tagSpan
     }
 
-    var forceRefresh = false
     val options = RequestOptions()
     val syncRequestClient = SyncRequestClient.create(
             PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
@@ -258,7 +263,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
 
             val date = Date(coin.openTime.toLong())
-            var format = SimpleDateFormat("MM.dd HH:mm")
+            var format = SimpleDateFormat("yyyy MM.dd HH:mm")
             var openTimeStr = format.format(date)
 
             var itemStr = " ${coin.name} $rangePrec $ratePrec  $openTimeStr\n"
@@ -268,24 +273,28 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
 
             if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
+
+                total++
+
                 var str = setTextColor(
                         "$itemStr",
                         android.R.color.holo_red_light
                 )
+                stringBuilder.append("No.${total}")
                 stringBuilder.append(str)
-
-                total++
 
                 compareNext(index, list, coin)
 
             } else if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
+
+                total++
+
                 var str = setTextColor(
                         "$itemStr",
                         android.R.color.holo_purple
                 )
+                stringBuilder.append("No.${total}")
                 stringBuilder.append(str)
-
-                total++
 
                 compareNext(index, list, coin)
             }
@@ -304,10 +313,10 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
 
                 val date = Date(nextCoin.openTime.toLong())
-                var format = SimpleDateFormat("MM.dd HH:mm")
+                var format = SimpleDateFormat("yyyy MM.dd HH:mm")
                 var openTimeStr = format.format(date)
 
-                var itemStr = "No.${total} ${coin.name} $rangePrec $ratePrec  $openTimeStr\n"
+                var itemStr = " ${coin.name} $rangePrec $ratePrec  $openTimeStr\n\n"
 
                 stringBuilder.append(itemStr)
             }
@@ -389,6 +398,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
     }
 
     override fun onRefresh() {
+        forceRefresh = true
         getData()
     }
 
