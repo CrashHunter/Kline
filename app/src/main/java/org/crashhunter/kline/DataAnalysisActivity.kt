@@ -13,11 +13,9 @@ import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
-import kotlinx.android.synthetic.main.activity_data_analysis.*
 import kotlinx.android.synthetic.main.activity_data_analysis.startTime
 import kotlinx.android.synthetic.main.activity_data_analysis.swipeRefresh
 import kotlinx.android.synthetic.main.activity_data_analysis.tvTitle
-import kotlinx.android.synthetic.main.activity_key_line.*
 import kotlinx.coroutines.*
 import org.crashhunter.kline.data.KeyLineCoin
 import org.crashhunter.kline.data.SharedPreferenceUtil
@@ -34,8 +32,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
     var forceRefresh = false
 
     var candlestickIntervalList = ArrayList<CandlestickInterval>()
-    var stringBuilder =
-            SpannableStringBuilder()
+    var stringBuilder = SpannableStringBuilder()
     var candlestickInterval = CandlestickInterval.DAILY
     var purplePointBase = 0.5
     var redPointBase = 0.25
@@ -103,19 +100,6 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
         }
 
-    }
-
-
-    private fun addDivideLine() {
-        var divideLine =
-                SpannableStringBuilder("------------------------------------------------------------------------\n")
-        divideLine.setSpan(
-                ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
-                0,
-                divideLine.length - 1,
-                Spanned.SPAN_INCLUSIVE_INCLUSIVE
-        )
-        stringBuilder.append(divideLine)
     }
 
 
@@ -250,7 +234,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
         for (index in list.indices) {
 
-            if (index==list.size-1){
+            if (index == list.size - 1) {
                 break
             }
 
@@ -258,15 +242,8 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
             var rateInc = coin.rateInc
 
-            var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
-            var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
+            var itemStr = buildTxt(coin)
 
-
-            val date = Date(coin.openTime.toLong())
-            var format = SimpleDateFormat("yyyy MM.dd HH:mm")
-            var openTimeStr = format.format(date)
-
-            var itemStr = " ${coin.name} $rangePrec $ratePrec  $openTimeStr\n"
             var purplePoint = purplePointBase * rate
             var redPoint = redPointBase * rate
 
@@ -308,19 +285,26 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
             if (nextRateInc > BigDecimal.ZERO) {
                 positive++
 
-                var ratePrec = "  ${nextCoin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
-                var rangePrec = "  ${nextCoin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
+                var itemStr = buildTxt(nextCoin)
 
-
-                val date = Date(nextCoin.openTime.toLong())
-                var format = SimpleDateFormat("yyyy MM.dd HH:mm")
-                var openTimeStr = format.format(date)
-
-                var itemStr = " ${coin.name} $rangePrec $ratePrec  $openTimeStr\n\n"
-
+                stringBuilder.append("      ")
                 stringBuilder.append(itemStr)
+                stringBuilder.append("\n")
             }
         }
+    }
+
+    private fun buildTxt(keyLineCoin: KeyLineCoin): String {
+        var ratePrec = "  ${keyLineCoin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
+        var rangePrec = "  ${keyLineCoin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
+
+
+        val date = Date(keyLineCoin.openTime.toLong())
+        var format = SimpleDateFormat("yyyy.MM.dd")
+        var openTimeStr = format.format(date)
+
+        var itemStr = " ${keyLineCoin.name} $rangePrec $ratePrec  $openTimeStr\n"
+        return itemStr
     }
 
     private fun getCoinKlineData(coin: String): List<Candlestick> {

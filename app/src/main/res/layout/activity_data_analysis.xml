@@ -32,16 +32,6 @@
                 android:hint="Start Time 2020-08-02 08:00"
                 />
 
-            <TextView
-                android:id="@+id/header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:text="DAILY"
-                android:textSize="45sp"
-                android:textStyle="bold"
-                />
 
 
             <TextView
