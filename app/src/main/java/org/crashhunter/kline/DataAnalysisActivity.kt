@@ -6,6 +6,7 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.widget.SeekBar
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.alibaba.fastjson.JSON
 import com.binance.client.RequestOptions
@@ -32,10 +33,10 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
     var candlestickIntervalList = ArrayList<CandlestickInterval>()
     var stringBuilder = SpannableStringBuilder()
     var candlestickInterval = CandlestickInterval.DAILY
-    var purplePointBase = 0.5
-    var redPointBase = 0.25
-    var rate = 1
 
+    //var purplePointBase = 0.5
+    //var redPointBase = 0.25
+    var rate = 1.0
     var historyRange = 24
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +45,6 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
         swipeRefresh.setOnRefreshListener(this)
 
         candlestickIntervalList.add(CandlestickInterval.MONTHLY)
-        setPointAndRange(candlestickInterval)
         initAction()
 
         getData()
@@ -54,16 +54,30 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
     private fun initAction() {
         request.setOnClickListener {
 
+            rate = tvRate.text.toString().toDouble()
             getData()
 
         }
+
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                rate = progress.toDouble()
+                tvRate.setText(rate.toString())
+                getData()
+
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            }
+        })
     }
 
     private fun getData() {
         stringBuilder = SpannableStringBuilder()
         tvTitle.text = "Loading..."
-
-        rate = tvRate.text.toString().toInt()
 
         object : Thread() {
             override fun run() {
@@ -105,8 +119,22 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
             }
             Log.d("sss", time.toString())
             var finabuild = SpannableStringBuilder()
-            finabuild.append("Total $total  Win $winCount  Rate: ${winCount / total.toDouble()}\n")
-            finabuild.append("Avg.Win ${totalWinRate / BigDecimal(winCount)}%  Avg.Lose: ${totalLoseRate / BigDecimal(loseCount)}%\n\n")
+            if (total > 0) {
+                finabuild.append("Total $total  Win $winCount  Rate: ${winCount / total.toDouble()}\n")
+            } else {
+                finabuild.append("Total $total  Win $winCount  Rate: --\n")
+            }
+            var avgwinrate = BigDecimal.ZERO
+            if (winCount > 0) {
+                avgwinrate = totalWinRate / BigDecimal(winCount)
+            }
+
+            var avgloserate = BigDecimal.ZERO
+            if (loseCount > 0) {
+                avgloserate = totalLoseRate / BigDecimal(loseCount)
+            }
+
+            finabuild.append("Avg.Win ${avgwinrate}%  Avg.Lose: ${avgloserate}%\n\n")
             finabuild.append(stringBuilder)
             runOnUiThread {
                 tvTitle.text = ""
@@ -266,12 +294,8 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
             var itemStr = buildTxt(coin)
 
-            var purplePoint = purplePointBase * rate
-            var redPoint = redPointBase * rate
 
-
-
-            if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
+            if (rateInc < BigDecimal(rate) && rateInc > -BigDecimal(rate)) {
 
                 total++
 
@@ -284,18 +308,6 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
                 compareNext(index, list, coin)
 
-            } else if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
-
-                total++
-
-                var str = setTextColor(
-                        "$itemStr",
-                        android.R.color.holo_purple
-                )
-                stringBuilder.append("No.${total}")
-                stringBuilder.append(str)
-
-                compareNext(index, list, coin)
             }
         }
     }
@@ -370,47 +382,6 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
         return ArrayList<Candlestick>(0)
     }
 
-    private fun setPointAndRange(candlestickInterval: CandlestickInterval) {
-        purplePointBase = 0.5
-        redPointBase = 0.25
-        rate = 1
-        when (candlestickInterval) {
-            CandlestickInterval.ONE_MINUTE -> {
-                purplePointBase = 0.03
-                redPointBase = 0.01
-                historyRange = 60
-            }
-            CandlestickInterval.HOURLY -> {
-                rate = 1
-                historyRange = 7
-            }
-            CandlestickInterval.SIX_HOURLY -> {
-                rate = 1
-                historyRange = 7
-            }
-            CandlestickInterval.TWELVE_HOURLY -> {
-                rate = 1
-                historyRange = 7
-            }
-            CandlestickInterval.DAILY -> {
-                rate = 2
-                historyRange = 7
-            }
-            CandlestickInterval.THREE_DAILY -> {
-                rate = 3
-                historyRange = 7
-            }
-            CandlestickInterval.WEEKLY -> {
-                rate = 4
-                historyRange = 24
-            }
-            CandlestickInterval.MONTHLY -> {
-                rate = 5
-                historyRange = 24
-            }
-
-        }
-    }
 
     override fun onRefresh() {
         forceRefresh = true
