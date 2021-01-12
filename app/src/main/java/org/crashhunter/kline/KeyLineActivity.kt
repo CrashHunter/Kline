@@ -8,6 +8,7 @@ import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.alibaba.fastjson.JSON
@@ -16,7 +17,11 @@ import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
+import kotlinx.android.synthetic.main.activity_data_analysis.*
 import kotlinx.android.synthetic.main.activity_key_line.*
+import kotlinx.android.synthetic.main.activity_key_line.header
+import kotlinx.android.synthetic.main.activity_key_line.seekBar
+import kotlinx.android.synthetic.main.activity_key_line.swipeRefresh
 import kotlinx.android.synthetic.main.activity_key_line.tvTitle
 import kotlinx.android.synthetic.main.activity_volume.*
 import kotlinx.coroutines.*
@@ -51,11 +56,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     var forceRefresh = false
     var isCoinInFilter = false
 
-    var purplePointBase = 0.5
-    var redPointBase = 0.25
-    var rate = 1
+    var rate = 1.0
 
-    var historyRange = 2
+    var historyRange = 7
 
     var currentItemId = R.id.oneDay
 
@@ -178,7 +181,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 getAllInterval()
             }
             R.id.DA -> {
-                startActivity(Intent(this,DataAnalysisActivity::class.java))
+                startActivity(Intent(this, DataAnalysisActivity::class.java))
             }
 
             else -> {
@@ -279,24 +282,15 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             i++;
 
             var header = "No.${i} ${coin.name} $rangePrec $ratePrec\n"
-            var purplePoint = purplePointBase * rate
-            var redPoint = redPointBase * rate
 
 
-
-            if (coin.name == "BTCUSDT" || rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(
-                            redPoint
+            if (coin.name == "BTCUSDT" || rateInc < BigDecimal(rate) && rateInc > -BigDecimal(
+                            rate
                     )
             ) {
                 var str = setTextColor(
                         "$header",
                         android.R.color.holo_red_light
-                )
-                itemStr.append(str)
-            } else if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
-                var str = setTextColor(
-                        "$header",
-                        android.R.color.holo_purple
                 )
                 itemStr.append(str)
             } else {
@@ -400,19 +394,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                     itemStr.append(str)
                 } else {
                     var str = SpannableStringBuilder()
-                    var purplePoint = purplePointBase * rate
-                    var redPoint = redPointBase * rate
                     str.append("${coin.name} $rangePrec $ratePrec \n")
 
 
-                    if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
-                        str = setTextColor(
-                                "${coin.name} $rangePrec $ratePrec \n",
-                                android.R.color.holo_purple
-                        )
-                    }
-
-                    if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
+                    if (rateInc < BigDecimal(rate) && rateInc > -BigDecimal(rate)) {
                         str = setTextColor(
                                 "${coin.name} $rangePrec $ratePrec \n",
                                 android.R.color.holo_red_light
@@ -454,7 +439,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 //                    var n  = ArrayList<Deferred<Int>>(10)
 //                    n.add(Deferred)
                     for (coin in Constant.coinList) {
-                        var n = async{
+                        var n = async {
                             getCoinInfo(coin)
                         }
                     }
@@ -499,7 +484,6 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
         for (item in candlestickIntervalList) {
             candlestickInterval = item
-            setPointAndRange(candlestickInterval)
             runOnUiThread {
                 tvTitle.text = "Loading... $coin $candlestickInterval"
             }
@@ -706,10 +690,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var rangePrec = "  ${rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
             var rateSpan = SpannableStringBuilder(ratePrec)
 
-            var purplePoint = purplePointBase * rate
-            var redPoint = redPointBase * rate
 
-            if (rateInc < BigDecimal(purplePoint) && rateInc > -BigDecimal(purplePoint) && candlestickInterval != CandlestickInterval.HOURLY) {
+            if (rateInc < BigDecimal(rate) && rateInc > -BigDecimal(rate) && candlestickInterval != CandlestickInterval.HOURLY) {
                 rateSpan.setSpan(
                         ForegroundColorSpan(getColor(android.R.color.holo_purple)),
                         0,
@@ -718,19 +700,6 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 )
                 isCoinInFilter = true
                 isLineInFilter = true
-            }
-
-            if (rateInc < BigDecimal(redPoint) && rateInc > -BigDecimal(redPoint)) {
-                rateSpan.setSpan(
-                        ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
-                        0,
-                        ratePrec.length - 1,
-                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                )
-                isCoinInFilter = true
-                isLineInFilter = true
-
-
             }
 
 
@@ -773,47 +742,6 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         return tagSpan
     }
 
-    private fun setPointAndRange(candlestickInterval: CandlestickInterval) {
-        purplePointBase = 0.5
-        redPointBase = 0.25
-        rate = 1
-        when (candlestickInterval) {
-            CandlestickInterval.ONE_MINUTE -> {
-                purplePointBase = 0.03
-                redPointBase = 0.01
-                historyRange = 60
-            }
-            CandlestickInterval.HOURLY -> {
-                rate = 1
-                historyRange = 7
-            }
-            CandlestickInterval.SIX_HOURLY -> {
-                rate = 1
-                historyRange = 7
-            }
-            CandlestickInterval.TWELVE_HOURLY -> {
-                rate = 1
-                historyRange = 7
-            }
-            CandlestickInterval.DAILY -> {
-                rate = 2
-                historyRange = 7
-            }
-            CandlestickInterval.THREE_DAILY -> {
-                rate = 3
-                historyRange = 7
-            }
-            CandlestickInterval.WEEKLY -> {
-                rate = 4
-                historyRange = 7
-            }
-            CandlestickInterval.MONTHLY -> {
-                rate = 5
-                historyRange = 7
-            }
-
-        }
-    }
 
     private fun getCoinKlineData(coin: String): List<Candlestick> {
         TimeUtils.stringToLong("2020-7-27 08:00", "yyyy-MM-dd HH:mm")
@@ -849,7 +777,20 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
 
     private fun initAction() {
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                rate = progress.toDouble()
+                //tvRate.setText(rate.toString())
+                getData()
 
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            }
+        })
     }
 
 
