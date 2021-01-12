@@ -1,11 +1,16 @@
 package org.crashhunter.kline
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.ContextMenu
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.SeekBar
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.alibaba.fastjson.JSON
@@ -15,6 +20,8 @@ import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
 import kotlinx.android.synthetic.main.activity_data_analysis.*
+import kotlinx.android.synthetic.main.activity_data_analysis.swipeRefresh
+import kotlinx.android.synthetic.main.activity_data_analysis.tvTitle
 import kotlinx.coroutines.*
 import org.crashhunter.kline.data.KeyLineCoin
 import org.crashhunter.kline.data.SharedPreferenceUtil
@@ -37,7 +44,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
     //var purplePointBase = 0.5
     //var redPointBase = 0.25
     var rate = 1.0
-    var historyRange = 24
+    var historyRange = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +57,93 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
         getData()
 
     }
+    var currentItemId = R.id.oneDay
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.keyline_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+
+        currentItemId = item.itemId
+        routeItem()
+        return true
+    }
+
+    private fun routeItem() {
+        when (currentItemId) {
+            R.id.oneM -> {
+                header.text = "ONE_MINUTE"
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.ONE_MINUTE)
+
+                getData()
+            }
+            R.id.oneH -> {
+                header.text = "ONE_HOURLY"
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.HOURLY)
+
+                getData()
+            }
+            R.id.sixH -> {
+                header.text = "SIX_HOURLY"
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.SIX_HOURLY)
+
+                getData()
+            }
+            R.id.twelveH -> {
+                header.text = "TWELVE_HOURLY"
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.TWELVE_HOURLY)
+
+                getData()
+            }
+            R.id.oneDay -> {
+                header.text = "DAILY"
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.DAILY)
+
+                getData()
+            }
+            R.id.threeDay -> {
+                header.text = "THREE_DAILY"
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.THREE_DAILY)
+
+                getData()
+            }
+            R.id.oneWeek -> {
+                header.text = "WEEKLY"
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.WEEKLY)
+
+                getData()
+            }
+            R.id.oneMonth -> {
+                header.text = "MONTHLY"
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.MONTHLY)
+
+                getData()
+            }
+            R.id.all -> {
+                header.text = "All"
+                candlestickIntervalList.clear()
+                //getAllInterval()
+            }
+            R.id.DA -> {
+                startActivity(Intent(this,DataAnalysisActivity::class.java))
+            }
+
+            else -> {
+            }
+        }
+    }
+
 
     private fun initAction() {
         request.setOnClickListener {
@@ -96,6 +190,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
         loseCount = 0;
         totalLoseRate = BigDecimal.ZERO;
+        stringBuilder = SpannableStringBuilder()
 
         GlobalScope.launch {
             val time = measureTimeMillis {

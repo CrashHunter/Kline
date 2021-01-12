@@ -22,7 +22,16 @@
             android:orientation="vertical"
             tools:context=".MainActivity"
             >
-
+            <TextView
+                android:id="@+id/header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:text="DAILY"
+                android:textSize="45sp"
+                android:textStyle="bold"
+                />
 
             <EditText
                 android:id="@+id/tvRate"
