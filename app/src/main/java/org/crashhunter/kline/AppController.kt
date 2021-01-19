@@ -15,7 +15,7 @@ class AppController : MultiDexApplication() {
         super.onCreate()
         instance = this
 
-        CelerExceptionHandler()
+//        CelerExceptionHandler()
     }
 }
 

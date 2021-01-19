@@ -213,7 +213,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
         var sorted = openTimeList.sortedDescending()
         for (index in sorted.indices) {
-
+            if (index ==0) {
+                continue
+            }
             if (index > 1) {
                 break
             }
@@ -439,9 +441,11 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 //                    var n  = ArrayList<Deferred<Int>>(10)
 //                    n.add(Deferred)
                     for (coin in Constant.coinList) {
-                        var n = async {
-                            getCoinInfo(coin)
-                        }
+//                        var n = async {
+//                            getCoinInfo(coin)
+//                        }
+                        getCoinInfo(coin)
+
                     }
 //                    for(x in n){
 //                        amount+=x.await()
