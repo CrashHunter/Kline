@@ -44,8 +44,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     val options = RequestOptions()
     val syncRequestClient = SyncRequestClient.create(
-            PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
-            options
+        PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
+        options
     )
     var stringBuilder = SpannableStringBuilder()
 
@@ -58,7 +58,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     var rate = 1.0
 
-    var historyRange = 7
+    var historyRange = 2
 
     var currentItemId = R.id.oneDay
 
@@ -209,50 +209,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     }
 
 
-    private fun getLastestRank(type: String) {
-
-        var sorted = openTimeList.sortedDescending()
-        for (index in sorted.indices) {
-            if (index ==0) {
-                continue
-            }
-            if (index > 1) {
-                break
-            }
-
-            var openTime = sorted[index]
-            var filterList = lastestCoinsRange.filter { it.openTime == openTime }
-            var list = ArrayList(filterList)
-
-            if (type == "Range") {
-                list.sortBy { it.rangeInc }
-            } else if (type == "Rate") {
-                list.sortBy { it.rateInc }
-            } else if (type == "Volume") {
-                list.sortByDescending { it.quoteAssetVolume }
-            }
-
-            var itemStr = SpannableStringBuilder()
-
-            val date = Date(openTime.toLong())
-            var format = SimpleDateFormat("MM.dd HH:mm")
-            var openTimeStr = format.format(date)
-
-            itemStr.append("${openTimeStr} \n")
-            printSortedCoinList(list, itemStr, type)
-
-            stringBuilder.append(itemStr)
-            addDivideLine()
-        }
-
-
-    }
-
-
     private fun printSortedCoinList(
-            list: ArrayList<KeyLineCoin>,
-            itemStr: SpannableStringBuilder,
-            type: String
+        list: ArrayList<KeyLineCoin>,
+        itemStr: SpannableStringBuilder,
+        type: String
     ) {
         var i = 0;
         for (index in list.indices) {
@@ -287,12 +247,12 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
 
             if (coin.name == "BTCUSDT" || rateInc < BigDecimal(rate) && rateInc > -BigDecimal(
-                            rate
-                    )
+                    rate
+                )
             ) {
                 var str = setTextColor(
-                        "$header",
-                        android.R.color.holo_red_light
+                    "$header",
+                    android.R.color.holo_red_light
                 )
                 itemStr.append(str)
             } else {
@@ -316,7 +276,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 //                itemStr.append(volumeStr)
 //            }
             var volumeStr2 =
-                    "           --$close | " + StringUtils.getFormattedVolume(coin.quoteAssetVolume.toString()) + "\n"
+                "           --$close | " + StringUtils.getFormattedVolume(coin.quoteAssetVolume.toString()) + "\n"
             itemStr.append(volumeStr2)
 
 
@@ -389,10 +349,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
                 if (coin.name == "BTCUSDT") {
                     var str =
-                            setTextColor(
-                                    "${coin.name} $rangePrec $ratePrec \n",
-                                    android.R.color.holo_red_light
-                            )
+                        setTextColor(
+                            "${coin.name} $rangePrec $ratePrec \n",
+                            android.R.color.holo_red_light
+                        )
                     itemStr.append(str)
                 } else {
                     var str = SpannableStringBuilder()
@@ -401,8 +361,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
                     if (rateInc < BigDecimal(rate) && rateInc > -BigDecimal(rate)) {
                         str = setTextColor(
-                                "${coin.name} $rangePrec $ratePrec \n",
-                                android.R.color.holo_red_light
+                            "${coin.name} $rangePrec $ratePrec \n",
+                            android.R.color.holo_red_light
                         )
                     }
 
@@ -421,12 +381,12 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     private fun addDivideLine() {
         var divideLine =
-                SpannableStringBuilder("------------------------------------------------------------------------\n")
+            SpannableStringBuilder("------------------------------------------------------------------------\n")
         divideLine.setSpan(
-                ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
-                0,
-                divideLine.length - 1,
-                Spanned.SPAN_INCLUSIVE_INCLUSIVE
+            ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
+            0,
+            divideLine.length - 1,
+            Spanned.SPAN_INCLUSIVE_INCLUSIVE
         )
         stringBuilder.append(divideLine)
     }
@@ -441,10 +401,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 //                    var n  = ArrayList<Deferred<Int>>(10)
 //                    n.add(Deferred)
                     for (coin in Constant.coinList) {
-//                        var n = async {
-//                            getCoinInfo(coin)
-//                        }
-                        getCoinInfo(coin)
+                        var n = async {
+                            getCoinInfo(coin)
+                        }
+//                        getCoinInfo(coin)
 
                     }
 //                    for(x in n){
@@ -483,6 +443,45 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         //}
     }
 
+    private fun getLastestRank(type: String) {
+
+        var sorted = openTimeList.sortedDescending()
+        for (index in sorted.indices) {
+            if (index == 0 && type == "Volume") {
+                continue
+            }
+            if (index > 1) {
+                break
+            }
+
+            var openTime = sorted[index]
+            var filterList = lastestCoinsRange.filter { it.openTime == openTime }
+            var list = ArrayList(filterList)
+
+            if (type == "Range") {
+                list.sortBy { it.rangeInc }
+            } else if (type == "Rate") {
+                list.sortBy { it.rateInc }
+            } else if (type == "Volume") {
+                list.sortByDescending { it.quoteAssetVolume }
+            }
+
+            var itemStr = SpannableStringBuilder()
+
+            val date = Date(openTime.toLong())
+            var format = SimpleDateFormat("MM.dd HH:mm")
+            var openTimeStr = format.format(date)
+
+            itemStr.append("${openTimeStr} \n")
+            printSortedCoinList(list, itemStr, type)
+
+            stringBuilder.append(itemStr)
+            addDivideLine()
+        }
+
+
+    }
+
     private suspend fun getCoinInfo(coin: String) {
 //        isCoinInFilter = false
 
@@ -493,10 +492,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             }
 
             var jsonList =
-                    SharedPreferenceUtil.loadData(
-                            AppController.instance.applicationContext,
-                            "KeyLine-${coin}-$candlestickInterval"
-                    )
+                SharedPreferenceUtil.loadData(
+                    AppController.instance.applicationContext,
+                    "KeyLine-${coin}-$candlestickInterval"
+                )
 
             if (jsonList.isNotEmpty() && !forceRefresh) {
                 var list = JSON.parseArray(jsonList, Candlestick::class.java)
@@ -523,10 +522,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
         for (coin in Constant.coinList) {
             isCoinInFilter = false
             var jsonList =
-                    SharedPreferenceUtil.loadData(
-                            AppController.instance.applicationContext,
-                            "KeyLine-${coin}-$candlestickInterval"
-                    )
+                SharedPreferenceUtil.loadData(
+                    AppController.instance.applicationContext,
+                    "KeyLine-${coin}-$candlestickInterval"
+                )
             var list = JSON.parseArray(jsonList, Candlestick::class.java)
             parseKLineData(coin, list, candlestickInterval)
 
@@ -550,9 +549,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
 
     private fun collectCoinInfo(
-            coin: String,
-            list: List<Candlestick>,
-            candlestickInterval: CandlestickInterval
+        coin: String,
+        list: List<Candlestick>,
+        candlestickInterval: CandlestickInterval
     ) {
 
         for (index in list.indices) {
@@ -619,9 +618,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     }
 
     private fun parseKLineData(
-            coin: String,
-            list: List<Candlestick>,
-            candlestickInterval: CandlestickInterval
+        coin: String,
+        list: List<Candlestick>,
+        candlestickInterval: CandlestickInterval
     ) {
 
 
@@ -697,10 +696,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
             if (rateInc < BigDecimal(rate) && rateInc > -BigDecimal(rate) && candlestickInterval != CandlestickInterval.HOURLY) {
                 rateSpan.setSpan(
-                        ForegroundColorSpan(getColor(android.R.color.holo_purple)),
-                        0,
-                        ratePrec.length - 1,
-                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                    ForegroundColorSpan(getColor(android.R.color.holo_purple)),
+                    0,
+                    ratePrec.length - 1,
+                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
                 )
                 isCoinInFilter = true
                 isLineInFilter = true
@@ -738,10 +737,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     private fun setTextColor(txt: String, color: Int): SpannableStringBuilder {
         var tagSpan = SpannableStringBuilder(txt)
         tagSpan.setSpan(
-                ForegroundColorSpan(getColor(color)),
-                0,
-                txt.length - 1,
-                Spanned.SPAN_INCLUSIVE_INCLUSIVE
+            ForegroundColorSpan(getColor(color)),
+            0,
+            txt.length - 1,
+            Spanned.SPAN_INCLUSIVE_INCLUSIVE
         )
         return tagSpan
     }
@@ -758,19 +757,19 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
         try {
             var list = syncRequestClient.getCandlestick(
-                    coin,
-                    candlestickInterval,
-                    startTimeLong,
-                    null,
-                    historyRange
+                coin,
+                candlestickInterval,
+                startTimeLong,
+                null,
+                historyRange
             )
             Log.d("sss", "showData:$coin")
 
             //Log.d("sss", list.toString())
             SharedPreferenceUtil.saveData(
-                    AppController.instance.applicationContext,
-                    "KeyLine-${coin}-$candlestickInterval",
-                    JSON.toJSONString(list)
+                AppController.instance.applicationContext,
+                "KeyLine-${coin}-$candlestickInterval",
+                JSON.toJSONString(list)
             )
             return list
         } catch (e: Exception) {
