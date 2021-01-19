@@ -170,7 +170,6 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
     }
 
     private fun getData() {
-        stringBuilder = SpannableStringBuilder()
         tvTitle.text = "Loading..."
 
         object : Thread() {
@@ -190,7 +189,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 
         loseCount = 0;
         totalLoseRate = BigDecimal.ZERO;
-        stringBuilder = SpannableStringBuilder()
+        stringBuilder.clear()
 
         GlobalScope.launch {
             val time = measureTimeMillis {
@@ -199,10 +198,10 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
 //                    var n  = ArrayList<Deferred<Int>>(10)
 //                    n.add(Deferred)
                     for (coin in Constant.coinList) {
-//                        var n = async {
-//                            getCoinInfo(coin)
-//                        }
-                        getCoinInfo(coin)
+                        var n = async {
+                            getCoinInfo(coin)
+                        }
+//                        getCoinInfo(coin)
                     }
 //                    for(x in n){
 //                        amount+=x.await()
