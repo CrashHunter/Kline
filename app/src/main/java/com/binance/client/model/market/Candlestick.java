@@ -31,6 +31,8 @@ public class Candlestick {
 
     private BigDecimal ignore;
 
+    public BigDecimal divide;
+
     public Long getOpenTime() {
         return openTime;
     }

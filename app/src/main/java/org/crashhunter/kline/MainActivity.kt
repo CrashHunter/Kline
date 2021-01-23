@@ -611,7 +611,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.volumeHistory -> {
 
-                var intent = Intent(this, VolumeRankActivity::class.java)
+                var intent = Intent(this, VolumeRank_binanceActivity::class.java)
                 startActivity(intent)
                 return true
             }
