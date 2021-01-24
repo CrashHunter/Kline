@@ -48,8 +48,9 @@
         </activity>
         <activity android:name=".CountActivity" />
         <activity android:name=".VolumeActivity" />
+        <activity android:name=".VolumeActivity_binance" />
         <activity android:name=".VolumeRankActivity" />
-        <activity android:name=".VolumeRank_binanceActivity" />
+        <activity android:name=".VolumeRankActivity_binance" />
         <activity android:name=".KeyLineActivity" />
         <activity android:name="org.crashhunter.app_record.CrashReportAct" />
     </application>

@@ -32,7 +32,7 @@ import kotlin.collections.ArrayList
 import kotlin.system.measureTimeMillis
 
 
-class VolumeRank_binanceActivity : AppCompatActivity() {
+class VolumeRankActivity_binance : AppCompatActivity() {
 
     var coinList = Constant.coinList
     var coinsVolume = ArrayList<CoinVolume2>()
@@ -88,7 +88,6 @@ class VolumeRank_binanceActivity : AppCompatActivity() {
                 Log.d("sss", " tvTitle.text = allStr")
                 tvTitle.text = allStr
             }
-
 
         }
 
@@ -287,7 +286,7 @@ class VolumeRank_binanceActivity : AppCompatActivity() {
     private fun initAction() {
         Single?.setOnClickListener {
 
-            startActivity(Intent(this, VolumeActivity::class.java))
+            startActivity(Intent(this, VolumeActivity_binance::class.java))
 
         }
 

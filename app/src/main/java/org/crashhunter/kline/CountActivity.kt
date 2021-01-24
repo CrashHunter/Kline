@@ -96,7 +96,7 @@ class CountActivity : AppCompatActivity() {
         var lastUp = num
         var lastDown = num
 
-        for (i in 1..6) {
+        for (i in 1..10) {
             lastUp *= (1 + rate1Num / 100).toFloat()
             lastDown *= (1 - rate1Num / 100).toFloat()
 
@@ -110,7 +110,7 @@ class CountActivity : AppCompatActivity() {
         var lastUp5 = num
         var lastDown5 = num
 
-        for (i in 1..6) {
+        for (i in 1..10) {
             lastUp5 = (1 + rate2Num * i / 100) * num
             lastDown5 = (1 - rate2Num * i / 100) * num
             upStr5 += "+${i * rate2Num}% : ${lastUp5} \n"
