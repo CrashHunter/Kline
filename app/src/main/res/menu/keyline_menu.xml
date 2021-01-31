@@ -55,4 +55,10 @@
         android:title="DA"
         app:showAsAction="always"
         />
+
+    <item
+        android:id="@+id/list"
+        android:title="list"
+        app:showAsAction="always"
+        />
 </menu>

@@ -1,4 +1,4 @@
-package org.crashhunter.kline
+package org.crashhunter.kline.oneline
 
 import android.content.Intent
 import android.os.Bundle
@@ -23,8 +23,10 @@ import kotlinx.android.synthetic.main.activity_key_line.header
 import kotlinx.android.synthetic.main.activity_key_line.seekBar
 import kotlinx.android.synthetic.main.activity_key_line.swipeRefresh
 import kotlinx.android.synthetic.main.activity_key_line.tvTitle
-import kotlinx.android.synthetic.main.activity_volume.*
 import kotlinx.coroutines.*
+import org.crashhunter.kline.AppController
+import org.crashhunter.kline.Constant
+import org.crashhunter.kline.R
 import org.crashhunter.kline.data.KeyLineCoin
 import org.crashhunter.kline.data.SharedPreferenceUtil
 import org.crashhunter.kline.utils.StringUtils
@@ -75,13 +77,46 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
         swipeRefresh.setOnRefreshListener(this)
 
-
+        getContractList()
 
         initAction()
 
 
 //        getAllInterval()
 
+    }
+
+    private fun getContractList() {
+        tvTitle.text = "Loading..."
+
+        object : Thread() {
+            override fun run() {
+                super.run()
+
+                stringBuilder.clear()
+
+                var data = syncRequestClient.getExchangeInformation()
+                data.symbols.sortBy { it.symbol }
+
+                for (index in data.symbols.indices) {
+                    var symbol = data.symbols.get(index)
+                    stringBuilder.append("   ${index + 1}. ${symbol.symbol}")
+                    stringBuilder.append("\n")
+
+                    if (!Constant.coinList.contains(symbol.symbol)) {
+                        Constant.coinList.add(symbol.symbol)
+                    }
+
+                }
+
+                runOnUiThread {
+
+                    tvTitle.text = stringBuilder
+
+                }
+
+            }
+        }.start()
     }
 
 
@@ -182,6 +217,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             }
             R.id.DA -> {
                 startActivity(Intent(this, DataAnalysisActivity::class.java))
+            }
+            R.id.list -> {
+                startActivity(Intent(this, ContractListActivity::class.java))
             }
 
             else -> {

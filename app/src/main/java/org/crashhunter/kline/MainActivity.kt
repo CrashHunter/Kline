@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.crashhunter.kline.data.BaseSharedPreference
 import org.crashhunter.kline.data.CoinInfo
 import org.crashhunter.kline.data.LATEST_COIN_LIST
+import org.crashhunter.kline.oneline.KeyLineActivity
 import org.crashhunter.kline.utils.StringUtils
 import org.jsoup.Jsoup
 import java.io.IOException

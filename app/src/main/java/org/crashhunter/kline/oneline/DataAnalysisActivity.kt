@@ -1,4 +1,4 @@
-package org.crashhunter.kline
+package org.crashhunter.kline.oneline
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -7,10 +7,8 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.util.Log
-import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.SeekBar
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.alibaba.fastjson.JSON
@@ -23,6 +21,9 @@ import kotlinx.android.synthetic.main.activity_data_analysis.*
 import kotlinx.android.synthetic.main.activity_data_analysis.swipeRefresh
 import kotlinx.android.synthetic.main.activity_data_analysis.tvTitle
 import kotlinx.coroutines.*
+import org.crashhunter.kline.AppController
+import org.crashhunter.kline.Constant
+import org.crashhunter.kline.R
 import org.crashhunter.kline.data.KeyLineCoin
 import org.crashhunter.kline.data.SharedPreferenceUtil
 import org.crashhunter.kline.utils.TimeUtils
@@ -136,7 +137,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
                 //getAllInterval()
             }
             R.id.DA -> {
-                startActivity(Intent(this,DataAnalysisActivity::class.java))
+                startActivity(Intent(this, DataAnalysisActivity::class.java))
             }
 
             else -> {

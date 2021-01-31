@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         >
-        <activity android:name=".DataAnalysisActivity"></activity>
+        <activity android:name=".oneline.DataAnalysisActivity"></activity>
         <activity android:name=".OneLineActivity"></activity>
         <service
             android:name=".service.MyIntentService"
@@ -51,8 +51,11 @@
         <activity android:name=".VolumeActivity_binance" />
         <activity android:name=".VolumeRankActivity" />
         <activity android:name=".VolumeRankActivity_binance" />
-        <activity android:name=".KeyLineActivity" />
+        <activity android:name=".oneline.KeyLineActivity" />
         <activity android:name="org.crashhunter.app_record.CrashReportAct" />
+
+
+        <activity android:name=".oneline.ContractListActivity"/>
     </application>
 
 </manifest>
