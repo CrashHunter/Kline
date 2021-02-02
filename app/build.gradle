@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     signingConfigs {
         dddd {
-            storeFile file('F:\\Android\\AndroidStudioProjects\\Kline\\kline_keystore.jks')
+            storeFile file('kline_keystore.jks')
             storePassword 'Eclipse3'
             keyAlias 'kline'
             keyPassword 'Eclipse3'
