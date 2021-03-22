@@ -142,7 +142,7 @@ class MainAICOINActivity : AppCompatActivity() {
 
         volumeEnoughNum = 0
 
-        Log.e("latestCoinListGet", latestCoinListJsonStr)
+        //Log.e("latestCoinListGet", latestCoinListJsonStr)
 
         getData()
 
@@ -641,7 +641,7 @@ class MainAICOINActivity : AppCompatActivity() {
 
         //save latestCoinList
         var jsonList = Gson().toJson(currentCoinList)
-        Log.e("jsonListSave", jsonList)
+        //Log.e("jsonListSave", jsonList)
         latestCoinListJsonStr = jsonList
 
 

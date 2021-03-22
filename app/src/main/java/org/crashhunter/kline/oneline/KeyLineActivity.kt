@@ -98,9 +98,15 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 var data = syncRequestClient.getExchangeInformation()
                 data.symbols.sortBy { it.symbol }
 
+                var num = 0;
                 for (index in data.symbols.indices) {
                     var symbol = data.symbols.get(index)
-                    stringBuilder.append("   ${index + 1}. ${symbol.symbol}")
+
+                    if(symbol.symbol.contains("_")){
+                        continue;
+                    }
+
+                    stringBuilder.append("   ${++num}. ${symbol.symbol}")
                     stringBuilder.append("\n")
 
                     if (!Constant.coinList.contains(symbol.symbol)) {

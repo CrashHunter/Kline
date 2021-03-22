@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity() {
 
         volumeEnoughNum = 0
 
-        Log.e("latestCoinListGet", latestCoinListJsonStr)
+        //Log.e("latestCoinListGet", latestCoinListJsonStr)
 
         getData()
 
@@ -255,7 +255,7 @@ class MainActivity : AppCompatActivity() {
 
                     val doc = Jsoup.connect(urlStr).get()
                     contextStr.append(doc.toString())
-                    Log.e("doc.toString()", doc.toString())
+                    //Log.e("doc.toString()", doc.toString())
 //                    var icons = doc.select("#currencies-all > tbody > tr")
                     var icons = doc.select("tr")
                     Log.e("iconssize", icons.size.toString())
@@ -763,7 +763,7 @@ class MainActivity : AppCompatActivity() {
 
         //save latestCoinList
         var jsonList = Gson().toJson(currentCoinList)
-        Log.d("jsonListSave", jsonList)
+        //Log.d("jsonListSave", jsonList)
         latestCoinListJsonStr = jsonList
         getdiffs(currentCoinList, latestCoinList)
         sortListRefreshUI()
