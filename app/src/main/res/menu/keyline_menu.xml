@@ -43,6 +43,12 @@
         android:title="1M"
         app:showAsAction="always"
         />
+
+    <item
+        android:id="@+id/oneyear"
+        android:title="1y"
+        app:showAsAction="always"
+        />
     <item
         android:id="@+id/all"
         android:title="All"

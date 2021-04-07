@@ -106,6 +106,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                         continue;
                     }
 
+                    if(symbol.symbol.contains("CELR")){
+                        continue;
+                    }
+
                     stringBuilder.append("   ${++num}. ${symbol.symbol}")
                     stringBuilder.append("\n")
 
@@ -216,6 +220,14 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
                 getData()
             }
+            R.id.oneyear -> {
+                header.text = "YEAR"
+                candlestickIntervalList.clear()
+                candlestickIntervalList.add(CandlestickInterval.YEAR)
+
+                getData()
+            }
+
             R.id.all -> {
                 header.text = "All"
                 candlestickIntervalList.clear()
@@ -817,7 +829,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             )
             return list
         } catch (e: Exception) {
-            Log.e("sss", e.printStackTrace().toString())
+            Log.e("sss", Log.getStackTraceString(e))
         }
         return ArrayList<Candlestick>(0)
     }

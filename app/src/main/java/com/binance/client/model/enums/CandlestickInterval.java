@@ -18,7 +18,8 @@ public enum CandlestickInterval {
     DAILY("1d"),
     THREE_DAILY("3d"),
     WEEKLY("1w"),
-    MONTHLY("1M");
+    MONTHLY("1M"),
+    YEAR("1y");
 
     private final String code;
 
