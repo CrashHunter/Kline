@@ -54,7 +54,7 @@
         <activity android:name=".oneline.KeyLineActivity" />
         <activity android:name="org.crashhunter.app_record.CrashReportAct" />
 
-
+        <activity android:name=".CoinMarketAPIActivity" />
         <activity android:name=".oneline.ContractListActivity"/>
     </application>
 

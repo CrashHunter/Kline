@@ -20,6 +20,9 @@
         android:title="刷新"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/coinmarketapi"
+        android:title="coinmarketapi" />
 
     <item
         android:id="@+id/allcap"

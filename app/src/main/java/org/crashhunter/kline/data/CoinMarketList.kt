@@ -1,5 +1,7 @@
 package org.crashhunter.kline.data
 
+import android.icu.math.BigDecimal
+
 /**
  * Created by CrashHunter on 2021/4/25.
  */
@@ -50,7 +52,7 @@ data class BTC(
 
 data class USD(
     val last_updated: String = "",
-    val market_cap: Double = 0.0,
+    val market_cap: String = "",
     val percent_change_1h: Double = 0.0,
     val percent_change_24h: Double = 0.0,
     val percent_change_7d: Double = 0.0,

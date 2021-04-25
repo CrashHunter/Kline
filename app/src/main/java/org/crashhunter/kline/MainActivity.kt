@@ -615,6 +615,12 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
                 return true
             }
+            R.id.coinmarketapi -> {
+
+                var intent = Intent(this, CoinMarketAPIActivity::class.java)
+                startActivity(intent)
+                return true
+            }
             R.id.refresh -> {
                 getData()
                 return true

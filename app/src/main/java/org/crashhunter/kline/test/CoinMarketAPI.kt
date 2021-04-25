@@ -20,7 +20,7 @@ import java.io.IOException
  * Created by CrashHunter on 2021/4/25.
  */
 internal object CoinMarketAPI {
-    private const val apiKey = "716cf148-7b23-46ff-89b8-fb8b3d84e157"
+    const val apiKey = "716cf148-7b23-46ff-89b8-fb8b3d84e157"
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -54,7 +54,7 @@ internal object CoinMarketAPI {
         })
     }
 
-    private fun genericClient(): OkHttpClient? {
+    fun genericClient(): OkHttpClient? {
         return OkHttpClient().newBuilder()
                 .addInterceptor(object : Interceptor {
                     @Throws(IOException::class)
@@ -73,7 +73,7 @@ internal object CoinMarketAPI {
 
     interface ListService {
 
-        @GET("v1/cryptocurrency/listings/latest?start=1&limit=50&convert=USD")
+        @GET("v1/cryptocurrency/listings/latest?start=1&limit=500&convert=USD")
         fun queryList(): Call<CoinMarketList?>?
     }
 }
