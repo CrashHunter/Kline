@@ -1,45 +1,36 @@
 package org.crashhunter.kline
 
-import CoinVolume
-import Data
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.alibaba.fastjson.JSON
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
-import com.binance.client.model.enums.CandlestickInterval
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_volume.*
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.apache.commons.lang3.math.NumberUtils
+import kotlinx.android.synthetic.main.activity_volume.tvTitle
 import org.crashhunter.kline.data.CoinMarketList
-import org.crashhunter.kline.data.SharedPreferenceUtil
 import org.crashhunter.kline.test.CoinMarketAPI
 import org.crashhunter.kline.utils.NumberTools
-import org.crashhunter.kline.utils.StringUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Query
-import java.io.IOException
 import java.math.BigDecimal
-import java.text.SimpleDateFormat
-import java.util.*
+import kotlin.collections.ArrayList
 
 
 class CoinMarketAPIActivity : AppCompatActivity() {
+    val options = RequestOptions()
+    var syncRequestClient = SyncRequestClient.create(
+        PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
+        options
+    )
 
+    var ownCoinList = ArrayList<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,13 +38,38 @@ class CoinMarketAPIActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_volume)
 
-        tvTitle.text = "loading"
-        getFromAPi()
+        tvTitle.text = "loading  getAccountSPOT"
+        options.url = "https://api.binance.com"
+        syncRequestClient = SyncRequestClient.create(
+            PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
+            options
+        )
+
+
+        object : Thread() {
+            override fun run() {
+                super.run()
+
+                var data = syncRequestClient.getAccountSPOT()
+
+                var filter = data.balances.filter { it.free.toBigDecimal() > BigDecimal.ZERO }
+                for (item in filter) {
+                    Log.d("sss", "${item.asset}:${item.free}")
+                    ownCoinList.add(item.asset)
+                }
+
+                getFromAPi()
+
+            }
+        }.start()
     }
 
 
     private fun getFromAPi() {
-        tvTitle.text = "loading"
+        runOnUiThread {
+
+            tvTitle.text = "loading getFromAPi"
+        }
         val retrofit = Retrofit.Builder()
             .baseUrl("https://pro-api.coinmarketcap.com/")
             .client(CoinMarketAPI.genericClient())
@@ -80,7 +96,8 @@ class CoinMarketAPIActivity : AppCompatActivity() {
 
                 var filterList =
                     datas.filter { Constant.coinList.contains(it.symbol.toUpperCase() + "USDT") }
-                var sortedList = filterList.sortedByDescending { it.quote.USD.market_cap.toBigDecimal() }
+                var sortedList =
+                    filterList.sortedByDescending { it.quote.USD.market_cap.toBigDecimal() }
                 var str = SpannableStringBuilder()
 
                 for (index in sortedList.indices) {
@@ -110,18 +127,33 @@ class CoinMarketAPIActivity : AppCompatActivity() {
 
                     str.append("${index + 1}. ")
 
-                    str.append("${item.symbol} ")
+
+                    var symbol = item.symbol + " "
+                    if (ownCoinList.contains(item.symbol)) {
+                        var symbolSpan = SpannableStringBuilder(symbol)
+                        symbolSpan.setSpan(
+                            ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+                            0,
+                            symbol.length - 1,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+
+                        str.append(symbolSpan)
+                    } else {
+                        str.append(symbol)
+                    }
+
 
 //                    str.append(StringUtils.getFormattedVolume(item.quote.USD.market_cap))
 
-                    str.append(NumberTools.amountConversion(item.quote.USD.market_cap.toDouble()))
+                    str.append(" " + NumberTools.amountConversion(item.quote.USD.market_cap.toDouble()))
 
                     str.append("\n")
                 }
 
                 runOnUiThread {
 
-                    tvTitle.text = str.toString()
+                    tvTitle.text = str
 
                 }
 
@@ -133,6 +165,17 @@ class CoinMarketAPIActivity : AppCompatActivity() {
 
             }
         })
+    }
+
+    private fun setTextColor(txt: String, color: Int): SpannableStringBuilder {
+        var tagSpan = SpannableStringBuilder(txt)
+        tagSpan.setSpan(
+            ForegroundColorSpan(getColor(color)),
+            0,
+            txt.length - 1,
+            Spanned.SPAN_INCLUSIVE_INCLUSIVE
+        )
+        return tagSpan
     }
 
 }

@@ -25,6 +25,7 @@ import kotlinx.android.synthetic.main.activity_key_line.swipeRefresh
 import kotlinx.android.synthetic.main.activity_key_line.tvTitle
 import kotlinx.coroutines.*
 import org.crashhunter.kline.AppController
+import org.crashhunter.kline.CoinMarketAPIActivity
 import org.crashhunter.kline.Constant
 import org.crashhunter.kline.R
 import org.crashhunter.kline.data.KeyLineCoin
@@ -239,7 +240,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             R.id.list -> {
                 startActivity(Intent(this, ContractListActivity::class.java))
             }
-
+            R.id.coinmarketapi -> {
+                startActivity(Intent(this, CoinMarketAPIActivity::class.java))
+            }
             else -> {
             }
         }

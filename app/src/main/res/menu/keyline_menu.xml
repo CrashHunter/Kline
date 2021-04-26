@@ -67,4 +67,11 @@
         android:title="list"
         app:showAsAction="always"
         />
+
+
+
+    <item
+        android:id="@+id/coinmarketapi"
+        android:title="coinmarketapi"
+        />
 </menu>

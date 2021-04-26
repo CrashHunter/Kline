@@ -1034,10 +1034,12 @@ class RestApiRequestImpl {
             result.setUpdateTime(jsonWrapper.getLong("updateTime"));
 
             List<BalancesItem> assetList = new LinkedList<>();
-            JsonWrapperArray assetArray = jsonWrapper.getJsonArray("assets");
+            JsonWrapperArray assetArray = jsonWrapper.getJsonArray("balances");
             assetArray.forEach((item) -> {
                 BalancesItem element = new BalancesItem();
                 element.setAsset(item.getString("asset"));
+                element.setFree(item.getString("free"));
+                element.setLocked(item.getString("locked"));
                 assetList.add(element);
             });
             result.setBalances(assetList);
