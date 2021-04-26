@@ -253,6 +253,8 @@ public interface SyncRequestClient {
      * @return Current account information.
      */
     AccountInformation getAccountInformation();
+
+    AccountSPOT getAccountSPOT();
   
     /**
      * Change initial leverage.

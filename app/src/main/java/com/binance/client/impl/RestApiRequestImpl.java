@@ -1019,6 +1019,34 @@ class RestApiRequestImpl {
         return request;
     }
 
+
+    //crashhunter
+    RestApiRequest<AccountSPOT> getAccountSPOT() {
+        RestApiRequest<AccountSPOT> request = new RestApiRequest<>();
+        UrlParamsBuilder builder = UrlParamsBuilder.build();
+        request.request = createRequestByGetWithSignature("/api/v3/account", builder);
+
+        request.jsonParser = (jsonWrapper -> {
+            AccountSPOT result = new AccountSPOT();
+            result.setCanDeposit(jsonWrapper.getBoolean("canDeposit"));
+            result.setCanTrade(jsonWrapper.getBoolean("canTrade"));
+            result.setCanWithdraw(jsonWrapper.getBoolean("canWithdraw"));
+            result.setUpdateTime(jsonWrapper.getLong("updateTime"));
+
+            List<BalancesItem> assetList = new LinkedList<>();
+            JsonWrapperArray assetArray = jsonWrapper.getJsonArray("assets");
+            assetArray.forEach((item) -> {
+                BalancesItem element = new BalancesItem();
+                element.setAsset(item.getString("asset"));
+                assetList.add(element);
+            });
+            result.setBalances(assetList);
+
+            return result;
+        });
+        return request;
+    }
+
     RestApiRequest<Leverage> changeInitialLeverage(String symbol, Integer leverage) {
         RestApiRequest<Leverage> request = new RestApiRequest<>();
         UrlParamsBuilder builder = UrlParamsBuilder.build()
