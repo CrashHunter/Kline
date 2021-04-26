@@ -19,9 +19,11 @@ import kotlinx.android.synthetic.main.activity_volume.*
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.apache.commons.lang3.math.NumberUtils
 import org.crashhunter.kline.data.CoinMarketList
 import org.crashhunter.kline.data.SharedPreferenceUtil
 import org.crashhunter.kline.test.CoinMarketAPI
+import org.crashhunter.kline.utils.NumberTools
 import org.crashhunter.kline.utils.StringUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -50,7 +52,6 @@ class CoinMarketAPIActivity : AppCompatActivity() {
     }
 
 
-
     private fun getFromAPi() {
         tvTitle.text = "loading"
         val retrofit = Retrofit.Builder()
@@ -67,38 +68,53 @@ class CoinMarketAPIActivity : AppCompatActivity() {
 
         call!!.enqueue(object : Callback<CoinMarketList?> {
 
-            override fun onResponse(call: Call<CoinMarketList?>, response: Response<CoinMarketList?>) {
+            override fun onResponse(
+                call: Call<CoinMarketList?>,
+                response: Response<CoinMarketList?>
+            ) {
                 var datas = response.body()?.data!!
                 var coinVolumeJsonStr = Gson().toJson(response.body())
 
                 Log.d("sss", coinVolumeJsonStr);
 
 
-               var filterList = datas.filter { Constant.coinList.contains(it.symbol.toUpperCase()+"USDT") }
-
+                var filterList =
+                    datas.filter { Constant.coinList.contains(it.symbol.toUpperCase() + "USDT") }
+                var sortedList = filterList.sortedByDescending { it.quote.USD.market_cap.toBigDecimal() }
                 var str = SpannableStringBuilder()
 
-                for(index in filterList.indices){
-                    val item = filterList[index]
+                for (index in sortedList.indices) {
+                    val item = sortedList[index]
 
                     if (index != 0) {
-                        if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(100_000_000) && filterList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(100_000_000)) {
+                        if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(100_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
+                                100_000_000
+                            )
+                        ) {
                             str.append("-----------------------一亿-------------------------------\n")
                         }
-                        if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(1_000_000_000) && filterList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(1_000_000_000) ) {
+                        if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(1_000_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
+                                1_000_000_000
+                            )
+                        ) {
                             str.append("------------------------十亿------------------------------\n")
                         }
-                        if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(10_000_000_000) && filterList[index - 1].quote.USD.market_cap.toBigDecimal() >=BigDecimal(10_000_000_000) ) {
+                        if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(10_000_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
+                                10_000_000_000
+                            )
+                        ) {
                             str.append("------------------------一百亿------------------------------\n")
                         }
                     }
 
 
-                    str.append("${index+1}. ")
+                    str.append("${index + 1}. ")
 
                     str.append("${item.symbol} ")
 
-                    str.append(StringUtils.getFormattedVolume(item.quote.USD.market_cap))
+//                    str.append(StringUtils.getFormattedVolume(item.quote.USD.market_cap))
+
+                    str.append(NumberTools.amountConversion(item.quote.USD.market_cap.toDouble()))
 
                     str.append("\n")
                 }
