@@ -74,4 +74,9 @@
         android:id="@+id/coinmarketapi"
         android:title="coinmarketapi"
         />
+
+    <item
+        android:id="@+id/downPercent"
+        android:title="downPercent"
+        />
 </menu>

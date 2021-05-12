@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
-    package="org.crashhunter.kline"
-    >
+    package="org.crashhunter.kline">
 
     <dist:module dist:instant="true" />
 
@@ -16,19 +14,18 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
-        <activity android:name=".oneline.DataAnalysisActivity"></activity>
-        <activity android:name=".OneLineActivity"></activity>
+        android:theme="@style/AppTheme">
+        <activity android:name=".oneline.DownPercentActivity"></activity>
+        <activity android:name=".oneline.DataAnalysisActivity" />
+        <activity android:name=".OneLineActivity" />
+
         <service
             android:name=".service.MyIntentService"
-            android:exported="false"
-            />
+            android:exported="false" />
         <service
             android:name=".service.KeyLineService"
             android:enabled="true"
-            android:exported="false"
-            />
+            android:exported="false" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -53,9 +50,8 @@
         <activity android:name=".VolumeRankActivity_binance" />
         <activity android:name=".oneline.KeyLineActivity" />
         <activity android:name="org.crashhunter.app_record.CrashReportAct" />
-
         <activity android:name=".CoinMarketAPIActivity" />
-        <activity android:name=".oneline.ContractListActivity"/>
+        <activity android:name=".oneline.ContractListActivity" />
     </application>
 
 </manifest>

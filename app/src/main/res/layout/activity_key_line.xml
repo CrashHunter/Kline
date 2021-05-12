@@ -33,6 +33,17 @@
                 />
 
             <TextView
+                android:id="@+id/activityName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:text="KeyLineActivity"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                />
+
+            <TextView
                 android:id="@+id/header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
