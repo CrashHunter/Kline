@@ -17,6 +17,7 @@ import org.crashhunter.kline.Constant
 import org.crashhunter.kline.R
 import org.crashhunter.kline.data.SharedPreferenceUtil
 import org.crashhunter.kline.utils.TimeUtils
+import java.math.BigDecimal
 import kotlin.system.measureTimeMillis
 
 class DownPercentActivity : AppCompatActivity() {
@@ -43,28 +44,32 @@ class DownPercentActivity : AppCompatActivity() {
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
                     var amount = 0
-//                    for (coin in Constant.coinList) {
-//                        var n = async {
-//                            getCoinInfo(coin)
-//                        }
-//
-//                    }
-                    getCoinInfo("BTCUSDT")
+                    for (coin in Constant.coinList) {
+                        var n = async {
+                            getCoinKlineData(coin)
+                        }
+
+                    }
+//                    getCoinKlineData("BTCUSDT")
                     amount
                 }
                 Log.d("sss", sum.toString())
             }
             Log.d("sss", time.toString())
+
+            runOnUiThread {
+                tvTitle.text = ""
+                tvTitle.text = stringBuilder
+            }
         }
 
-        runOnUiThread {
-            tvTitle.text = ""
-            tvTitle.text = stringBuilder
-        }
 
     }
 
     private fun getCoinKlineData(coin: String): List<Candlestick> {
+        runOnUiThread {
+            tvTitle.text = "Loading... $coin "
+        }
 
         try {
             var list = syncRequestClient.getCandlestick(
@@ -76,6 +81,26 @@ class DownPercentActivity : AppCompatActivity() {
             )
             Log.d("sss", "showData:$coin")
 
+            var max = BigDecimal.ZERO
+            for (item in list) {
+                if (item.high > max) {
+                    max = item.high
+                }
+            }
+
+            var current = list[list.size - 1].close
+
+            if (max.divide(BigDecimal(2), 4, BigDecimal.ROUND_HALF_UP) > current) {
+                stringBuilder.append(
+                    "$coin $max $current ${
+                        (1 - current.divide(
+                            max,
+                            4,
+                            BigDecimal.ROUND_HALF_UP
+                        ).toDouble()).toString()
+                    } \n \n"
+                )
+            }
             return list
         } catch (e: Exception) {
             Log.e("sss", Log.getStackTraceString(e))
@@ -83,17 +108,5 @@ class DownPercentActivity : AppCompatActivity() {
         return ArrayList<Candlestick>(0)
     }
 
-
-    private suspend fun getCoinInfo(coin: String) {
-//        isCoinInFilter = false
-
-        runOnUiThread {
-            tvTitle.text = "Loading... $coin "
-        }
-
-        var list = getCoinKlineData(coin)
-
-
-    }
 
 }
