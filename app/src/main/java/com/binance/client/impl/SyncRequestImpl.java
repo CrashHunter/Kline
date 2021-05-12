@@ -49,6 +49,12 @@ public class SyncRequestImpl implements SyncRequestClient {
             Long endTime, Integer limit) {
         return RestApiInvoker.callSync(requestImpl.getCandlestick(symbol, interval, startTime, endTime, limit));
     }
+
+    @Override
+    public List<Candlestick> getSPOTCandlestick(String symbol, CandlestickInterval interval, Long startTime,
+                                            Long endTime, Integer limit) {
+        return RestApiInvoker.callSync(requestImpl.getSPOTCandlestick(symbol, interval, startTime, endTime, limit));
+    }
     
     @Override
     public List<MarkPrice> getMarkPrice(String symbol) {

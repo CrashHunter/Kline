@@ -377,6 +377,42 @@ class RestApiRequestImpl {
         return request;
     }
 
+    RestApiRequest<List<Candlestick>> getSPOTCandlestick(String symbol, CandlestickInterval interval, Long startTime,
+                                                     Long endTime, Integer limit) {
+        RestApiRequest<List<Candlestick>> request = new RestApiRequest<>();
+        UrlParamsBuilder builder = UrlParamsBuilder.build()
+                .putToUrl("symbol", symbol)
+                .putToUrl("interval", interval)
+                .putToUrl("startTime", startTime)
+                .putToUrl("endTime", endTime)
+                .putToUrl("limit", limit);
+        request.request = createRequestByGet("/api/v3/klines", builder);
+
+        request.jsonParser = (jsonWrapper -> {
+            List<Candlestick> result = new LinkedList<>();
+            JsonWrapperArray dataArray = jsonWrapper.getJsonArray("data");
+            dataArray.forEachAsArray((item) -> {
+                Candlestick element = new Candlestick();
+                element.setOpenTime(item.getLongAt(0));
+                element.setOpen(item.getBigDecimalAt(1));
+                element.setHigh(item.getBigDecimalAt(2));
+                element.setLow(item.getBigDecimalAt(3));
+                element.setClose(item.getBigDecimalAt(4));
+                element.setVolume(item.getBigDecimalAt(5));
+                element.setCloseTime(item.getLongAt(6));
+                element.setQuoteAssetVolume(item.getBigDecimalAt(7));
+                element.setNumTrades(item.getIntegerAt(8));
+                element.setTakerBuyBaseAssetVolume(item.getBigDecimalAt(9));
+                element.setTakerBuyQuoteAssetVolume(item.getBigDecimalAt(10));
+                element.setIgnore(item.getBigDecimalAt(11));
+                result.add(element);
+            });
+
+            return result;
+        });
+        return request;
+    }
+
     RestApiRequest<List<MarkPrice>> getMarkPrice(String symbol) {
         RestApiRequest<List<MarkPrice>> request = new RestApiRequest<>();
         UrlParamsBuilder builder = UrlParamsBuilder.build()

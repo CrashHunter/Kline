@@ -98,6 +98,13 @@ public interface SyncRequestClient {
     List<Candlestick> getCandlestick(String symbol, CandlestickInterval interval, Long startTime, Long endTime, Integer limit);
 
     /**
+     * Get kline/candlestick bars for a symbol.
+     *
+     * @return Kline/candlestick bars for a symbol.
+     */
+    List<Candlestick> getSPOTCandlestick(String symbol, CandlestickInterval interval, Long startTime, Long endTime, Integer limit);
+
+    /**
      * Get mark price for a symbol.
      *
      * @return Mark price for a symbol.
