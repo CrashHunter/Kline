@@ -13,13 +13,19 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.tvTitle
 import org.crashhunter.kline.data.BaseSharedPreference
 import org.crashhunter.kline.data.CoinInfo
+import org.crashhunter.kline.data.CoinMarketList
 import org.crashhunter.kline.data.LATEST_COIN_LIST
 import org.crashhunter.kline.oneline.KeyLineActivity
+import org.crashhunter.kline.test.CoinMarketAPI
 import org.crashhunter.kline.utils.StringUtils
-import org.jsoup.Jsoup
-import java.io.IOException
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.math.BigDecimal
 
 
@@ -63,7 +69,7 @@ class MainActivity : AppCompatActivity() {
 //        "BNT", "ELF", "BCV", "EKT", "OCEAN",
 //        "ABBC", "LAMB", "BTG", "CRO", "KCS",
 //        "NEXO", "REP", "BCD", "XZC", "MONA"
-    ""
+        ""
     )
 
 //    var foreignList = arrayListOf(
@@ -138,7 +144,7 @@ class MainActivity : AppCompatActivity() {
 
         //Log.e("latestCoinListGet", latestCoinListJsonStr)
 
-        getData()
+        getFromAPi()
 
 //        startService(Intent(this, KeyLineService::class.java))
 
@@ -221,111 +227,164 @@ class MainActivity : AppCompatActivity() {
 //
 //	}
 
-    private fun getData() {
+    private fun getFromAPi() {
+        runOnUiThread {
 
-        tvTitle.text = "Loading..."
-
-        initData()
-
-        object : Thread() {
-            override fun run() {
-                super.run()
-                try {
-
-
-                    var urlStr = "https://coinmarketcap.com/all/views/all/"
-//                    var urlStr = "https://www.baidu.com"
-                    //                    titleStr.append(urlStr)
+            tvTitle.text = "loading getFromAPi"
+        }
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://pro-api.coinmarketcap.com/")
+            .client(CoinMarketAPI.genericClient())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
 
-//                    val httpUtils = HttpUtils.instance
-//                    httpUtils.timeout = 30000
-//                    httpUtils.waitForBackgroundJavaScript = 30000
-//                    val doc = httpUtils.getHtmlPageResponseAsDocument(urlStr)
+        val service = retrofit.create(CoinMarketAPI.ListService::class.java)
 
-//                    val webClient = WebClient(BrowserVersion.CHROME)
-//                    val htmlpage: HtmlPage = webClient.getPage(urlStr)
-//
-//                    val pageAsXml = htmlpage.asXml()
-//                    val doc = Jsoup.parse(pageAsXml, urlStr)
-
-//                    val driver = FirefoxDriver()
-//                    driver.get(urlStr)
-//                    var list = driver.findElements("//*[@id=\"id-waves\"]")
-
-                    val doc = Jsoup.connect(urlStr).get()
-                    contextStr.append(doc.toString())
-                    //Log.e("doc.toString()", doc.toString())
-//                    var icons = doc.select("#currencies-all > tbody > tr")
-                    var icons = doc.select("tr")
-                    Log.e("iconssize", icons.size.toString())
-
-                    for (i in 0 until icons.size) {
-
-                        if (icons[i].select("td").size < 10) {
-                            Log.d("invaild item", icons[i].toString())
-                            //                            titleStr.append("\n invaild item: ${icons[i]} \n")
-                            continue
-                        }
+        val call: Call<CoinMarketList?>? = service.queryList()
 
 
-                        var rank = icons[i].select("td")[0]
-                        //                        Log.e("icon rank", rank.text())
-                        var name =
-                            icons[i].select("td")[2].text() + " " + icons[i].select("td")[1].text()
-                        //                        Log.e("icon name", name.text())
+        call!!.enqueue(object : Callback<CoinMarketList?> {
 
-                        var cap = icons[i].select("td")[3]
-                        //                        Log.e("icon cap", cap.text())
-                        var capStr = cap.text().replace("$", "").replace(",", "")
-
-
-                        var price = icons[i].select("td")[4]
-                        var priceStr = price.text()
+            override fun onResponse(
+                call: Call<CoinMarketList?>,
+                response: Response<CoinMarketList?>
+            ) {
+                var datas = response.body()?.data!!
+                var coinVolumeJsonStr = Gson().toJson(response.body())
 
 
-                        var volume = icons[i].select("td")[6].select("a")
-                        //                        Log.e("icon volume", volume.text())
-                        var volumeStr = volume.text().replace("$", "").replace(",", "")
+                for (i in 0 until datas.size) {
+                    val item = datas.get(i)
 
 
-                        var oneDayPercent = icons[i].select("td")[8]
-                        //                        Log.e("icon oneDayPercent", oneDayPercent.text())
+                    var rank = i
+                    var name = item.name
 
-                        var sevenDaysPercent = icons[i].select("td")[9]
-                        //                        Log.e("icon sevenDaysPercent", sevenDaysPercent.text())
+                    var capStr = item.quote.USD.market_cap
 
+                    var price = item.quote.USD.price.toString()
 
-                        var iconInfo = CoinInfo()
-                        iconInfo.name = name
-                        iconInfo.rank = rank.text().parseLong()
-                        iconInfo.volume = volumeStr.parseLong()
-                        iconInfo.cap = capStr.parseLong()
-                        iconInfo.oneDayPercent =
-                            oneDayPercent.text().replace("%", "").replace("?", "").parseDouble()
-                        iconInfo.sevenDaysPercent =
-                            sevenDaysPercent.text()
-                                .replace("%", "")
-                                .replace("?", "")
-                                .replace(">", "")
-                                .parseDouble()
+                    var volume = item.quote.USD.volume_24h
 
-                        iconInfo.price = priceStr
-                        allCoinList.add(iconInfo)
+                    var oneDayPercent = item.quote.USD.percent_change_24h
+
+                    var sevenDaysPercent = item.quote.USD.percent_change_7d
 
 
-                    }
+                    var iconInfo = CoinInfo()
+                    iconInfo.name = name
+                    iconInfo.rank = rank.toLong()
+                    iconInfo.volume = volume
+                    iconInfo.cap = capStr
+                    iconInfo.oneDayPercent = oneDayPercent
+                    iconInfo.sevenDaysPercent = sevenDaysPercent
 
-                    showAllCap()
+                    iconInfo.price = price
+                    allCoinList.add(iconInfo)
 
 
-                } catch (e: IOException) {
-                    //                    e.printStackTrace()
                 }
 
+                showAllCap()
+
             }
-        }.start()
+
+            override fun onFailure(call: Call<CoinMarketList?>, t: Throwable) {
+                Log.d("sss", Log.getStackTraceString(t));
+
+            }
+        })
     }
+
+
+//    private fun getData() {
+//
+//        tvTitle.text = "Loading..."
+//
+//        initData()
+//
+//        object : Thread() {
+//            override fun run() {
+//                super.run()
+//                try {
+//
+//
+//                    var urlStr = "https://coinmarketcap.com/all/views/all/"
+//
+//                    val doc = Jsoup.connect(urlStr).get()
+//                    contextStr.append(doc.toString())
+//                    //Log.e("doc.toString()", doc.toString())
+////                    var icons = doc.select("#currencies-all > tbody > tr")
+//                    var icons = doc.select("tr")
+//                    Log.e("iconssize", icons.size.toString())
+//
+//                    for (i in 0 until icons.size) {
+//
+//                        if (icons[i].select("td").size < 10) {
+//                            Log.d("invaild item", icons[i].toString())
+//                            //                            titleStr.append("\n invaild item: ${icons[i]} \n")
+//                            continue
+//                        }
+//
+//
+//                        var rank = icons[i].select("td")[0]
+//                        //                        Log.e("icon rank", rank.text())
+//                        var name =
+//                            icons[i].select("td")[2].text() + " " + icons[i].select("td")[1].text()
+//                        //                        Log.e("icon name", name.text())
+//
+//                        var cap = icons[i].select("td")[3]
+//                        //                        Log.e("icon cap", cap.text())
+//                        var capStr = cap.text().replace("$", "").replace(",", "")
+//
+//
+//                        var price = icons[i].select("td")[4]
+//                        var priceStr = price.text()
+//
+//
+//                        var volume = icons[i].select("td")[6].select("a")
+//                        //                        Log.e("icon volume", volume.text())
+//                        var volumeStr = volume.text().replace("$", "").replace(",", "")
+//
+//
+//                        var oneDayPercent = icons[i].select("td")[8]
+//                        //                        Log.e("icon oneDayPercent", oneDayPercent.text())
+//
+//                        var sevenDaysPercent = icons[i].select("td")[9]
+//                        //                        Log.e("icon sevenDaysPercent", sevenDaysPercent.text())
+//
+//
+//                        var iconInfo = CoinInfo()
+//                        iconInfo.name = name
+//                        iconInfo.rank = rank.text().parseLong()
+//                        iconInfo.volume = volumeStr.parseLong()
+//                        iconInfo.cap = capStr.parseLong()
+//                        iconInfo.oneDayPercent =
+//                            oneDayPercent.text().replace("%", "").replace("?", "").parseDouble()
+//                        iconInfo.sevenDaysPercent =
+//                            sevenDaysPercent.text()
+//                                .replace("%", "")
+//                                .replace("?", "")
+//                                .replace(">", "")
+//                                .parseDouble()
+//
+//                        iconInfo.price = priceStr
+//                        allCoinList.add(iconInfo)
+//
+//
+//                    }
+//
+//                    showAllCap()
+//
+//
+//                } catch (e: IOException) {
+//                    //                    e.printStackTrace()
+//                }
+//
+//            }
+//        }.start()
+//    }
 
     private fun initData() {
 
@@ -481,7 +540,7 @@ class MainActivity : AppCompatActivity() {
 
             // contextStr.append(StringUtils.getFormattedVolume(item.cap.toString()) + " ")
             var volumeStr = StringUtils.getFormattedVolume(item.volume.toString()) + " "
-            if (item.volume > volumMin) {
+            if (item.volume > android.icu.math.BigDecimal(volumMin)) {
                 var volumeSpan = SpannableStringBuilder(volumeStr)
                 volumeSpan.setSpan(
                     ForegroundColorSpan(getColor(R.color.brown)),
@@ -622,7 +681,7 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             R.id.refresh -> {
-                getData()
+                getFromAPi()
                 return true
             }
             R.id.allcap -> {
@@ -722,7 +781,9 @@ class MainActivity : AppCompatActivity() {
         contextStr = SpannableStringBuilder()
 
         var smallVolumeCoinList =
-            allCoinList.filter { it.volume in (volumMin + 1)..(volumeMax - 1) }
+            allCoinList.filter { it.volume > android.icu.math.BigDecimal(volumMin + 1) && it.volume < android.icu.math.BigDecimal(
+                volumeMax - 1
+            ) }
 
         smallVolumeCoinList =
             smallVolumeCoinList.filterNot {
@@ -747,7 +808,11 @@ class MainActivity : AppCompatActivity() {
 
         titleStr.append("All: ${allCoinList.size} ")
 
-        currentCoinList = allCoinList.filter { it.volume in (volumMin + 1)..(volumeMax - 1) }
+        currentCoinList = allCoinList.filter {
+            it.volume > android.icu.math.BigDecimal(volumMin + 1) && it.volume < android.icu.math.BigDecimal(
+                volumeMax - 1
+            )
+        }
         titleStr.append("VolEnough: ${currentCoinList.size} ")
 
         currentCoinList =
@@ -796,8 +861,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun showSmallCap() {
 
-        var smallCoinList = currentCoinList.filter { it.cap < capDivider }
-        var smallLatestCoinList = latestCoinList.filter { it.cap < capDivider }
+        var smallCoinList =
+            currentCoinList.filter { it.cap < android.icu.math.BigDecimal(capDivider) }
+        var smallLatestCoinList =
+            latestCoinList.filter { it.cap < android.icu.math.BigDecimal(capDivider) }
         contextStr = SpannableStringBuilder()
 
         getdiffs(smallCoinList, smallLatestCoinList)
@@ -810,8 +877,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun showBigCap() {
 
-        var bigCoinList = currentCoinList.filter { it.cap >= capDivider }
-        var bigLatestCoinList = latestCoinList.filter { it.cap >= capDivider }
+        var bigCoinList =
+            currentCoinList.filter { it.cap >= android.icu.math.BigDecimal(capDivider) }
+        var bigLatestCoinList =
+            latestCoinList.filter { it.cap >= android.icu.math.BigDecimal(capDivider) }
         contextStr = SpannableStringBuilder()
 
         getdiffs(bigCoinList, bigLatestCoinList)
