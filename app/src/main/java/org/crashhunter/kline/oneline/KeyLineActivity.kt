@@ -103,19 +103,25 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 for (index in data.symbols.indices) {
                     var symbol = data.symbols.get(index)
 
-                    if(symbol.symbol.contains("_")){
+                    if (symbol.symbol.contains("_")) {
                         continue;
                     }
 
-                    if(symbol.symbol.contains("CELR")){
+                    if (symbol.symbol.contains("CELR")) {
                         continue;
                     }
+
 
                     stringBuilder.append("   ${++num}. ${symbol.symbol}")
                     stringBuilder.append("\n")
 
                     if (!Constant.coinList.contains(symbol.symbol)) {
-                        Constant.coinList.add(symbol.symbol)
+                        if (symbol.symbol.contains("SHIB")) {
+                            Constant.coinList.add("SHIBUSDT")
+                        } else {
+                            Constant.coinList.add(symbol.symbol)
+                        }
+
                     }
 
                 }

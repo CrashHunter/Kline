@@ -23,8 +23,8 @@ class DownPercentActivity : AppCompatActivity() {
 
     val options = RequestOptions()
     var syncRequestClient = SyncRequestClient.create(
-            PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
-            options
+        PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
+        options
     )
 
     var stringBuilder = SpannableStringBuilder()
@@ -37,8 +37,8 @@ class DownPercentActivity : AppCompatActivity() {
 
         options.url = "https://api.binance.com"
         syncRequestClient = SyncRequestClient.create(
-                PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
-                options
+            PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
+            options
         )
 
         getAllCoins()
@@ -92,35 +92,35 @@ class DownPercentActivity : AppCompatActivity() {
 
             stringBuilder.append("${index + 1}. ")
 
-            stringBuilder.append("$coin $max $current $downPer ")
+            stringBuilder.append("$coin $max / $current / ")
 
             if (downPer > BigDecimal(0.8)) {
                 val span = SpannableStringBuilder("$downPer")
                 span.setSpan(
-                        ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
-                        0,
-                        downPer.toString().length,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+                    0,
+                    downPer.toString().length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
 
                 stringBuilder.append(span)
             } else if (downPer > BigDecimal(0.6)) {
                 val span = SpannableStringBuilder("$downPer")
                 span.setSpan(
-                        ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
-                        0,
-                        downPer.toString().length,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
+                    0,
+                    downPer.toString().length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
 
                 stringBuilder.append(span)
             } else if (downPer > BigDecimal(0.4)) {
                 val span = SpannableStringBuilder("$downPer")
                 span.setSpan(
-                        ForegroundColorSpan(getColor(android.R.color.holo_blue_dark)),
-                        0,
-                        downPer.toString().length,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    ForegroundColorSpan(getColor(android.R.color.holo_blue_dark)),
+                    0,
+                    downPer.toString().length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
 
                 stringBuilder.append(span)
@@ -139,11 +139,11 @@ class DownPercentActivity : AppCompatActivity() {
 
         try {
             var list = syncRequestClient.getSPOTCandlestick(
-                    coin,
-                    CandlestickInterval.MONTHLY,
-                    null,
-                    null,
-                    12
+                coin,
+                CandlestickInterval.MONTHLY,
+                null,
+                null,
+                12
             )
             Log.d("sss", "showData:$coin")
 
@@ -155,7 +155,8 @@ class DownPercentActivity : AppCompatActivity() {
             }
 
             var current = list[list.size - 1].close
-            var downPer = BigDecimal.ONE.subtract(current.divide(max, 4, BigDecimal.ROUND_HALF_UP)).setScale(4, BigDecimal.ROUND_HALF_UP)
+            var downPer = BigDecimal.ONE.subtract(current.divide(max, 4, BigDecimal.ROUND_HALF_UP))
+                .setScale(4, BigDecimal.ROUND_HALF_UP)
 
             var downPerItem = DownPerItem()
             downPerItem.coin = coin
