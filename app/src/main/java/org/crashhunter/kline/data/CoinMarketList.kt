@@ -11,12 +11,12 @@ data class CoinMarketList(
 )
 
 data class Data(
-    val circulating_supply: Double = 0.0,
+    val circulating_supply: String = "",
     val cmc_rank: Int = 0,
     val date_added: String = "",
     val id: Int = 0,
     val last_updated: String = "",
-    val max_supply: BigDecimal = BigDecimal.ONE,
+    val max_supply: String = "",
     val name: String = "",
     val num_market_pairs: Int = 0,
     val platform: Any = Any(),
@@ -24,7 +24,7 @@ data class Data(
     val slug: String = "",
     val symbol: String = "",
     val tags: List<String> = listOf(),
-    val total_supply: BigDecimal = BigDecimal.ONE
+    val total_supply: String = ""
 )
 
 data class Status(
@@ -42,20 +42,20 @@ data class Quote(
 
 data class BTC(
     val last_updated: String = "",
-    val market_cap: BigDecimal = BigDecimal.ONE,
+    val market_cap: String = "",
     val percent_change_1h: Double = 0.0,
     val percent_change_24h: Double = 0.0,
     val percent_change_7d: Double = 0.0,
     val price: Double = 0.0,
-    val volume_24h: BigDecimal = BigDecimal.ONE
+    val volume_24h: String = ""
 )
 
 data class USD(
     val last_updated: String = "",
-    val market_cap: BigDecimal = BigDecimal.ONE,
+    val market_cap: String = "",
     val percent_change_1h: Double = 0.0,
     val percent_change_24h: Double = 0.0,
     val percent_change_7d: Double = 0.0,
     val price: Double = 0.0,
-    val volume_24h: BigDecimal = BigDecimal.ONE
+    val volume_24h: String = ""
 )

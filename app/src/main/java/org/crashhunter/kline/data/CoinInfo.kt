@@ -14,5 +14,5 @@ class CoinInfo {
     var volume: BigDecimal = BigDecimal.ONE
     var oneDayPercent: Double = 0.0
     var sevenDaysPercent: Double = 0.0
-    var price = ""
+    var price : BigDecimal = BigDecimal.ONE
 }

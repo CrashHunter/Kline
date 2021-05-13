@@ -275,12 +275,12 @@ class MainActivity : AppCompatActivity() {
                     var iconInfo = CoinInfo()
                     iconInfo.name = name
                     iconInfo.rank = rank.toLong()
-                    iconInfo.volume = volume
-                    iconInfo.cap = capStr
+                    iconInfo.volume = android.icu.math.BigDecimal(volume)
+                    iconInfo.cap = android.icu.math.BigDecimal(capStr)
                     iconInfo.oneDayPercent = oneDayPercent
                     iconInfo.sevenDaysPercent = sevenDaysPercent
 
-                    iconInfo.price = price
+                    iconInfo.price = android.icu.math.BigDecimal(price)
                     allCoinList.add(iconInfo)
 
 
@@ -292,7 +292,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<CoinMarketList?>, t: Throwable) {
                 Log.d("sss", Log.getStackTraceString(t));
-
+                throw t
             }
         })
     }
@@ -535,7 +535,9 @@ class MainActivity : AppCompatActivity() {
             contextStr.append("No.${item.rank} | ")
 
 
-            contextStr.append(item.price + " \n             ")
+            contextStr.append(
+                item.price.setScale(2, BigDecimal.ROUND_HALF_UP).toString() + " \n   "
+            )
 
 
             // contextStr.append(StringUtils.getFormattedVolume(item.cap.toString()) + " ")
@@ -554,7 +556,8 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-            var oneDayPercentStr = item.oneDayPercent.toString() + " "
+            var oneDayPercentStr = android.icu.math.BigDecimal(item.oneDayPercent)
+                .setScale(2, BigDecimal.ROUND_HALF_UP).toString() + " "
             var oneDayPercentSpan = SpannableStringBuilder(oneDayPercentStr)
             if (item.oneDayPercent > 0) {
                 oneDayPercentSpan.setSpan(
@@ -574,7 +577,8 @@ class MainActivity : AppCompatActivity() {
             contextStr.append(oneDayPercentSpan)
 
 
-            var sevenDaysPercentStr = item.sevenDaysPercent.toString() + "\n"
+            var sevenDaysPercentStr = android.icu.math.BigDecimal(item.sevenDaysPercent)
+                .setScale(2, BigDecimal.ROUND_HALF_UP).toString() + "\n"
             var sevenDaysPercentSpan = SpannableStringBuilder(sevenDaysPercentStr)
             if (item.sevenDaysPercent > 0) {
                 sevenDaysPercentSpan.setSpan(
@@ -781,9 +785,11 @@ class MainActivity : AppCompatActivity() {
         contextStr = SpannableStringBuilder()
 
         var smallVolumeCoinList =
-            allCoinList.filter { it.volume > android.icu.math.BigDecimal(volumMin + 1) && it.volume < android.icu.math.BigDecimal(
-                volumeMax - 1
-            ) }
+            allCoinList.filter {
+                it.volume > android.icu.math.BigDecimal(volumMin + 1) && it.volume < android.icu.math.BigDecimal(
+                    volumeMax - 1
+                )
+            }
 
         smallVolumeCoinList =
             smallVolumeCoinList.filterNot {
