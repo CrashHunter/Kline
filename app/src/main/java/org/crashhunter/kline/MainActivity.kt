@@ -111,12 +111,12 @@ class MainActivity : AppCompatActivity() {
     var handler: Handler = Handler()
 
 
-    var allCoinList = ArrayList<CoinInfo>()
+    var allCoinList: ArrayList<CoinInfo> = ArrayList<CoinInfo>()
 
     lateinit var currentCoinList: List<CoinInfo>
     lateinit var latestCoinList: List<CoinInfo>
 
-    lateinit var diffs: List<CoinInfo>
+//    lateinit var diffs: List<CoinInfo>
 
     var titleStr = StringBuffer()
     var contextStr = SpannableStringBuilder()
@@ -144,9 +144,16 @@ class MainActivity : AppCompatActivity() {
 
         //Log.e("latestCoinListGet", latestCoinListJsonStr)
 
-        getFromAPi()
+        if (latestCoinListJsonStr.isNotEmpty()) {
+            allCoinList =
+                Gson().fromJson(latestCoinListJsonStr, object : TypeToken<ArrayList<CoinInfo>>() {}
+                    .type) as ArrayList<CoinInfo>
+            showAllCap()
+        } else {
+            getFromAPi()
+        }
+//        getFromAPi()
 
-//        startService(Intent(this, KeyLineService::class.java))
 
     }
 
@@ -182,50 +189,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-//	private fun setSLevel() {
-//
-//		SLevel.add("BTC")
-//		SLevel.add("ETH")
-//		SLevel.add("LTC")
-//		SLevel.add("BCH")
-//		SLevel.add("EOS")
-//		SLevel.add("XRP")
-//		SLevel.add("ETC")
-//		SLevel.add("DASH")
-//		SLevel.add("TRX")
-//
-//
-//	}
-//
-//	private fun setALevel() {
-//
-//		ALevel.add("XLM")
-//		ALevel.add("NEO")
-//		ALevel.add("ZEC")
-//		ALevel.add("QTUM")
-//		ALevel.add("BNB")
-//		ALevel.add("ATOM")
-//		ALevel.add("LINK")
-//		ALevel.add("ONT")
-//		ALevel.add("VET")
-//
-//
-//	}
-//
-//	private fun setBLevel() {
-//
-//		BLevel.add("DOGE")
-//		BLevel.add("ADA")
-//		BLevel.add("BTT")
-//		BLevel.add("WAVES")
-//		BLevel.add("XMR")
-//		BLevel.add("XTZ")
-//		BLevel.add("BAT")
-//		BLevel.add("OMG")
-//		BLevel.add("ALGO")
-//		BLevel.add("MCO")
-//
-//	}
 
     private fun getFromAPi() {
         runOnUiThread {
@@ -251,7 +214,8 @@ class MainActivity : AppCompatActivity() {
                 response: Response<CoinMarketList?>
             ) {
                 var datas = response.body()?.data!!
-                var coinVolumeJsonStr = Gson().toJson(response.body())
+                var coinVolumeJsonStr = Gson().toJson(datas)
+
 
 
                 for (i in 0 until datas.size) {
@@ -275,15 +239,19 @@ class MainActivity : AppCompatActivity() {
                     var iconInfo = CoinInfo()
                     iconInfo.name = name
                     iconInfo.rank = rank.toLong()
-                    iconInfo.volume = android.icu.math.BigDecimal(volume)
-                    iconInfo.cap = android.icu.math.BigDecimal(capStr)
+                    iconInfo.volume = volume
+                    iconInfo.cap = capStr
                     iconInfo.oneDayPercent = oneDayPercent
                     iconInfo.sevenDaysPercent = sevenDaysPercent
 
-                    iconInfo.price = android.icu.math.BigDecimal(price)
+                    iconInfo.price = price
                     allCoinList.add(iconInfo)
 
+                }
 
+                if (allCoinList.isNotEmpty()) {
+                    var jsonList = Gson().toJson(allCoinList)
+                    latestCoinListJsonStr = jsonList
                 }
 
                 showAllCap()
@@ -412,64 +380,64 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun displayDiffs(
-        currentCoinList: List<CoinInfo>
-    ) {
+//    private fun displayDiffs(
+//        currentCoinList: List<CoinInfo>
+//    ) {
+//
+//
+//        contextStr.append("-----------Diffs----------- \n")
+//
+//        for (i in 0 until diffs.size) {
+//            var item = diffs[i]
+//
+//
+//            if (currentCoinList.contains(item)) {
+//                var index = currentCoinList.indexOf(item)
+//                var diffNameStr = "+ ${index + 1}.${item.name} No.${item.rank} \n"
+//                var diffNameSpan = SpannableStringBuilder(diffNameStr)
+//
+//                if (filterALevel(item.name)) {
+//                    diffNameSpan.setSpan(
+//                        ForegroundColorSpan(getColor(android.R.color.holo_blue_light)),
+//                        0,
+//                        diffNameStr.length - 1,
+//                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+//                    )
+//                } else {
+//                    diffNameSpan.setSpan(
+//                        ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+//                        0,
+//                        diffNameStr.length - 1,
+//                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+//                    )
+//                }
+//
+//                contextStr.append(diffNameSpan)
+//            } else {
+//                var diffNameStr = "- ${item.name}\n"
+//                var diffNameSpan = SpannableStringBuilder(diffNameStr)
+//                diffNameSpan.setSpan(
+//                    ForegroundColorSpan(getColor(android.R.color.holo_green_dark)),
+//                    0,
+//                    diffNameStr.length - 1,
+//                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+//                )
+//                contextStr.append(diffNameSpan)
+//            }
+//
+//
+//        }
+//    }
 
-
-        contextStr.append("-----------Diffs----------- \n")
-
-        for (i in 0 until diffs.size) {
-            var item = diffs[i]
-
-
-            if (currentCoinList.contains(item)) {
-                var index = currentCoinList.indexOf(item)
-                var diffNameStr = "+ ${index + 1}.${item.name} No.${item.rank} \n"
-                var diffNameSpan = SpannableStringBuilder(diffNameStr)
-
-                if (filterALevel(item.name)) {
-                    diffNameSpan.setSpan(
-                        ForegroundColorSpan(getColor(android.R.color.holo_blue_light)),
-                        0,
-                        diffNameStr.length - 1,
-                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                    )
-                } else {
-                    diffNameSpan.setSpan(
-                        ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
-                        0,
-                        diffNameStr.length - 1,
-                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                    )
-                }
-
-                contextStr.append(diffNameSpan)
-            } else {
-                var diffNameStr = "- ${item.name}\n"
-                var diffNameSpan = SpannableStringBuilder(diffNameStr)
-                diffNameSpan.setSpan(
-                    ForegroundColorSpan(getColor(android.R.color.holo_green_dark)),
-                    0,
-                    diffNameStr.length - 1,
-                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                )
-                contextStr.append(diffNameSpan)
-            }
-
-
-        }
-    }
-
-    private fun getdiffs(
-        currentCoinList: List<CoinInfo>,
-        latestCoinList: List<CoinInfo>
-    ) {
-        diffs = latestCoinList + currentCoinList
-        diffs = diffs.groupBy { it.name }
-            .filter { it.value.size == 1 }
-            .flatMap { it.value }
-    }
+//    private fun getdiffs(
+//        currentCoinList: List<CoinInfo>,
+//        latestCoinList: List<CoinInfo>
+//    ) {
+//        diffs = latestCoinList + currentCoinList
+//        diffs = diffs.groupBy { it.name }
+//            .filter { it.value.size == 1 }
+//            .flatMap { it.value }
+//    }
 
     private fun displayCoinList(
         coinInfos: List<CoinInfo>
@@ -480,19 +448,19 @@ class MainActivity : AppCompatActivity() {
             setLevel(item)
 
             var indexStr = "${i}: "
-            if (diffs.contains(item)) {
-                var indexSpan = SpannableStringBuilder(indexStr)
-                indexSpan.setSpan(
-                    ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
-                    0,
-                    indexStr.length - 1,
-                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                )
-                contextStr.append(indexSpan)
-            } else {
-                contextStr.append(indexStr)
-            }
-
+//            if (diffs.contains(item)) {
+//                var indexSpan = SpannableStringBuilder(indexStr)
+//                indexSpan.setSpan(
+//                    ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+//                    0,
+//                    indexStr.length - 1,
+//                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+//                )
+//                contextStr.append(indexSpan)
+//            } else {
+//                contextStr.append(indexStr)
+//            }
+            contextStr.append(indexStr)
 
             if (filterBLevel(item.name)) {
 
@@ -536,13 +504,13 @@ class MainActivity : AppCompatActivity() {
 
 
             contextStr.append(
-                item.price.setScale(2, BigDecimal.ROUND_HALF_UP).toString() + " \n   "
+                BigDecimal(item.price).setScale(2, BigDecimal.ROUND_HALF_UP).toString() + " \n   "
             )
 
 
             // contextStr.append(StringUtils.getFormattedVolume(item.cap.toString()) + " ")
             var volumeStr = StringUtils.getFormattedVolume(item.volume.toString()) + " "
-            if (item.volume > android.icu.math.BigDecimal(volumMin)) {
+            if (BigDecimal(item.volume) > BigDecimal(volumMin)) {
                 var volumeSpan = SpannableStringBuilder(volumeStr)
                 volumeSpan.setSpan(
                     ForegroundColorSpan(getColor(R.color.brown)),
@@ -556,7 +524,7 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-            var oneDayPercentStr = android.icu.math.BigDecimal(item.oneDayPercent)
+            var oneDayPercentStr = BigDecimal(item.oneDayPercent)
                 .setScale(2, BigDecimal.ROUND_HALF_UP).toString() + " "
             var oneDayPercentSpan = SpannableStringBuilder(oneDayPercentStr)
             if (item.oneDayPercent > 0) {
@@ -577,7 +545,7 @@ class MainActivity : AppCompatActivity() {
             contextStr.append(oneDayPercentSpan)
 
 
-            var sevenDaysPercentStr = android.icu.math.BigDecimal(item.sevenDaysPercent)
+            var sevenDaysPercentStr = BigDecimal(item.sevenDaysPercent)
                 .setScale(2, BigDecimal.ROUND_HALF_UP).toString() + "\n"
             var sevenDaysPercentSpan = SpannableStringBuilder(sevenDaysPercentStr)
             if (item.sevenDaysPercent > 0) {
@@ -685,6 +653,7 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             R.id.refresh -> {
+                allCoinList.clear()
                 getFromAPi()
                 return true
             }
@@ -765,7 +734,7 @@ class MainActivity : AppCompatActivity() {
         if (sortByType == "name") {
             list1 = list1.sortedBy { it.name }
         } else if (sortByType == "volume") {
-            list1 = list1.sortedByDescending { it.volume }
+            list1 = list1.sortedByDescending { BigDecimal(it.volume) }
         } else if (sortByType == "oneDay") {
             list1 = list1.sortedBy { it.oneDayPercent }
         } else if (sortByType == "sevenDay") {
@@ -786,9 +755,7 @@ class MainActivity : AppCompatActivity() {
 
         var smallVolumeCoinList =
             allCoinList.filter {
-                it.volume > android.icu.math.BigDecimal(volumMin + 1) && it.volume < android.icu.math.BigDecimal(
-                    volumeMax - 1
-                )
+                BigDecimal(it.volume) > BigDecimal(volumMin + 1) && BigDecimal(it.volume) < BigDecimal(volumeMax - 1)
             }
 
         smallVolumeCoinList =
@@ -814,8 +781,11 @@ class MainActivity : AppCompatActivity() {
 
         titleStr.append("All: ${allCoinList.size} ")
 
+        var item = allCoinList[0]
+        Log.e("sssaas", item.volume.toString())
+
         currentCoinList = allCoinList.filter {
-            it.volume > android.icu.math.BigDecimal(volumMin + 1) && it.volume < android.icu.math.BigDecimal(
+            BigDecimal(it.volume) > BigDecimal(volumMin + 1) &&  BigDecimal(it.volume) < BigDecimal(
                 volumeMax - 1
             )
         }
@@ -830,22 +800,10 @@ class MainActivity : AppCompatActivity() {
                 .sortedBy { it.sevenDaysPercent }
         titleStr.append("Filter: ${currentCoinList.size}")
 
-        //get latestCoinList
-        if (latestCoinListJsonStr.isNotEmpty()) {
-            latestCoinList =
-                Gson().fromJson(latestCoinListJsonStr, object : TypeToken<List<CoinInfo>>() {}
-                    .type) as List<CoinInfo>
-        }
-
-
-        //save latestCoinList
-        var jsonList = Gson().toJson(currentCoinList)
-        //Log.d("jsonListSave", jsonList)
-        latestCoinListJsonStr = jsonList
-        getdiffs(currentCoinList, latestCoinList)
+//        getdiffs(currentCoinList, latestCoinList)
         sortListRefreshUI()
 
-        displayDiffs(currentCoinList)
+//        displayDiffs(currentCoinList)
     }
 
     private fun showLeverList() {
@@ -868,14 +826,14 @@ class MainActivity : AppCompatActivity() {
     private fun showSmallCap() {
 
         var smallCoinList =
-            currentCoinList.filter { it.cap < android.icu.math.BigDecimal(capDivider) }
+            currentCoinList.filter {  BigDecimal(it.cap) < BigDecimal(capDivider) }
         var smallLatestCoinList =
-            latestCoinList.filter { it.cap < android.icu.math.BigDecimal(capDivider) }
+            latestCoinList.filter { BigDecimal(it.cap) < BigDecimal(capDivider) }
         contextStr = SpannableStringBuilder()
 
-        getdiffs(smallCoinList, smallLatestCoinList)
+//        getdiffs(smallCoinList, smallLatestCoinList)
         displayCoinList(smallCoinList)
-        displayDiffs(smallCoinList)
+//        displayDiffs(smallCoinList)
 
         refreshUI()
 
@@ -884,14 +842,14 @@ class MainActivity : AppCompatActivity() {
     private fun showBigCap() {
 
         var bigCoinList =
-            currentCoinList.filter { it.cap >= android.icu.math.BigDecimal(capDivider) }
+            currentCoinList.filter {  BigDecimal(it.cap)>= BigDecimal(capDivider) }
         var bigLatestCoinList =
-            latestCoinList.filter { it.cap >= android.icu.math.BigDecimal(capDivider) }
+            latestCoinList.filter {  BigDecimal(it.cap) >= BigDecimal(capDivider) }
         contextStr = SpannableStringBuilder()
 
-        getdiffs(bigCoinList, bigLatestCoinList)
+//        getdiffs(bigCoinList, bigLatestCoinList)
         displayCoinList(bigCoinList)
-        displayDiffs(bigCoinList)
+//        displayDiffs(bigCoinList)
 
         refreshUI()
 

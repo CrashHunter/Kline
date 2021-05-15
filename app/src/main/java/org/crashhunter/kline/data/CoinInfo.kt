@@ -10,9 +10,9 @@ class CoinInfo {
 
     var name = ""
     var rank: Long = 0
-    var cap: BigDecimal = BigDecimal.ONE
-    var volume: BigDecimal = BigDecimal.ONE
+    var cap: String = ""
+    var volume: String = ""
     var oneDayPercent: Double = 0.0
     var sevenDaysPercent: Double = 0.0
-    var price : BigDecimal = BigDecimal.ONE
+    var price: String = ""
 }
