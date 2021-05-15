@@ -14,10 +14,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.tvTitle
-import org.crashhunter.kline.data.BaseSharedPreference
-import org.crashhunter.kline.data.CoinInfo
-import org.crashhunter.kline.data.CoinMarketList
-import org.crashhunter.kline.data.LATEST_COIN_LIST
+import org.crashhunter.kline.data.*
 import org.crashhunter.kline.oneline.KeyLineActivity
 import org.crashhunter.kline.test.CoinMarketAPI
 import org.crashhunter.kline.utils.StringUtils
@@ -113,6 +110,8 @@ class MainActivity : AppCompatActivity() {
 
     var allCoinList: ArrayList<CoinInfo> = ArrayList<CoinInfo>()
 
+    var coinMarketList: List<Data> = ArrayList<Data>()
+
     lateinit var currentCoinList: List<CoinInfo>
     lateinit var latestCoinList: List<CoinInfo>
 
@@ -145,9 +144,13 @@ class MainActivity : AppCompatActivity() {
         //Log.e("latestCoinListGet", latestCoinListJsonStr)
 
         if (latestCoinListJsonStr.isNotEmpty()) {
-            allCoinList =
-                Gson().fromJson(latestCoinListJsonStr, object : TypeToken<ArrayList<CoinInfo>>() {}
-                    .type) as ArrayList<CoinInfo>
+//            allCoinList =
+//                Gson().fromJson(latestCoinListJsonStr, object : TypeToken<ArrayList<CoinInfo>>() {}
+//                    .type) as ArrayList<CoinInfo>
+
+            coinMarketList =
+                Gson().fromJson(latestCoinListJsonStr, object : TypeToken<List<Data>>() {}
+                    .type) as List<Data>
             showAllCap()
         } else {
             getFromAPi()
@@ -214,45 +217,14 @@ class MainActivity : AppCompatActivity() {
                 response: Response<CoinMarketList?>
             ) {
                 var datas = response.body()?.data!!
+
+                coinMarketList = datas
+
                 var coinVolumeJsonStr = Gson().toJson(datas)
+//                var jsonList = Gson().toJson(allCoinList)
+                latestCoinListJsonStr = coinVolumeJsonStr
 
 
-
-                for (i in 0 until datas.size) {
-                    val item = datas.get(i)
-
-
-                    var rank = i
-                    var name = item.name
-
-                    var capStr = item.quote.USD.market_cap
-
-                    var price = item.quote.USD.price.toString()
-
-                    var volume = item.quote.USD.volume_24h
-
-                    var oneDayPercent = item.quote.USD.percent_change_24h
-
-                    var sevenDaysPercent = item.quote.USD.percent_change_7d
-
-
-                    var iconInfo = CoinInfo()
-                    iconInfo.name = name
-                    iconInfo.rank = rank.toLong()
-                    iconInfo.volume = volume
-                    iconInfo.cap = capStr
-                    iconInfo.oneDayPercent = oneDayPercent
-                    iconInfo.sevenDaysPercent = sevenDaysPercent
-
-                    iconInfo.price = price
-                    allCoinList.add(iconInfo)
-
-                }
-
-                if (allCoinList.isNotEmpty()) {
-                    var jsonList = Gson().toJson(allCoinList)
-                    latestCoinListJsonStr = jsonList
-                }
 
                 showAllCap()
 
@@ -359,6 +331,7 @@ class MainActivity : AppCompatActivity() {
         volumeMax = maximum
         volumMin = minimum
 
+        coinMarketList = ArrayList<Data>()
         allCoinList = ArrayList<CoinInfo>()
         currentCoinList = ArrayList<CoinInfo>()
         latestCoinList = ArrayList<CoinInfo>()
@@ -755,7 +728,9 @@ class MainActivity : AppCompatActivity() {
 
         var smallVolumeCoinList =
             allCoinList.filter {
-                BigDecimal(it.volume) > BigDecimal(volumMin + 1) && BigDecimal(it.volume) < BigDecimal(volumeMax - 1)
+                BigDecimal(it.volume) > BigDecimal(volumMin + 1) && BigDecimal(it.volume) < BigDecimal(
+                    volumeMax - 1
+                )
             }
 
         smallVolumeCoinList =
@@ -774,6 +749,39 @@ class MainActivity : AppCompatActivity() {
 
     private fun showAllCap() {
 
+        for (i in 0 until coinMarketList.size) {
+            val item = coinMarketList.get(i)
+
+
+            var rank = i
+            var name = item.name
+
+            var capStr = item.quote.USD.market_cap
+
+            var price = item.quote.USD.price.toString()
+
+            var volume = item.quote.USD.volume_24h
+
+            var oneDayPercent = item.quote.USD.percent_change_24h
+
+            var sevenDaysPercent = item.quote.USD.percent_change_7d
+
+
+            var iconInfo = CoinInfo()
+            iconInfo.name = name
+            iconInfo.rank = rank.toLong()
+            iconInfo.volume = volume
+            iconInfo.cap = capStr
+            iconInfo.oneDayPercent = oneDayPercent
+            iconInfo.sevenDaysPercent = sevenDaysPercent
+
+            iconInfo.price = price
+            allCoinList.add(iconInfo)
+
+        }
+
+
+
         volumeMax = maximum
         volumMin = minimum
 
@@ -785,7 +793,7 @@ class MainActivity : AppCompatActivity() {
         Log.e("sssaas", item.volume.toString())
 
         currentCoinList = allCoinList.filter {
-            BigDecimal(it.volume) > BigDecimal(volumMin + 1) &&  BigDecimal(it.volume) < BigDecimal(
+            BigDecimal(it.volume) > BigDecimal(volumMin + 1) && BigDecimal(it.volume) < BigDecimal(
                 volumeMax - 1
             )
         }
@@ -826,7 +834,7 @@ class MainActivity : AppCompatActivity() {
     private fun showSmallCap() {
 
         var smallCoinList =
-            currentCoinList.filter {  BigDecimal(it.cap) < BigDecimal(capDivider) }
+            currentCoinList.filter { BigDecimal(it.cap) < BigDecimal(capDivider) }
         var smallLatestCoinList =
             latestCoinList.filter { BigDecimal(it.cap) < BigDecimal(capDivider) }
         contextStr = SpannableStringBuilder()
@@ -842,9 +850,9 @@ class MainActivity : AppCompatActivity() {
     private fun showBigCap() {
 
         var bigCoinList =
-            currentCoinList.filter {  BigDecimal(it.cap)>= BigDecimal(capDivider) }
+            currentCoinList.filter { BigDecimal(it.cap) >= BigDecimal(capDivider) }
         var bigLatestCoinList =
-            latestCoinList.filter {  BigDecimal(it.cap) >= BigDecimal(capDivider) }
+            latestCoinList.filter { BigDecimal(it.cap) >= BigDecimal(capDivider) }
         contextStr = SpannableStringBuilder()
 
 //        getdiffs(bigCoinList, bigLatestCoinList)

@@ -10,8 +10,9 @@ import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_volume.tvTitle
-import org.crashhunter.kline.data.CoinMarketList
+import org.crashhunter.kline.data.*
 import org.crashhunter.kline.test.CoinMarketAPI
 import org.crashhunter.kline.utils.NumberTools
 import retrofit2.Call
@@ -31,6 +32,13 @@ class CoinMarketAPIActivity : AppCompatActivity() {
     )
 
     var ownCoinList = ArrayList<String>()
+
+    private var latestCoinListJsonStr by BaseSharedPreference(
+        AppController.instance.applicationContext,
+        LATEST_COIN_LIST,
+        ""
+    )
+    var coinMarketList: List<Data> = ArrayList<Data>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,8 +65,14 @@ class CoinMarketAPIActivity : AppCompatActivity() {
                     Log.d("sss", "${item.asset}:${item.free}")
                     ownCoinList.add(item.asset)
                 }
-
-                getFromAPi()
+                if (latestCoinListJsonStr.isNotEmpty()) {
+                    coinMarketList =
+                        Gson().fromJson(latestCoinListJsonStr, object : TypeToken<List<Data>>() {}
+                            .type) as List<Data>
+                    showInfo(coinMarketList)
+                } else {
+                    getFromAPi()
+                }
 
             }
         }.start()
@@ -94,68 +108,7 @@ class CoinMarketAPIActivity : AppCompatActivity() {
                 Log.d("sss", coinVolumeJsonStr);
 
 
-                var filterList =
-                    datas.filter { Constant.coinList.contains(it.symbol.toUpperCase() + "USDT") }
-                var sortedList =
-                    filterList.sortedByDescending { it.quote.USD.market_cap.toBigDecimal() }
-                var str = SpannableStringBuilder()
-
-                for (index in sortedList.indices) {
-                    val item = sortedList[index]
-
-                    if (index != 0) {
-                        if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(100_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
-                                100_000_000
-                            )
-                        ) {
-                            str.append("-----------------------一亿-------------------------------\n")
-                        }
-                        if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(1_000_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
-                                1_000_000_000
-                            )
-                        ) {
-                            str.append("------------------------十亿------------------------------\n")
-                        }
-                        if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(10_000_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
-                                10_000_000_000
-                            )
-                        ) {
-                            str.append("------------------------一百亿------------------------------\n")
-                        }
-                    }
-
-
-                    str.append("${index + 1}. ")
-
-
-                    var symbol = item.symbol + " "
-                    if (ownCoinList.contains(item.symbol)) {
-                        var symbolSpan = SpannableStringBuilder(symbol)
-                        symbolSpan.setSpan(
-                            ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
-                            0,
-                            symbol.length - 1,
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-
-                        str.append(symbolSpan)
-                    } else {
-                        str.append(symbol)
-                    }
-
-
-//                    str.append(StringUtils.getFormattedVolume(item.quote.USD.market_cap))
-
-                    str.append(" " + NumberTools.amountConversion(item.quote.USD.market_cap.toDouble()))
-
-                    str.append("\n")
-                }
-
-                runOnUiThread {
-
-                    tvTitle.text = str
-
-                }
+                showInfo(datas)
 
 
             }
@@ -165,6 +118,71 @@ class CoinMarketAPIActivity : AppCompatActivity() {
 
             }
         })
+    }
+
+    private fun showInfo(datas: List<Data>) {
+        var filterList =
+            datas.filter { Constant.coinList.contains(it.symbol.toUpperCase() + "USDT") }
+        var sortedList =
+            filterList.sortedByDescending { it.quote.USD.market_cap.toBigDecimal() }
+        var str = SpannableStringBuilder()
+
+        for (index in sortedList.indices) {
+            val item = sortedList[index]
+
+            if (index != 0) {
+                if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(100_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
+                        100_000_000
+                    )
+                ) {
+                    str.append("-----------------------一亿-------------------------------\n")
+                }
+                if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(1_000_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
+                        1_000_000_000
+                    )
+                ) {
+                    str.append("------------------------十亿------------------------------\n")
+                }
+                if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(10_000_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
+                        10_000_000_000
+                    )
+                ) {
+                    str.append("------------------------一百亿------------------------------\n")
+                }
+            }
+
+
+            str.append("${index + 1}. ")
+
+
+            var symbol = item.symbol + " "
+            if (ownCoinList.contains(item.symbol)) {
+                var symbolSpan = SpannableStringBuilder(symbol)
+                symbolSpan.setSpan(
+                    ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+                    0,
+                    symbol.length - 1,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                str.append(symbolSpan)
+            } else {
+                str.append(symbol)
+            }
+
+
+    //                    str.append(StringUtils.getFormattedVolume(item.quote.USD.market_cap))
+
+            str.append(" " + NumberTools.amountConversion(item.quote.USD.market_cap.toDouble()))
+
+            str.append("\n")
+        }
+
+        runOnUiThread {
+
+            tvTitle.text = str
+
+        }
     }
 
     private fun setTextColor(txt: String, color: Int): SpannableStringBuilder {
