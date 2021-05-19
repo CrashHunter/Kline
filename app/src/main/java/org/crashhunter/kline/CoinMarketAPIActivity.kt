@@ -181,7 +181,7 @@ class CoinMarketAPIActivity : AppCompatActivity() {
                     val current = item.current
                     val downPer = item.downPer
 
-                    str.append(" / $max / $current / ")
+                    str.append("  ")
 
                     if (downPer > BigDecimal(0.8)) {
                         val span = SpannableStringBuilder("$downPer")
