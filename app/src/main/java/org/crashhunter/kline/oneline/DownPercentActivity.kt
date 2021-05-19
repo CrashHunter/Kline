@@ -165,6 +165,8 @@ class DownPercentActivity : AppCompatActivity() {
             downPerItem.downPer = downPer
             resultList.add(downPerItem)
 
+
+            Constant.downPerItemList = resultList
             return list
         } catch (e: Exception) {
             Log.e("sss", Log.getStackTraceString(e))

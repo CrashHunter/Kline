@@ -175,6 +175,52 @@ class CoinMarketAPIActivity : AppCompatActivity() {
 
             str.append(" " + NumberTools.amountConversion(item.quote.USD.market_cap.toDouble()))
 
+            for (item in Constant.downPerItemList){
+                if (item.coin.contains(symbol.trim())){
+                    val max = item.max
+                    val current = item.current
+                    val downPer = item.downPer
+
+                    str.append(" / $max / $current / ")
+
+                    if (downPer > BigDecimal(0.8)) {
+                        val span = SpannableStringBuilder("$downPer")
+                        span.setSpan(
+                            ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+                            0,
+                            downPer.toString().length,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+
+                        str.append(span)
+                    } else if (downPer > BigDecimal(0.6)) {
+                        val span = SpannableStringBuilder("$downPer")
+                        span.setSpan(
+                            ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
+                            0,
+                            downPer.toString().length,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+
+                        str.append(span)
+                    } else if (downPer > BigDecimal(0.4)) {
+                        val span = SpannableStringBuilder("$downPer")
+                        span.setSpan(
+                            ForegroundColorSpan(getColor(android.R.color.holo_blue_dark)),
+                            0,
+                            downPer.toString().length,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+
+                        str.append(span)
+                    } else {
+                        str.append("$downPer")
+                    }
+
+                    break
+                }
+            }
+
             str.append("\n")
         }
 
