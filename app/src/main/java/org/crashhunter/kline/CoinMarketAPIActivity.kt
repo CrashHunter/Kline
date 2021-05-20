@@ -176,12 +176,12 @@ class CoinMarketAPIActivity : AppCompatActivity() {
             str.append(" " + NumberTools.amountConversion(item.quote.USD.market_cap.toDouble()))
 
             for (item in Constant.downPerItemList){
-                if (item.coin.contains(symbol.trim())){
+                if (item.coin.replace("USDT","").equals(symbol.trim())){
                     val max = item.max
                     val current = item.current
                     val downPer = item.downPer
 
-                    str.append("  ")
+                    str.append(" $max / $current / ")
 
                     if (downPer > BigDecimal(0.8)) {
                         val span = SpannableStringBuilder("$downPer")
@@ -221,7 +221,7 @@ class CoinMarketAPIActivity : AppCompatActivity() {
                 }
             }
 
-            str.append("\n")
+            str.append("\n \n")
         }
 
         runOnUiThread {
