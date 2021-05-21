@@ -9,4 +9,6 @@ object Constant {
 
     var coinList = ArrayList<String>()
     var downPerItemList = ArrayList<DownPerItem>()
+
+    var ownCoinList = ArrayList<String>()
 }

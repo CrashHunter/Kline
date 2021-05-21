@@ -31,7 +31,6 @@ class CoinMarketAPIActivity : AppCompatActivity() {
         options
     )
 
-    var ownCoinList = ArrayList<String>()
 
     private var latestCoinListJsonStr by BaseSharedPreference(
         AppController.instance.applicationContext,
@@ -63,7 +62,7 @@ class CoinMarketAPIActivity : AppCompatActivity() {
                 var filter = data.balances.filter { it.free.toBigDecimal() > BigDecimal.ZERO }
                 for (item in filter) {
                     Log.d("sss", "${item.asset}:${item.free}")
-                    ownCoinList.add(item.asset)
+                    Constant.ownCoinList.add(item.asset)
                 }
                 if (latestCoinListJsonStr.isNotEmpty()) {
                     coinMarketList =
@@ -156,7 +155,7 @@ class CoinMarketAPIActivity : AppCompatActivity() {
 
 
             var symbol = item.symbol + " "
-            if (ownCoinList.contains(item.symbol)) {
+            if (Constant.ownCoinList.contains(item.symbol)) {
                 var symbolSpan = SpannableStringBuilder(symbol)
                 symbolSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
@@ -225,6 +224,7 @@ class CoinMarketAPIActivity : AppCompatActivity() {
         }
 
         runOnUiThread {
+
 
             tvTitle.text = str
 

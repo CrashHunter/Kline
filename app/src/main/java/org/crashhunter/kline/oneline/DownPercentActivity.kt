@@ -127,6 +127,9 @@ class DownPercentActivity : AppCompatActivity() {
             } else {
                 stringBuilder.append("$downPer")
             }
+            if (Constant.ownCoinList.contains(coin.replace("USDT",""))){
+                stringBuilder.append(" OWN")
+            }
 
             stringBuilder.append("\n \n")
         }
