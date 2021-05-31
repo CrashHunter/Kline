@@ -151,9 +151,12 @@ class DownPercentActivity : AppCompatActivity() {
             Log.d("sss", "showData:$coin")
 
             var max = BigDecimal.ZERO
-            for (item in list) {
-                if (item.high > max) {
-                    max = item.high
+            for (index in list.indices) {
+                if (index==0){
+                    continue
+                }
+                if (list.get(index).high > max) {
+                    max = list.get(index).high
                 }
             }
 
