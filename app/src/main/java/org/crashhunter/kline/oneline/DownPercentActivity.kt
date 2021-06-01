@@ -41,6 +41,8 @@ class DownPercentActivity : AppCompatActivity() {
 
     var stringBuilder = SpannableStringBuilder()
 
+    var dailyStringBuilder = SpannableStringBuilder()
+
     var resultList = ArrayList<DownPerItem>()
 
     var dailyResultList = ArrayList<DownPerItem>()
@@ -76,7 +78,7 @@ class DownPercentActivity : AppCompatActivity() {
     private fun routeItem() {
         when (currentItemId) {
             R.id.sort -> {
-                startActivity(Intent(this, DataAnalysisActivity::class.java))
+                getCoinsDaily()
             }
             else -> {
             }
@@ -84,15 +86,15 @@ class DownPercentActivity : AppCompatActivity() {
     }
 
 
-    private fun getAllCoins() {
-
+    private fun getCoinsDaily() {
+        val list = resultList.filter { it.downPer >= BigDecimal(0.7) }
         GlobalScope.launch {
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
                     var amount = 0
-                    for (coin in Constant.coinList) {
+                    for (coin in list) {
                         var n = async {
-                            getCoinKlineData(coin)
+                            getCoinKlineDailyData(coin.coin)
                         }
 
                     }
@@ -103,11 +105,11 @@ class DownPercentActivity : AppCompatActivity() {
             }
             Log.d("sss", time.toString())
 
-            processData()
+            processDailyData()
 
             runOnUiThread {
-                tvTitle.text = ""
-                tvTitle.text = stringBuilder
+                tvDaily.text = ""
+                tvDaily.text = dailyStringBuilder
             }
         }
 
@@ -174,6 +176,61 @@ class DownPercentActivity : AppCompatActivity() {
         }
     }
 
+
+    private fun getAllCoins() {
+
+        GlobalScope.launch {
+            val time = measureTimeMillis {
+                val sum = withContext(Dispatchers.IO) {
+                    var amount = 0
+                    for (coin in Constant.coinList) {
+                        var n = async {
+                            getCoinKlineData(coin)
+                        }
+
+                    }
+//                    getCoinKlineData("BTCUSDT")
+                    amount
+                }
+                Log.d("sss", sum.toString())
+            }
+            Log.d("sss", time.toString())
+
+            processData()
+
+            runOnUiThread {
+                tvTitle.text = ""
+                tvTitle.text = stringBuilder
+            }
+        }
+
+
+    }
+
+    private fun processDailyData() {
+
+        dailyResultList.sortBy { it.rateInc }
+
+
+        for (index in dailyResultList.indices) {
+
+            val item = dailyResultList[index]
+
+
+            val current = item.current
+            val rate = item.rateInc
+            val coin = item.coin
+
+            dailyStringBuilder.append("${index + 1}. ")
+
+            dailyStringBuilder.append("$coin $current / ")
+
+            dailyStringBuilder.append("$rate")
+
+            dailyStringBuilder.append("\n \n")
+        }
+    }
+
     private fun getCoinKlineData(coin: String): List<Candlestick> {
         runOnUiThread {
             tvTitle.text = "Loading... $coin "
@@ -220,10 +277,9 @@ class DownPercentActivity : AppCompatActivity() {
     }
 
 
-
     private fun getCoinKlineDailyData(coin: String): List<Candlestick> {
         runOnUiThread {
-            tvTitle.text = "Loading... $coin "
+            tvDaily.text = "Loading... $coin "
         }
 
         try {
@@ -236,8 +292,8 @@ class DownPercentActivity : AppCompatActivity() {
             )
             Log.d("sss", "showData:$coin")
 
-            var open = list[list.size - 1].open
-            var close = list[list.size - 1].close
+            var open = list[0].open
+            var close = list[0].close
             var diff = close.minus(open)
 
             var rateInc = diff.divide(open, 6, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
@@ -245,6 +301,7 @@ class DownPercentActivity : AppCompatActivity() {
 
             var downPerItem = DownPerItem()
             downPerItem.coin = coin
+            downPerItem.current = close
             downPerItem.rateInc = rateInc
             dailyResultList.add(downPerItem)
 
@@ -257,9 +314,6 @@ class DownPercentActivity : AppCompatActivity() {
         }
         return ArrayList<Candlestick>(0)
     }
-
-
-
 
 
 }
