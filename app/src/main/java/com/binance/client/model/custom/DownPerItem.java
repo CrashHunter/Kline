@@ -8,13 +8,23 @@ import java.math.BigDecimal;
 
 public class DownPerItem {
 
-  private String coin;
+    private String coin;
 
-  private BigDecimal max;
+    private BigDecimal max;
 
-  private BigDecimal current;
+    private BigDecimal current;
 
-  private BigDecimal downPer;
+    private BigDecimal downPer;
+
+    private BigDecimal rateInc;
+
+    public BigDecimal getRateInc() {
+        return rateInc;
+    }
+
+    public void setRateInc(BigDecimal rateInc) {
+        this.rateInc = rateInc;
+    }
 
     public String getCoin() {
         return coin;

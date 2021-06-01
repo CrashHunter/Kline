@@ -1,11 +1,15 @@
 package org.crashhunter.kline.oneline
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.alibaba.fastjson.JSON
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
@@ -13,9 +17,15 @@ import com.binance.client.model.custom.DownPerItem
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
 import kotlinx.android.synthetic.main.activity_down_percent.*
+import kotlinx.android.synthetic.main.activity_down_percent.tvTitle
+import kotlinx.android.synthetic.main.activity_key_line.*
 import kotlinx.coroutines.*
+import org.crashhunter.kline.AppController
+import org.crashhunter.kline.CoinMarketAPIActivity
 import org.crashhunter.kline.Constant
 import org.crashhunter.kline.R
+import org.crashhunter.kline.data.SharedPreferenceUtil
+import org.crashhunter.kline.utils.TimeUtils
 import java.math.BigDecimal
 import kotlin.system.measureTimeMillis
 
@@ -27,9 +37,13 @@ class DownPercentActivity : AppCompatActivity() {
         options
     )
 
+    var currentItemId = R.id.oneDay
+
     var stringBuilder = SpannableStringBuilder()
 
     var resultList = ArrayList<DownPerItem>()
+
+    var dailyResultList = ArrayList<DownPerItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +56,31 @@ class DownPercentActivity : AppCompatActivity() {
         )
 
         getAllCoins()
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.downpercent_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+
+        currentItemId = item.itemId
+        routeItem()
+        return true
+    }
+
+    private fun routeItem() {
+        when (currentItemId) {
+            R.id.sort -> {
+                startActivity(Intent(this, DataAnalysisActivity::class.java))
+            }
+            else -> {
+            }
+        }
     }
 
 
@@ -127,7 +166,7 @@ class DownPercentActivity : AppCompatActivity() {
             } else {
                 stringBuilder.append("$downPer")
             }
-            if (Constant.ownCoinList.contains(coin.replace("USDT",""))){
+            if (Constant.ownCoinList.contains(coin.replace("USDT", ""))) {
                 stringBuilder.append(" OWN")
             }
 
@@ -152,7 +191,7 @@ class DownPercentActivity : AppCompatActivity() {
 
             var max = BigDecimal.ZERO
             for (index in list.indices) {
-                if (index==0){
+                if (index == 0) {
                     continue
                 }
                 if (list.get(index).high > max) {
@@ -179,6 +218,48 @@ class DownPercentActivity : AppCompatActivity() {
         }
         return ArrayList<Candlestick>(0)
     }
+
+
+
+    private fun getCoinKlineDailyData(coin: String): List<Candlestick> {
+        runOnUiThread {
+            tvTitle.text = "Loading... $coin "
+        }
+
+        try {
+            var list = syncRequestClient.getSPOTCandlestick(
+                coin,
+                CandlestickInterval.DAILY,
+                null,
+                null,
+                2
+            )
+            Log.d("sss", "showData:$coin")
+
+            var open = list[list.size - 1].open
+            var close = list[list.size - 1].close
+            var diff = close.minus(open)
+
+            var rateInc = diff.divide(open, 6, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
+
+
+            var downPerItem = DownPerItem()
+            downPerItem.coin = coin
+            downPerItem.rateInc = rateInc
+            dailyResultList.add(downPerItem)
+
+
+            return list
+
+
+        } catch (e: Exception) {
+            Log.e("sss", Log.getStackTraceString(e))
+        }
+        return ArrayList<Candlestick>(0)
+    }
+
+
+
 
 
 }
