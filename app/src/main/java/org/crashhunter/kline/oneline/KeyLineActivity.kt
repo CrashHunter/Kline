@@ -116,15 +116,13 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                     stringBuilder.append("\n")
 
                     if (!Constant.coinList.contains(symbol.symbol)) {
-                        if (symbol.symbol.contains("SHIB")) {
-                            Constant.coinList.add("SHIBUSDT")
-                        } else {
-                            Constant.coinList.add(symbol.symbol)
-                        }
+                        Constant.coinList.add(symbol.symbol)
 
+                        Log.d("sss", "coinList: ${symbol.symbol}")
                     }
 
                 }
+
 
                 runOnUiThread {
 
@@ -832,7 +830,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 null,
                 historyRange
             )
-            Log.d("sss", "showData:$coin")
+            Log.d("sss", "showData: $coin")
 
             //Log.d("sss", list.toString())
             SharedPreferenceUtil.saveData(

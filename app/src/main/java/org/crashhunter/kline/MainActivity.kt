@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     val capDivider = 100 * 1000000
 
-    val topNum = 0
+    val topNum = -1
 
     var sortByType = "volume"
 
@@ -162,33 +162,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setLever() {
 
-        leverList.add("ADA")
-        leverList.add("ATOM")
-        leverList.add("BAT")
-        leverList.add("BCH")
-        leverList.add("BNB")
-        leverList.add("BTC")
-        leverList.add("DASH")
-        leverList.add("DASH")
-        leverList.add("EOS")
-        leverList.add("ETC")
-        leverList.add("ETH")
-        leverList.add("IOST")
-        leverList.add("IOTA")
-        leverList.add("LINK")
-        leverList.add("LTC")
-        leverList.add("MATIC")
-        leverList.add("NEO")
-        leverList.add("ONT")
-        leverList.add("QTUM")
-        leverList.add("RVN")
-        leverList.add("TRX")
-        leverList.add("VET")
-        leverList.add("XLM")
-        leverList.add("XMR")
-        leverList.add("XRP")
-        leverList.add("XTZ")
-        leverList.add("ZEC")
 
     }
 
@@ -754,7 +727,7 @@ class MainActivity : AppCompatActivity() {
 
 
             var rank = i
-            var name = item.name
+            var name = item.symbol
 
             var capStr = item.quote.USD.market_cap
 
@@ -790,7 +763,7 @@ class MainActivity : AppCompatActivity() {
         titleStr.append("All: ${allCoinList.size} ")
 
         var item = allCoinList[0]
-        Log.e("sssaas", item.volume.toString())
+        Log.e("sss", item.name.toString())
 
         currentCoinList = allCoinList.filter {
             BigDecimal(it.volume) > BigDecimal(volumMin + 1) && BigDecimal(it.volume) < BigDecimal(
