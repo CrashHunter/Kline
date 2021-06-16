@@ -742,7 +742,7 @@ class MainActivity : AppCompatActivity() {
 
             var iconInfo = CoinInfo()
             iconInfo.name = name
-            iconInfo.rank = rank.toLong()
+            iconInfo.rank = rank.toLong() + 1
             iconInfo.volume = volume
             iconInfo.cap = capStr
             iconInfo.oneDayPercent = oneDayPercent

@@ -1,6 +1,5 @@
 package org.crashhunter.kline.oneline
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -9,7 +8,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.alibaba.fastjson.JSON
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
@@ -18,14 +16,9 @@ import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
 import kotlinx.android.synthetic.main.activity_down_percent.*
 import kotlinx.android.synthetic.main.activity_down_percent.tvTitle
-import kotlinx.android.synthetic.main.activity_key_line.*
 import kotlinx.coroutines.*
-import org.crashhunter.kline.AppController
-import org.crashhunter.kline.CoinMarketAPIActivity
 import org.crashhunter.kline.Constant
 import org.crashhunter.kline.R
-import org.crashhunter.kline.data.SharedPreferenceUtil
-import org.crashhunter.kline.utils.TimeUtils
 import java.math.BigDecimal
 import kotlin.system.measureTimeMillis
 
@@ -94,7 +87,7 @@ class DownPercentActivity : AppCompatActivity() {
                     var amount = 0
                     for (coin in list) {
                         var n = async {
-                            getCoinKlineDailyData(coin.coin)
+                            getCoinKlineDailyData(coin)
                         }
 
                     }
@@ -128,51 +121,56 @@ class DownPercentActivity : AppCompatActivity() {
             val max = item.max
 
             val current = item.current
-            val downPer = item.downPer
+
             val coin = item.coin
 
             stringBuilder.append("${index + 1}. ")
 
             stringBuilder.append("$coin $max / $current / ")
 
-            if (downPer > BigDecimal(0.8)) {
-                val span = SpannableStringBuilder("$downPer")
-                span.setSpan(
-                    ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
-                    0,
-                    downPer.toString().length,
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-
-                stringBuilder.append(span)
-            } else if (downPer > BigDecimal(0.6)) {
-                val span = SpannableStringBuilder("$downPer")
-                span.setSpan(
-                    ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
-                    0,
-                    downPer.toString().length,
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-
-                stringBuilder.append(span)
-            } else if (downPer > BigDecimal(0.4)) {
-                val span = SpannableStringBuilder("$downPer")
-                span.setSpan(
-                    ForegroundColorSpan(getColor(android.R.color.holo_blue_dark)),
-                    0,
-                    downPer.toString().length,
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-
-                stringBuilder.append(span)
-            } else {
-                stringBuilder.append("$downPer")
-            }
+            downPerColor(item, stringBuilder)
             if (Constant.ownCoinList.contains(coin.replace("USDT", ""))) {
                 stringBuilder.append(" OWN")
             }
 
             stringBuilder.append("\n \n")
+        }
+    }
+
+    private fun downPerColor(item: DownPerItem, stringBuilder: SpannableStringBuilder) {
+        val downPer = item.downPer
+        if (downPer > BigDecimal(0.8)) {
+            val span = SpannableStringBuilder("$downPer")
+            span.setSpan(
+                ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+                0,
+                downPer.toString().length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            stringBuilder.append(span)
+        } else if (downPer > BigDecimal(0.6)) {
+            val span = SpannableStringBuilder("$downPer")
+            span.setSpan(
+                ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
+                0,
+                downPer.toString().length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            stringBuilder.append(span)
+        } else if (downPer > BigDecimal(0.4)) {
+            val span = SpannableStringBuilder("$downPer")
+            span.setSpan(
+                ForegroundColorSpan(getColor(android.R.color.holo_blue_dark)),
+                0,
+                downPer.toString().length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            stringBuilder.append(span)
+        } else {
+            stringBuilder.append("$downPer")
         }
     }
 
@@ -216,7 +214,6 @@ class DownPercentActivity : AppCompatActivity() {
 
             val item = dailyResultList[index]
 
-
             val current = item.current
             val rate = item.rateInc
             val coin = item.coin
@@ -225,7 +222,9 @@ class DownPercentActivity : AppCompatActivity() {
 
             dailyStringBuilder.append("$coin $current / ")
 
-            dailyStringBuilder.append("$rate")
+            dailyStringBuilder.append("$rate / ")
+
+            downPerColor(item, dailyStringBuilder)
 
             dailyStringBuilder.append("\n \n")
         }
@@ -277,14 +276,14 @@ class DownPercentActivity : AppCompatActivity() {
     }
 
 
-    private fun getCoinKlineDailyData(coin: String): List<Candlestick> {
+    private fun getCoinKlineDailyData(coin: DownPerItem): List<Candlestick> {
         runOnUiThread {
             tvDaily.text = "Loading... $coin "
         }
 
         try {
             var list = syncRequestClient.getSPOTCandlestick(
-                coin,
+                coin.coin,
                 CandlestickInterval.DAILY,
                 null,
                 null,
@@ -300,9 +299,10 @@ class DownPercentActivity : AppCompatActivity() {
 
 
             var downPerItem = DownPerItem()
-            downPerItem.coin = coin
+            downPerItem.coin = coin.coin
             downPerItem.current = close
             downPerItem.rateInc = rateInc
+            downPerItem.downPer = coin.downPer
             dailyResultList.add(downPerItem)
 
 
