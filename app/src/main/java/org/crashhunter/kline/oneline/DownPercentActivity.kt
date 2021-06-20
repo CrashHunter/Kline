@@ -40,6 +40,7 @@ class DownPercentActivity : AppCompatActivity() {
 
     var dailyResultList = ArrayList<DownPerItem>()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_down_percent)
@@ -50,8 +51,10 @@ class DownPercentActivity : AppCompatActivity() {
             options
         )
 
+
         getAllCoins()
     }
+
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -80,7 +83,10 @@ class DownPercentActivity : AppCompatActivity() {
 
 
     private fun getCoinsDaily() {
-        val list = resultList.filter { it.downPer >= BigDecimal(0.7) }
+
+        var sortLine = tvRate.text.toString()
+
+        val list = resultList.filter { it.downPer >= BigDecimal(sortLine) }
         GlobalScope.launch {
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
@@ -208,7 +214,7 @@ class DownPercentActivity : AppCompatActivity() {
     private fun processDailyData() {
 
         dailyResultList.sortBy { it.rateInc }
-
+        dailyStringBuilder.clear()
 
         for (index in dailyResultList.indices) {
 
@@ -277,8 +283,9 @@ class DownPercentActivity : AppCompatActivity() {
 
 
     private fun getCoinKlineDailyData(coin: DownPerItem): List<Candlestick> {
+        dailyResultList.clear()
         runOnUiThread {
-            tvDaily.text = "Loading... $coin "
+            tvDaily.text = "Loading... ${coin.coin} "
         }
 
         try {
