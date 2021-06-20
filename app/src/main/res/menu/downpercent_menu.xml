@@ -4,8 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
     <item
-        android:id="@+id/sort"
-        android:title="sort"
+        android:id="@+id/Daily"
+        android:title="Daily"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/Week"
+        android:title="Week"
         app:showAsAction="always"
         />
 </menu>

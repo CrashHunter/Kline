@@ -73,8 +73,11 @@ class DownPercentActivity : AppCompatActivity() {
 
     private fun routeItem() {
         when (currentItemId) {
-            R.id.sort -> {
-                getCoinsDaily()
+            R.id.Daily -> {
+                getCoinsInterval(CandlestickInterval.DAILY)
+            }
+            R.id.Week -> {
+                getCoinsInterval(CandlestickInterval.WEEKLY)
             }
             else -> {
             }
@@ -82,7 +85,7 @@ class DownPercentActivity : AppCompatActivity() {
     }
 
 
-    private fun getCoinsDaily() {
+    private fun getCoinsInterval(interval :CandlestickInterval) {
 
         var sortLine = tvRate.text.toString()
 
@@ -93,7 +96,7 @@ class DownPercentActivity : AppCompatActivity() {
                     var amount = 0
                     for (coin in list) {
                         var n = async {
-                            getCoinKlineDailyData(coin)
+                            getCoinKlineIntervalData(coin,interval)
                         }
 
                     }
@@ -189,7 +192,13 @@ class DownPercentActivity : AppCompatActivity() {
                     var amount = 0
                     for (coin in Constant.coinList) {
                         var n = async {
-                            getCoinKlineData(coin)
+
+                            if (coin.contains("SHIB")) {
+                                getCoinKlineData("SHIBUSDT")
+                            }else {
+                                getCoinKlineData(coin)
+                            }
+
                         }
 
                     }
@@ -237,6 +246,8 @@ class DownPercentActivity : AppCompatActivity() {
     }
 
     private fun getCoinKlineData(coin: String): List<Candlestick> {
+
+
         runOnUiThread {
             tvTitle.text = "Loading... $coin "
         }
@@ -282,16 +293,16 @@ class DownPercentActivity : AppCompatActivity() {
     }
 
 
-    private fun getCoinKlineDailyData(coin: DownPerItem): List<Candlestick> {
+    private fun getCoinKlineIntervalData(coin: DownPerItem, interval :CandlestickInterval): List<Candlestick> {
         dailyResultList.clear()
         runOnUiThread {
-            tvDaily.text = "Loading... ${coin.coin} "
+            tvDaily.text = "Loading... $coin $interval"
         }
 
         try {
             var list = syncRequestClient.getSPOTCandlestick(
                 coin.coin,
-                CandlestickInterval.DAILY,
+                interval,
                 null,
                 null,
                 2
