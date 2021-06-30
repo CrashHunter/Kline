@@ -17,7 +17,6 @@ import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
-import kotlinx.android.synthetic.main.activity_data_analysis.*
 import kotlinx.android.synthetic.main.activity_key_line.*
 import kotlinx.android.synthetic.main.activity_key_line.header
 import kotlinx.android.synthetic.main.activity_key_line.seekBar
@@ -25,7 +24,6 @@ import kotlinx.android.synthetic.main.activity_key_line.swipeRefresh
 import kotlinx.android.synthetic.main.activity_key_line.tvTitle
 import kotlinx.coroutines.*
 import org.crashhunter.kline.AppController
-import org.crashhunter.kline.CoinMarketAPIActivity
 import org.crashhunter.kline.Constant
 import org.crashhunter.kline.R
 import org.crashhunter.kline.data.KeyLineCoin

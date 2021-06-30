@@ -287,7 +287,7 @@ class DownPercentActivity : AppCompatActivity() {
             Constant.downPerItemList = resultList
             return list
         } catch (e: Exception) {
-            Log.e("sss", Log.getStackTraceString(e))
+            Log.e("sss", "$coin: "+Log.getStackTraceString(e))
         }
         return ArrayList<Candlestick>(0)
     }

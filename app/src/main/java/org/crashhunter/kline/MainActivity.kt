@@ -15,6 +15,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.tvTitle
 import org.crashhunter.kline.data.*
+import org.crashhunter.kline.oneline.CoinMarketAPIActivity
 import org.crashhunter.kline.oneline.KeyLineActivity
 import org.crashhunter.kline.test.CoinMarketAPI
 import org.crashhunter.kline.utils.StringUtils

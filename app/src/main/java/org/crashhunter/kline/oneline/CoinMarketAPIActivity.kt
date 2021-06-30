@@ -1,4 +1,4 @@
-package org.crashhunter.kline
+package org.crashhunter.kline.oneline
 
 import android.os.Bundle
 import android.text.SpannableStringBuilder
@@ -12,6 +12,9 @@ import com.binance.client.examples.constants.PrivateConfig
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_volume.tvTitle
+import org.crashhunter.kline.AppController
+import org.crashhunter.kline.Constant
+import org.crashhunter.kline.R
 import org.crashhunter.kline.data.*
 import org.crashhunter.kline.test.CoinMarketAPI
 import org.crashhunter.kline.utils.NumberTools
@@ -121,7 +124,7 @@ class CoinMarketAPIActivity : AppCompatActivity() {
 
     private fun showInfo(datas: List<Data>) {
         var filterList =
-            datas.filter { Constant.coinList.contains(it.symbol.toUpperCase() + "USDT") }
+            datas.filter { Constant.coinList.contains(it.symbol.toUpperCase() + "USDT") || it.symbol.contains("SHIB")}
         var sortedList =
             filterList.sortedByDescending { it.quote.USD.market_cap.toBigDecimal() }
         var str = SpannableStringBuilder()
