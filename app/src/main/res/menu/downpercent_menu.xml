@@ -14,4 +14,9 @@
         android:title="Week"
         app:showAsAction="always"
         />
+    <item
+        android:id="@+id/Month"
+        android:title="Month"
+        app:showAsAction="always"
+        />
 </menu>

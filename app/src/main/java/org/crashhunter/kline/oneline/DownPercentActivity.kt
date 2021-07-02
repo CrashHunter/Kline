@@ -79,6 +79,9 @@ class DownPercentActivity : AppCompatActivity() {
             R.id.Week -> {
                 getCoinsInterval(CandlestickInterval.WEEKLY)
             }
+            R.id.Month -> {
+                getCoinsInterval(CandlestickInterval.MONTHLY)
+            }
             else -> {
             }
         }
@@ -296,7 +299,7 @@ class DownPercentActivity : AppCompatActivity() {
     private fun getCoinKlineIntervalData(coin: DownPerItem, interval :CandlestickInterval): List<Candlestick> {
         dailyResultList.clear()
         runOnUiThread {
-            tvDaily.text = "Loading... $coin $interval"
+            tvDaily.text = "Loading... ${coin.coin} $interval"
         }
 
         try {
