@@ -12,9 +12,28 @@ public class DownPerItem {
 
     private BigDecimal max;
 
+    private BigDecimal min;
+
     private BigDecimal current;
 
+    public BigDecimal getMin() {
+        return min;
+    }
+
+    public void setMin(BigDecimal min) {
+        this.min = min;
+    }
+
+    public BigDecimal getUpPer() {
+        return upPer;
+    }
+
+    public void setUpPer(BigDecimal upPer) {
+        this.upPer = upPer;
+    }
+
     private BigDecimal downPer;
+    private BigDecimal upPer;
 
     private BigDecimal rateInc;
 

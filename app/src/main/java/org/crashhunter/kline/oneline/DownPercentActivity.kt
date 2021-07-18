@@ -56,7 +56,6 @@ class DownPercentActivity : AppCompatActivity() {
     }
 
 
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.downpercent_menu, menu)
@@ -82,13 +81,29 @@ class DownPercentActivity : AppCompatActivity() {
             R.id.Month -> {
                 getCoinsInterval(CandlestickInterval.MONTHLY)
             }
+            R.id.UpPer -> {
+                processUpData()
+
+                runOnUiThread {
+                    tvTitle.text = ""
+                    tvTitle.text = stringBuilder
+                }
+            }
+            R.id.DownPer -> {
+                processDownData()
+
+                runOnUiThread {
+                    tvTitle.text = ""
+                    tvTitle.text = stringBuilder
+                }
+            }
             else -> {
             }
         }
     }
 
 
-    private fun getCoinsInterval(interval :CandlestickInterval) {
+    private fun getCoinsInterval(interval: CandlestickInterval) {
 
         var sortLine = tvRate.text.toString()
 
@@ -99,7 +114,7 @@ class DownPercentActivity : AppCompatActivity() {
                     var amount = 0
                     for (coin in list) {
                         var n = async {
-                            getCoinKlineIntervalData(coin,interval)
+                            getCoinKlineIntervalData(coin, interval)
                         }
 
                     }
@@ -121,8 +136,75 @@ class DownPercentActivity : AppCompatActivity() {
 
     }
 
-    private fun processData() {
+    private fun processUpData() {
+        stringBuilder.clear()
+        resultList.sortBy { it.upPer }
 
+
+        for (index in resultList.indices) {
+
+            val item = resultList[index]
+
+            val min = item.min
+
+            val current = item.current
+
+            val coin = item.coin
+
+            stringBuilder.append("${index + 1}. ")
+
+            stringBuilder.append("$coin $min / $current / ")
+
+            upPerColor(item, stringBuilder)
+            if (Constant.ownCoinList.contains(coin.replace("USDT", ""))) {
+                stringBuilder.append(" OWN")
+            }
+
+            stringBuilder.append("\n \n")
+        }
+    }
+
+    private fun upPerColor(item: DownPerItem, stringBuilder: SpannableStringBuilder) {
+        val upPer = item.upPer
+//        if (downPer > BigDecimal(0.8)) {
+//            val span = SpannableStringBuilder("$downPer")
+//            span.setSpan(
+//                ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+//                0,
+//                downPer.toString().length,
+//                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+//            )
+//
+//            stringBuilder.append(span)
+//        } else if (downPer > BigDecimal(0.6)) {
+//            val span = SpannableStringBuilder("$downPer")
+//            span.setSpan(
+//                ForegroundColorSpan(getColor(android.R.color.holo_orange_dark)),
+//                0,
+//                downPer.toString().length,
+//                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+//            )
+//
+//            stringBuilder.append(span)
+//        } else if (downPer > BigDecimal(0.4)) {
+//            val span = SpannableStringBuilder("$downPer")
+//            span.setSpan(
+//                ForegroundColorSpan(getColor(android.R.color.holo_blue_dark)),
+//                0,
+//                downPer.toString().length,
+//                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+//            )
+//
+//            stringBuilder.append(span)
+//        } else {
+//            stringBuilder.append("$downPer")
+//        }
+
+        stringBuilder.append("$upPer")
+    }
+
+    private fun processDownData() {
+        stringBuilder.clear()
         resultList.sortByDescending { it.downPer }
 
 
@@ -198,7 +280,7 @@ class DownPercentActivity : AppCompatActivity() {
 
                             if (coin.contains("SHIB")) {
                                 getCoinKlineData("SHIBUSDT")
-                            }else {
+                            } else {
                                 getCoinKlineData(coin)
                             }
 
@@ -212,7 +294,7 @@ class DownPercentActivity : AppCompatActivity() {
             }
             Log.d("sss", time.toString())
 
-            processData()
+            processDownData()
 
             runOnUiThread {
                 tvTitle.text = ""
@@ -256,16 +338,18 @@ class DownPercentActivity : AppCompatActivity() {
         }
 
         try {
+            //没有YEAR的维度，最大到月
             var list = syncRequestClient.getSPOTCandlestick(
                 coin,
                 CandlestickInterval.MONTHLY,
                 null,
                 null,
-                12
+                36
             )
             Log.d("sss", "showData:$coin")
 
             var max = BigDecimal.ZERO
+            var min = BigDecimal(9999999999)
             for (index in list.indices) {
                 if (index == 0) {
                     continue
@@ -273,30 +357,42 @@ class DownPercentActivity : AppCompatActivity() {
                 if (list.get(index).high > max) {
                     max = list.get(index).high
                 }
+
+                if (list.get(index).low < min && list.get(index).low > BigDecimal.ZERO&& list.get(index).low != BigDecimal(0.0001)) {
+                    min = list.get(index).low
+                }
             }
 
             var current = list[list.size - 1].close
             var downPer = BigDecimal.ONE.subtract(current.divide(max, 4, BigDecimal.ROUND_HALF_UP))
                 .setScale(4, BigDecimal.ROUND_HALF_UP)
 
+            var upPer = current.divide(min, 4, BigDecimal.ROUND_HALF_UP)
+
+
             var downPerItem = DownPerItem()
             downPerItem.coin = coin
             downPerItem.current = current
             downPerItem.max = max
+            downPerItem.min = min
             downPerItem.downPer = downPer
+            downPerItem.upPer = upPer
             resultList.add(downPerItem)
 
 
             Constant.downPerItemList = resultList
             return list
         } catch (e: Exception) {
-            Log.e("sss", "$coin: "+Log.getStackTraceString(e))
+            Log.e("sss", "$coin: " + Log.getStackTraceString(e))
         }
         return ArrayList<Candlestick>(0)
     }
 
 
-    private fun getCoinKlineIntervalData(coin: DownPerItem, interval :CandlestickInterval): List<Candlestick> {
+    private fun getCoinKlineIntervalData(
+        coin: DownPerItem,
+        interval: CandlestickInterval
+    ): List<Candlestick> {
         dailyResultList.clear()
         runOnUiThread {
             tvDaily.text = "Loading... ${coin.coin} $interval"
