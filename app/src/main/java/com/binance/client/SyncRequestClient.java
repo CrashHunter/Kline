@@ -82,13 +82,20 @@ public interface SyncRequestClient {
      * @return Old trades.
      */
     List<Trade> getOldTrades(String symbol, Integer limit, Long fromId);
-
+    List<Trade> getSPOTOldTrades(String symbol, Integer limit, Long fromId);
     /**
      * Get compressed, aggregate trades.
      *
      * @return Aggregate trades.
      */
     List<AggregateTrade> getAggregateTrades(String symbol, Long fromId, Long startTime, Long endTime, Integer limit);
+
+    /**
+     * Get compressed, aggregate trades.
+     *
+     * @return Aggregate trades.
+     */
+    List<AggregateTrade> getSPOTAggregateTrades(String symbol, Long fromId, Long startTime, Long endTime, Integer limit);
 
     /**
      * Get kline/candlestick bars for a symbol.
@@ -283,6 +290,7 @@ public interface SyncRequestClient {
      * @return Trades.
      */
     List<MyTrade> getAccountTrades(String symbol, Long startTime, Long endTime, Long fromId, Integer limit);
+    List<MyTrade> getSPOTAccountTrades(String symbol, Long startTime, Long endTime, Long fromId, Integer limit);
 
     /**
      * Get income history.

@@ -13,13 +13,19 @@ import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.custom.DownPerItem
 import com.binance.client.model.enums.CandlestickInterval
+import com.binance.client.model.market.AggregateTrade
 import com.binance.client.model.market.Candlestick
+import com.binance.client.model.market.Trade
+import com.binance.client.model.trade.MyTrade
 import kotlinx.android.synthetic.main.activity_down_percent.*
 import kotlinx.android.synthetic.main.activity_down_percent.tvTitle
 import kotlinx.coroutines.*
 import org.crashhunter.kline.Constant
 import org.crashhunter.kline.R
 import java.math.BigDecimal
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.system.measureTimeMillis
 
 class DownPercentActivity : AppCompatActivity() {
@@ -53,6 +59,33 @@ class DownPercentActivity : AppCompatActivity() {
 
 
         getAllCoins()
+
+    }
+
+    private fun getSPOTAccountTrades(coin: String): List<MyTrade> {
+
+        try {
+            //没有YEAR的维度，最大到月
+            var list = syncRequestClient.getSPOTAccountTrades(
+                coin,
+                null,
+                null,
+                null,
+                null
+            )
+            Log.d("Trades", "showData getSPOTAccountTrades:------------------------------------------")
+            for (item in list){
+                val date = Date(item.time)
+                var format = SimpleDateFormat("yyyy.MM.dd HH:mm")
+                var openTimeStr = format.format(date)
+                Log.d("Trades", "$coin: ${item.isBuyer} ${item.price} ${item.qty} ${item.quoteQty} $openTimeStr")
+            }
+
+            return list
+        } catch (e: Exception) {
+            Log.e("Trades", "$coin: " + Log.getStackTraceString(e))
+        }
+        return ArrayList<MyTrade>(0)
     }
 
 
@@ -275,6 +308,7 @@ class DownPercentActivity : AppCompatActivity() {
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
                     var amount = 0
+                    getSPOTAccountTrades("ALICEUSDT")
                     for (coin in Constant.coinList) {
                         var n = async {
 
@@ -282,6 +316,7 @@ class DownPercentActivity : AppCompatActivity() {
                                 getCoinKlineData("SHIBUSDT")
                             } else {
                                 getCoinKlineData(coin)
+
                             }
 
                         }
@@ -358,7 +393,10 @@ class DownPercentActivity : AppCompatActivity() {
                     max = list.get(index).high
                 }
 
-                if (list.get(index).low < min && list.get(index).low > BigDecimal.ZERO&& list.get(index).low != BigDecimal(0.0001)) {
+                if (list.get(index).low < min
+                    && list.get(index).low > BigDecimal.ZERO
+                    && list.get(index).low != BigDecimal(0.0001)
+                ) {
                     min = list.get(index).low
                 }
             }

@@ -310,6 +310,33 @@ class RestApiRequestImpl {
         return request;
     }
 
+    RestApiRequest<List<Trade>> getSPOTOldTrades(String symbol, Integer limit, Long fromId) {
+        RestApiRequest<List<Trade>> request = new RestApiRequest<>();
+        UrlParamsBuilder builder = UrlParamsBuilder.build()
+                .putToUrl("symbol", symbol)
+                .putToUrl("limit", limit)
+                .putToUrl("fromId", fromId);
+        request.request = createRequestByGetWithApikey("/api/v3/historicalTrades", builder);
+
+        request.jsonParser = (jsonWrapper -> {
+            List<Trade> result = new LinkedList<>();
+            JsonWrapperArray dataArray = jsonWrapper.getJsonArray("data");
+            dataArray.forEach((item) -> {
+                Trade element = new Trade();
+                element.setId(item.getLong("id"));
+                element.setPrice(item.getBigDecimal("price"));
+                element.setQty(item.getBigDecimal("qty"));
+                element.setQuoteQty(item.getBigDecimal("quoteQty"));
+                element.setTime(item.getLong("time"));
+                element.setIsBuyerMaker(item.getBoolean("isBuyerMaker"));
+                result.add(element);
+            });
+
+            return result;
+        });
+        return request;
+    }
+
     RestApiRequest<List<AggregateTrade>> getAggregateTrades(String symbol, Long fromId,
                                                             Long startTime, Long endTime, Integer limit) {
         RestApiRequest<List<AggregateTrade>> request = new RestApiRequest<>();
@@ -320,6 +347,37 @@ class RestApiRequestImpl {
                 .putToUrl("endTime", endTime)
                 .putToUrl("limit", limit);
         request.request = createRequestByGet("/fapi/v1/aggTrades", builder);
+
+        request.jsonParser = (jsonWrapper -> {
+            List<AggregateTrade> result = new LinkedList<>();
+            JsonWrapperArray dataArray = jsonWrapper.getJsonArray("data");
+            dataArray.forEach((item) -> {
+                AggregateTrade element = new AggregateTrade();
+                element.setId(item.getLong("a"));
+                element.setPrice(item.getBigDecimal("p"));
+                element.setQty(item.getBigDecimal("q"));
+                element.setFirstId(item.getLong("f"));
+                element.setLastId(item.getLong("l"));
+                element.setTime(item.getLong("T"));
+                element.setIsBuyerMaker(item.getBoolean("m"));
+                result.add(element);
+            });
+
+            return result;
+        });
+        return request;
+    }
+
+    RestApiRequest<List<AggregateTrade>> getSPOTAggregateTrades(String symbol, Long fromId,
+                                                            Long startTime, Long endTime, Integer limit) {
+        RestApiRequest<List<AggregateTrade>> request = new RestApiRequest<>();
+        UrlParamsBuilder builder = UrlParamsBuilder.build()
+                .putToUrl("symbol", symbol)
+                .putToUrl("fromId", fromId)
+                .putToUrl("startTime", startTime)
+                .putToUrl("endTime", endTime)
+                .putToUrl("limit", limit);
+        request.request = createRequestByGet("/api/v3/aggTrades", builder);
 
         request.jsonParser = (jsonWrapper -> {
             List<AggregateTrade> result = new LinkedList<>();
@@ -1167,6 +1225,41 @@ class RestApiRequestImpl {
                 element.setRealizedPnl(item.getBigDecimal("realizedPnl"));
                 element.setSide(item.getString("side"));
                 element.setPositionSide(item.getString("positionSide"));
+                element.setSymbol(item.getString("symbol"));
+                element.setTime(item.getLong("time"));
+                result.add(element);
+            });
+            return result;
+        });
+        return request;
+    }
+
+    RestApiRequest<List<MyTrade>> getSPOTAccountTrades(String symbol, Long startTime, Long endTime,
+                                                   Long fromId, Integer limit) {
+        RestApiRequest<List<MyTrade>> request = new RestApiRequest<>();
+        UrlParamsBuilder builder = UrlParamsBuilder.build()
+                .putToUrl("symbol", symbol)
+                .putToUrl("startTime", startTime)
+                .putToUrl("endTime", endTime)
+                .putToUrl("fromId", fromId)
+                .putToUrl("limit", limit);
+        request.request = createRequestByGetWithSignature("/api/v3/myTrades", builder);
+
+        request.jsonParser = (jsonWrapper -> {
+            List<MyTrade> result = new LinkedList<>();
+            JsonWrapperArray dataArray = jsonWrapper.getJsonArray("data");
+            dataArray.forEach((item) -> {
+                MyTrade element = new MyTrade();
+                element.setIsBuyer(item.getBoolean("isBuyer"));
+                element.setCommission(item.getBigDecimal("commission"));
+                element.setCommissionAsset(item.getString("commissionAsset"));
+                element.setCounterPartyId(item.getLongOrDefault("counterPartyId", 0));
+                element.setOrderId(item.getLong("orderId"));
+                element.setIsMaker(item.getBoolean("isMaker"));
+                element.setOrderId(item.getLong("orderId"));
+                element.setPrice(item.getBigDecimal("price"));
+                element.setQty(item.getBigDecimal("qty"));
+                element.setQuoteQty(item.getBigDecimal("quoteQty"));
                 element.setSymbol(item.getString("symbol"));
                 element.setTime(item.getLong("time"));
                 result.add(element);

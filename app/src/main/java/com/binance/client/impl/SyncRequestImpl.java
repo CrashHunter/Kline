@@ -37,11 +37,23 @@ public class SyncRequestImpl implements SyncRequestClient {
     public List<Trade> getOldTrades(String symbol, Integer limit, Long fromId) {
         return RestApiInvoker.callSync(requestImpl.getOldTrades(symbol, limit, fromId));
     }
+
+    @Override
+    public List<Trade> getSPOTOldTrades(String symbol, Integer limit, Long fromId) {
+        return RestApiInvoker.callSync(requestImpl.getSPOTOldTrades(symbol, limit, fromId));
+    }
     
     @Override
     public List<AggregateTrade> getAggregateTrades(String symbol, Long fromId, Long startTime, 
             Long endTime, Integer limit) {
         return RestApiInvoker.callSync(requestImpl.getAggregateTrades(symbol, fromId, startTime, endTime, limit));
+    }
+
+
+    @Override
+    public List<AggregateTrade> getSPOTAggregateTrades(String symbol, Long fromId, Long startTime,
+                                                   Long endTime, Integer limit) {
+        return RestApiInvoker.callSync(requestImpl.getSPOTAggregateTrades(symbol, fromId, startTime, endTime, limit));
     }
     
     @Override
@@ -184,6 +196,10 @@ public class SyncRequestImpl implements SyncRequestClient {
     @Override
     public List<MyTrade> getAccountTrades(String symbol, Long startTime, Long endTime, Long fromId, Integer limit) {
         return RestApiInvoker.callSync(requestImpl.getAccountTrades(symbol, startTime, endTime, fromId, limit));
+    }
+    @Override
+    public List<MyTrade> getSPOTAccountTrades(String symbol, Long startTime, Long endTime, Long fromId, Integer limit) {
+        return RestApiInvoker.callSync(requestImpl.getSPOTAccountTrades(symbol, startTime, endTime, fromId, limit));
     }
     
     @Override
