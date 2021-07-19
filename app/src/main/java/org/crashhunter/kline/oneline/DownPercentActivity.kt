@@ -74,12 +74,25 @@ class DownPercentActivity : AppCompatActivity() {
                 null
             )
             Log.d("Trades", "showData getSPOTAccountTrades:------------------------------------------")
+            var sum = BigDecimal.ZERO
+            var holdNum = BigDecimal.ZERO
             for (item in list){
                 val date = Date(item.time)
                 var format = SimpleDateFormat("yyyy.MM.dd HH:mm")
                 var openTimeStr = format.format(date)
-                Log.d("Trades", "$coin: ${item.isBuyer} ${item.price} ${item.qty} ${item.quoteQty} $openTimeStr")
+//                Log.d("Trades", "$coin: ${item.isBuyer} ${item.price} ${item.qty} ${item.quoteQty} $openTimeStr")
+
+                if (item.isBuyer){
+                    holdNum+=item.qty
+                    sum+=item.quoteQty
+                }else{
+                    holdNum-=item.qty
+                    sum-=item.quoteQty
+                }
             }
+            var avgPrice = sum/holdNum
+            Log.d("Trades", "$coin: ${avgPrice} ")
+
 
             return list
         } catch (e: Exception) {
@@ -314,9 +327,10 @@ class DownPercentActivity : AppCompatActivity() {
 
                             if (coin.contains("SHIB")) {
                                 getCoinKlineData("SHIBUSDT")
+                                getSPOTAccountTrades("SHIBUSDT")
                             } else {
                                 getCoinKlineData(coin)
-
+//                                getSPOTAccountTrades(coin)
                             }
 
                         }
