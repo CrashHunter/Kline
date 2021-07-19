@@ -13,9 +13,7 @@ import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.custom.DownPerItem
 import com.binance.client.model.enums.CandlestickInterval
-import com.binance.client.model.market.AggregateTrade
 import com.binance.client.model.market.Candlestick
-import com.binance.client.model.market.Trade
 import com.binance.client.model.trade.MyTrade
 import kotlinx.android.synthetic.main.activity_down_percent.*
 import kotlinx.android.synthetic.main.activity_down_percent.tvTitle
@@ -59,7 +57,7 @@ class DownPercentActivity : AppCompatActivity() {
 
 
         getAllCoins()
-
+        getAllCoinsAvg()
     }
 
     private fun getSPOTAccountTrades(coin: String): List<MyTrade> {
@@ -73,26 +71,42 @@ class DownPercentActivity : AppCompatActivity() {
                 null,
                 null
             )
-            Log.d("Trades", "showData getSPOTAccountTrades:------------------------------------------")
+            Log.d(
+                "Trades",
+                "showData getSPOTAccountTrades:------------------------------------------"
+            )
             var sum = BigDecimal.ZERO
             var holdNum = BigDecimal.ZERO
-            for (item in list){
+            var start = false
+            for (item in list) {
                 val date = Date(item.time)
                 var format = SimpleDateFormat("yyyy.MM.dd HH:mm")
-                var openTimeStr = format.format(date)
-//                Log.d("Trades", "$coin: ${item.isBuyer} ${item.price} ${item.qty} ${item.quoteQty} $openTimeStr")
+                var tradeTime = format.format(date)
+//                Log.d(
+//                    "Trades",
+//                    "$coin: ${item.isBuyer} ${item.price} ${item.qty} ${item.quoteQty} $tradeTime"
+//                )
 
-                if (item.isBuyer){
-                    holdNum+=item.qty
-                    sum+=item.quoteQty
-                }else{
-                    holdNum-=item.qty
-                    sum-=item.quoteQty
+                if (!start && !item.isBuyer) {
+                    continue
+                } else {
+                    start = true
+                }
+
+                if (item.isBuyer) {
+                    holdNum += item.qty
+                    sum += item.quoteQty
+                } else {
+                    holdNum -= item.qty
+                    sum -= item.quoteQty
                 }
             }
-            var avgPrice = sum/holdNum
-            Log.d("Trades", "$coin: ${avgPrice} ")
-
+            if (holdNum > BigDecimal.ZERO){
+                var avgPrice = sum / holdNum
+                Log.d("Trades", "$coin: $sum $holdNum ${avgPrice} ")
+            }else{
+                Log.d("Trades", "EMPTY")
+            }
 
             return list
         } catch (e: Exception) {
@@ -314,6 +328,25 @@ class DownPercentActivity : AppCompatActivity() {
         }
     }
 
+    private fun getAllCoinsAvg() {
+
+        GlobalScope.launch {
+            val time = measureTimeMillis {
+                val sum = withContext(Dispatchers.IO) {
+                    getSPOTAccountTrades("BTCUSDT")
+                    for (coin in Constant.coinList) {
+                        if (coin.contains("SHIB")) {
+                            getSPOTAccountTrades("SHIBUSDT")
+                        } else {
+                            getSPOTAccountTrades(coin)
+                        }
+
+                    }
+                }
+            }
+        }
+
+    }
 
     private fun getAllCoins() {
 
@@ -321,16 +354,13 @@ class DownPercentActivity : AppCompatActivity() {
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
                     var amount = 0
-                    getSPOTAccountTrades("ALICEUSDT")
                     for (coin in Constant.coinList) {
                         var n = async {
 
                             if (coin.contains("SHIB")) {
                                 getCoinKlineData("SHIBUSDT")
-                                getSPOTAccountTrades("SHIBUSDT")
                             } else {
                                 getCoinKlineData(coin)
-//                                getSPOTAccountTrades(coin)
                             }
 
                         }
