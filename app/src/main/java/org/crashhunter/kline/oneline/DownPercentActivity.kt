@@ -73,7 +73,7 @@ class DownPercentActivity : AppCompatActivity() {
             )
             Log.d(
                 "Trades",
-                "showData getSPOTAccountTrades:------------------------------------------"
+                "getSPOTAccountTrades:------------------------------------------ $coin"
             )
             var sum = BigDecimal.ZERO
             var holdNum = BigDecimal.ZERO
@@ -101,7 +101,7 @@ class DownPercentActivity : AppCompatActivity() {
                     sum -= item.quoteQty
                 }
             }
-            if (holdNum > BigDecimal.ZERO){
+            if (holdNum != BigDecimal.ZERO){
                 var avgPrice = sum / holdNum
                 Log.d("Trades", "$coin: $sum $holdNum ${avgPrice} ")
             }else{
@@ -333,17 +333,20 @@ class DownPercentActivity : AppCompatActivity() {
         GlobalScope.launch {
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
-                    getSPOTAccountTrades("BTCUSDT")
                     for (coin in Constant.coinList) {
-                        if (coin.contains("SHIB")) {
-                            getSPOTAccountTrades("SHIBUSDT")
-                        } else {
-                            getSPOTAccountTrades(coin)
+                        if (Constant.ownCoinList.contains(coin.replace("USDT", ""))) {
+                            Thread.sleep(400)
+                            if (coin.contains("SHIB")) {
+                                getSPOTAccountTrades("SHIBUSDT")
+                            } else {
+                                getSPOTAccountTrades(coin)
+                            }
                         }
-
                     }
                 }
             }
+            Log.d("Trades", "getAllCoinsAvg end")
+
         }
 
     }
