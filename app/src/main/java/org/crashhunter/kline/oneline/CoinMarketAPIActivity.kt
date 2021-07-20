@@ -61,11 +61,13 @@ class CoinMarketAPIActivity : AppCompatActivity() {
                 super.run()
 
                 var data = syncRequestClient.getAccountSPOT()
-
+                Constant.ownCoinListName.clear()
+                Constant.ownCoinList.clear()
                 var filter = data.balances.filter { it.free.toBigDecimal() > BigDecimal.ZERO }
                 for (item in filter) {
                     Log.d("sss", "${item.asset}:${item.free}")
-                    Constant.ownCoinList.add(item.asset)
+                    Constant.ownCoinListName.add(item.asset)
+                    Constant.ownCoinList.add(item)
                 }
                 if (latestCoinListJsonStr.isNotEmpty()) {
                     coinMarketList =
@@ -158,7 +160,7 @@ class CoinMarketAPIActivity : AppCompatActivity() {
 
 
             var symbol = item.symbol + " "
-            if (Constant.ownCoinList.contains(item.symbol)) {
+            if (Constant.ownCoinListName.contains(item.symbol)) {
                 var symbolSpan = SpannableStringBuilder(symbol)
                 symbolSpan.setSpan(
                     ForegroundColorSpan(getColor(android.R.color.holo_red_light)),

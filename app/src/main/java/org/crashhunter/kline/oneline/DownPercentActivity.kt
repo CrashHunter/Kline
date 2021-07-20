@@ -16,11 +16,15 @@ import com.binance.client.model.custom.DownPerItem
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
 import com.binance.client.model.trade.MyTrade
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_down_percent.*
 import kotlinx.android.synthetic.main.activity_down_percent.tvTitle
 import kotlinx.coroutines.*
+import org.crashhunter.kline.AppController
 import org.crashhunter.kline.Constant
 import org.crashhunter.kline.R
+import org.crashhunter.kline.data.BaseSharedPreference
+import org.crashhunter.kline.data.LATESTAVGPRICEITEMLISTJSONSTR
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
@@ -47,7 +51,14 @@ class DownPercentActivity : AppCompatActivity() {
 
     var dailyResultList = ArrayList<DownPerItem>()
 
-    var avgPriceItemList = ArrayList<AvgPriceItem>()
+    var avgPriceItemList: List<AvgPriceItem> = ArrayList<AvgPriceItem>()
+    var avgList = ArrayList<AvgPriceItem>()
+
+    private var latestAvgPriceItemListJsonStr by BaseSharedPreference(
+        AppController.instance.applicationContext,
+        LATESTAVGPRICEITEMLISTJSONSTR,
+        ""
+    )
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,9 +83,7 @@ class DownPercentActivity : AppCompatActivity() {
             tvRoi.text = "loading $coin"
 
         }
-
         try {
-            //没有YEAR的维度，最大到月
             var list = syncRequestClient.getSPOTAccountTrades(
                 coin,
                 null,
@@ -88,33 +97,46 @@ class DownPercentActivity : AppCompatActivity() {
             )
             var sum = BigDecimal.ZERO
             var holdNum = BigDecimal.ZERO
-            var start = false
+            //获取当前持有数
+            for (item in Constant.ownCoinList) {
+                if (coin.equals(item.asset + "USDT")) {
+                    holdNum = BigDecimal(item.free)
+                    Log.d(
+                        "Trades",
+                        "$coin holdNum:$holdNum"
+                    )
+                    break
+                }
+            }
+            list.sortByDescending { it.time }
+
+            var tempHoldNum = BigDecimal.ZERO
             for (item in list) {
+                if (item.isBuyer) {
+                    tempHoldNum += item.qty
+                    sum += item.quoteQty
+                } else {
+                    tempHoldNum -= item.qty
+                    sum -= item.quoteQty
+                }
+
                 val date = Date(item.time)
                 var format = SimpleDateFormat("yyyy.MM.dd HH:mm")
                 var tradeTime = format.format(date)
-//                Log.d(
-//                    "Trades",
-//                    "$coin: ${item.isBuyer} ${item.price} ${item.qty} ${item.quoteQty} $tradeTime"
-//                )
+                Log.d(
+                    "Trades",
+                    "$coin: ${item.isBuyer} price:${item.price} qty:${item.qty} quoteQty:${item.quoteQty} $tradeTime"
+                )
 
-                if (!start && !item.isBuyer) {
-                    continue
-                } else {
-                    start = true
+                //找到最近满足持仓的记录
+                if (tempHoldNum>=holdNum){
+                    break
                 }
 
-                if (item.isBuyer) {
-                    holdNum += item.qty
-                    sum += item.quoteQty
-                } else {
-                    holdNum -= item.qty
-                    sum -= item.quoteQty
-                }
             }
             if (holdNum != BigDecimal.ZERO) {
                 var avgPrice = sum / holdNum
-                Log.d("Trades", "$coin: $sum $holdNum ${avgPrice} ")
+                Log.d("Trades", "$coin: sum:$sum holdNum:$holdNum avgPrice:${avgPrice} ")
 
 
                 var avgPriceItem = AvgPriceItem()
@@ -132,8 +154,7 @@ class DownPercentActivity : AppCompatActivity() {
                     avgPriceItem.roi = -(BigDecimal.ONE.minus(avgPriceItem.current / avgPrice))
                 }
 
-                avgPriceItemList.add(avgPriceItem)
-
+                avgList.add(avgPriceItem)
             } else {
                 Log.d("Trades", "EMPTY")
             }
@@ -187,10 +208,31 @@ class DownPercentActivity : AppCompatActivity() {
                     tvTitle.text = ""
                     tvTitle.text = stringBuilder
                 }
-            } R.id.ROI -> {
-            getAllCoinsAvg()
+            }
+            R.id.ROI -> {
 
-        }
+//                if (latestAvgPriceItemListJsonStr.isNotEmpty()) {
+//
+//                    avgPriceItemList =
+//                        Gson().fromJson(
+//                            latestAvgPriceItemListJsonStr,
+//                            object : TypeToken<List<AvgPriceItem>>() {}
+//                                .type) as List<AvgPriceItem>
+//
+//                    processROIData()
+//
+//                    runOnUiThread {
+//                        tvRoi.text = ""
+//                        tvRoi.text = roiStringBuilder
+//                    }
+//                } else {
+
+                getAllCoinsAvg()
+
+//                }
+
+
+            }
             else -> {
             }
         }
@@ -250,7 +292,7 @@ class DownPercentActivity : AppCompatActivity() {
             stringBuilder.append("$coin $min / $current / ")
 
             upPerColor(item, stringBuilder)
-            if (Constant.ownCoinList.contains(coin.replace("USDT", ""))) {
+            if (Constant.ownCoinListName.contains(coin.replace("USDT", ""))) {
                 stringBuilder.append(" OWN")
             }
 
@@ -317,7 +359,7 @@ class DownPercentActivity : AppCompatActivity() {
             stringBuilder.append("$coin $max / $current / ")
 
             downPerColor(item, stringBuilder)
-            if (Constant.ownCoinList.contains(coin.replace("USDT", ""))) {
+            if (Constant.ownCoinListName.contains(coin.replace("USDT", ""))) {
                 stringBuilder.append(" OWN")
             }
 
@@ -363,23 +405,30 @@ class DownPercentActivity : AppCompatActivity() {
     }
 
     private fun getAllCoinsAvg() {
-        avgPriceItemList.clear()
+        avgPriceItemList = ArrayList<AvgPriceItem>()
+
         GlobalScope.launch {
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
-                    getSPOTAccountTrades("SHIBUSDT")
-//                    for (coin in Constant.coinList) {
-//                        if (Constant.ownCoinList.contains(coin.replace("USDT", ""))) {
-//                            Thread.sleep(400)
-//                            if (coin.contains("SHIB")) {
-//                                getSPOTAccountTrades("SHIBUSDT")
-//                            } else {
-//                                getSPOTAccountTrades(coin)
-//                            }
-//                        }
-//                    }
+//                    getSPOTAccountTrades("SXPUSDT")
+                    for (coin in Constant.coinList) {
+                        if (Constant.ownCoinListName.contains(coin.replace("USDT", ""))) {
+                            Thread.sleep(300)
+                            if (coin.contains("SHIB")) {
+                                getSPOTAccountTrades("SHIBUSDT")
+                            } else {
+                                getSPOTAccountTrades(coin)
+                            }
+                        }
+                    }
                 }
             }
+
+            avgPriceItemList = avgList
+
+            var jsonStr = Gson().toJson(avgPriceItemList)
+            latestAvgPriceItemListJsonStr = jsonStr
+
             processROIData()
 
             runOnUiThread {
@@ -393,12 +442,12 @@ class DownPercentActivity : AppCompatActivity() {
 
     private fun processROIData() {
 
-        avgPriceItemList.sortBy { it.roi }
+        var list = avgPriceItemList.sortedBy { it.roi }
         roiStringBuilder.clear()
 
-        for (index in avgPriceItemList.indices) {
+        for (index in list.indices) {
 
-            val item = avgPriceItemList[index]
+            val item = list[index]
 
             val current = item.current
             val avgPrice = item.avgPrice
