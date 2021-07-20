@@ -17,6 +17,7 @@ import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
 import com.binance.client.model.trade.MyTrade
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_down_percent.*
 import kotlinx.android.synthetic.main.activity_down_percent.tvTitle
 import kotlinx.coroutines.*
@@ -129,7 +130,7 @@ class DownPercentActivity : AppCompatActivity() {
                 )
 
                 //找到最近满足持仓的记录
-                if (tempHoldNum>=holdNum){
+                if (tempHoldNum >= holdNum) {
                     break
                 }
 
@@ -211,25 +212,25 @@ class DownPercentActivity : AppCompatActivity() {
             }
             R.id.ROI -> {
 
-//                if (latestAvgPriceItemListJsonStr.isNotEmpty()) {
-//
-//                    avgPriceItemList =
-//                        Gson().fromJson(
-//                            latestAvgPriceItemListJsonStr,
-//                            object : TypeToken<List<AvgPriceItem>>() {}
-//                                .type) as List<AvgPriceItem>
-//
-//                    processROIData()
-//
-//                    runOnUiThread {
-//                        tvRoi.text = ""
-//                        tvRoi.text = roiStringBuilder
-//                    }
-//                } else {
+                if (latestAvgPriceItemListJsonStr.isNotEmpty()) {
 
-                getAllCoinsAvg()
+                    avgPriceItemList =
+                        Gson().fromJson(
+                            latestAvgPriceItemListJsonStr,
+                            object : TypeToken<List<AvgPriceItem>>() {}
+                                .type) as List<AvgPriceItem>
 
-//                }
+                    processROIData()
+
+                    runOnUiThread {
+                        tvRoi.text = ""
+                        tvRoi.text = roiStringBuilder
+                    }
+                } else {
+
+                    getAllCoinsAvg()
+
+                }
 
 
             }
