@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
+import com.binance.client.model.custom.AvgPriceItem
 import com.binance.client.model.custom.DownPerItem
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
@@ -40,9 +41,13 @@ class DownPercentActivity : AppCompatActivity() {
 
     var dailyStringBuilder = SpannableStringBuilder()
 
+    var roiStringBuilder = SpannableStringBuilder()
+
     var resultList = ArrayList<DownPerItem>()
 
     var dailyResultList = ArrayList<DownPerItem>()
+
+    var avgPriceItemList = ArrayList<AvgPriceItem>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,10 +62,16 @@ class DownPercentActivity : AppCompatActivity() {
 
 
         getAllCoins()
-        getAllCoinsAvg()
+
     }
 
     private fun getSPOTAccountTrades(coin: String): List<MyTrade> {
+
+        runOnUiThread {
+
+            tvRoi.text = "loading $coin"
+
+        }
 
         try {
             //没有YEAR的维度，最大到月
@@ -101,12 +112,32 @@ class DownPercentActivity : AppCompatActivity() {
                     sum -= item.quoteQty
                 }
             }
-            if (holdNum != BigDecimal.ZERO){
+            if (holdNum != BigDecimal.ZERO) {
                 var avgPrice = sum / holdNum
                 Log.d("Trades", "$coin: $sum $holdNum ${avgPrice} ")
-            }else{
+
+
+                var avgPriceItem = AvgPriceItem()
+                avgPriceItem.coin = coin
+                avgPriceItem.avgPrice = avgPrice
+                for (item in resultList) {
+                    if (item.coin.equals(coin)) {
+                        avgPriceItem.current = item.current
+                        break
+                    }
+                }
+                if (avgPriceItem.current >= avgPrice) {
+                    avgPriceItem.roi = avgPriceItem.current / avgPrice
+                } else {
+                    avgPriceItem.roi = -(BigDecimal.ONE.minus(avgPriceItem.current / avgPrice))
+                }
+
+                avgPriceItemList.add(avgPriceItem)
+
+            } else {
                 Log.d("Trades", "EMPTY")
             }
+
 
             return list
         } catch (e: Exception) {
@@ -156,7 +187,10 @@ class DownPercentActivity : AppCompatActivity() {
                     tvTitle.text = ""
                     tvTitle.text = stringBuilder
                 }
-            }
+            } R.id.ROI -> {
+            getAllCoinsAvg()
+
+        }
             else -> {
             }
         }
@@ -329,27 +363,61 @@ class DownPercentActivity : AppCompatActivity() {
     }
 
     private fun getAllCoinsAvg() {
-
+        avgPriceItemList.clear()
         GlobalScope.launch {
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
-                    for (coin in Constant.coinList) {
-                        if (Constant.ownCoinList.contains(coin.replace("USDT", ""))) {
-                            Thread.sleep(400)
-                            if (coin.contains("SHIB")) {
-                                getSPOTAccountTrades("SHIBUSDT")
-                            } else {
-                                getSPOTAccountTrades(coin)
-                            }
-                        }
-                    }
+                    getSPOTAccountTrades("SHIBUSDT")
+//                    for (coin in Constant.coinList) {
+//                        if (Constant.ownCoinList.contains(coin.replace("USDT", ""))) {
+//                            Thread.sleep(400)
+//                            if (coin.contains("SHIB")) {
+//                                getSPOTAccountTrades("SHIBUSDT")
+//                            } else {
+//                                getSPOTAccountTrades(coin)
+//                            }
+//                        }
+//                    }
                 }
             }
-            Log.d("Trades", "getAllCoinsAvg end")
+            processROIData()
 
+            runOnUiThread {
+                tvRoi.text = ""
+                tvRoi.text = roiStringBuilder
+            }
         }
 
     }
+
+
+    private fun processROIData() {
+
+        avgPriceItemList.sortBy { it.roi }
+        roiStringBuilder.clear()
+
+        for (index in avgPriceItemList.indices) {
+
+            val item = avgPriceItemList[index]
+
+            val current = item.current
+            val avgPrice = item.avgPrice
+            val roi = item.roi
+            val coin = item.coin
+
+            roiStringBuilder.append("${index + 1}. ")
+
+            roiStringBuilder.append("$coin $current / $avgPrice /")
+
+            roiStringBuilder.append("$roi / ")
+
+//            downPerColor(item, dailyStringBuilder)
+//            roiStringBuilder.append("$downPer")
+
+            roiStringBuilder.append("\n \n")
+        }
+    }
+
 
     private fun getAllCoins() {
 
@@ -369,7 +437,6 @@ class DownPercentActivity : AppCompatActivity() {
                         }
 
                     }
-//                    getCoinKlineData("BTCUSDT")
                     amount
                 }
                 Log.d("sss", sum.toString())
