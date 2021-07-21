@@ -142,7 +142,12 @@ class DownPercentActivity : AppCompatActivity() {
 
 
             if (holdNum != BigDecimal.ZERO) {
-                var avgPrice = sum / holdNum
+                var avgPrice = BigDecimal.ZERO
+                if (sum > BigDecimal.ZERO) {
+                    avgPrice = sum / holdNum
+                } else {
+                    avgPrice = BigDecimal.ZERO
+                }
                 Log.d("Trades", "$coin: sum:$sum holdNum:$holdNum avgPrice:${avgPrice} ")
 
                 var avgPriceItem = AvgPriceItem()
@@ -426,6 +431,8 @@ class DownPercentActivity : AppCompatActivity() {
 
         var list = avgPriceItemList.sortedBy { it.roi }
         roiStringBuilder.clear()
+        var totalSum = BigDecimal.ZERO
+        var totalWin = BigDecimal.ZERO
 
         for (index in list.indices) {
 
@@ -443,10 +450,16 @@ class DownPercentActivity : AppCompatActivity() {
                     break
                 }
             }
-            if (currentPrice >= avgPrice) {
+            if (avgPrice <= BigDecimal.ZERO) {
+                //optimize
+                item.roi = BigDecimal(100)
+            } else if (currentPrice >= avgPrice) {
                 item.roi = currentPrice / avgPrice
             } else {
-                item.roi = -(BigDecimal.ONE.minus(currentPrice / avgPrice))
+                item.roi = -(BigDecimal.ONE.minus(currentPrice / avgPrice)).setScale(
+                    4,
+                    BigDecimal.ROUND_HALF_UP
+                )
             }
             val roi = item.roi
 
@@ -462,13 +475,13 @@ class DownPercentActivity : AppCompatActivity() {
 //            downPerColor(item, dailyStringBuilder)
 //            roiStringBuilder.append("$downPer")
 
-            roiStringBuilder.append("\n ")
+            roiStringBuilder.append("\n")
         }
         var totalROI = BigDecimal.ZERO
         if (totalSum > BigDecimal.ZERO) {
             totalROI = totalWin / totalSum
         }
-        roiStringBuilder.append("totalSum:$totalSum totalWin:$totalWin totalROI:${totalROI} \n ")
+        roiStringBuilder.append("totalSum:$totalSum \ntotalWin:$totalWin \ntotalROI:${totalROI} \n ")
     }
 
 
