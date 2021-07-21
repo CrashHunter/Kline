@@ -7,6 +7,7 @@ import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
@@ -54,6 +55,9 @@ class DownPercentActivity : AppCompatActivity() {
 
     var avgPriceItemList: List<AvgPriceItem> = ArrayList<AvgPriceItem>()
     var avgList = ArrayList<AvgPriceItem>()
+
+    var totalSum = BigDecimal.ZERO
+    var totalWin = BigDecimal.ZERO
 
     private var latestAvgPriceItemListJsonStr by BaseSharedPreference(
         AppController.instance.applicationContext,
@@ -135,25 +139,17 @@ class DownPercentActivity : AppCompatActivity() {
                 }
 
             }
+
+
             if (holdNum != BigDecimal.ZERO) {
                 var avgPrice = sum / holdNum
                 Log.d("Trades", "$coin: sum:$sum holdNum:$holdNum avgPrice:${avgPrice} ")
 
-
                 var avgPriceItem = AvgPriceItem()
                 avgPriceItem.coin = coin
                 avgPriceItem.avgPrice = avgPrice
-                for (item in resultList) {
-                    if (item.coin.equals(coin)) {
-                        avgPriceItem.current = item.current
-                        break
-                    }
-                }
-                if (avgPriceItem.current >= avgPrice) {
-                    avgPriceItem.roi = avgPriceItem.current / avgPrice
-                } else {
-                    avgPriceItem.roi = -(BigDecimal.ONE.minus(avgPriceItem.current / avgPrice))
-                }
+                avgPriceItem.sumBuy = sum
+                avgPriceItem.holdNum = holdNum
 
                 avgList.add(avgPriceItem)
             } else {
@@ -212,26 +208,7 @@ class DownPercentActivity : AppCompatActivity() {
             }
             R.id.ROI -> {
 
-                if (latestAvgPriceItemListJsonStr.isNotEmpty()) {
-
-                    avgPriceItemList =
-                        Gson().fromJson(
-                            latestAvgPriceItemListJsonStr,
-                            object : TypeToken<List<AvgPriceItem>>() {}
-                                .type) as List<AvgPriceItem>
-
-                    processROIData()
-
-                    runOnUiThread {
-                        tvRoi.text = ""
-                        tvRoi.text = roiStringBuilder
-                    }
-                } else {
-
-                    getAllCoinsAvg()
-
-                }
-
+                getAllCoinsAvg()
 
             }
             else -> {
@@ -407,6 +384,10 @@ class DownPercentActivity : AppCompatActivity() {
 
     private fun getAllCoinsAvg() {
         avgPriceItemList = ArrayList<AvgPriceItem>()
+        if (Constant.ownCoinListName.isEmpty()) {
+            Toast.makeText(applicationContext, "no ownCoinListName", Toast.LENGTH_LONG).show()
+            return
+        }
 
         GlobalScope.launch {
             val time = measureTimeMillis {
@@ -414,7 +395,7 @@ class DownPercentActivity : AppCompatActivity() {
 //                    getSPOTAccountTrades("SXPUSDT")
                     for (coin in Constant.coinList) {
                         if (Constant.ownCoinListName.contains(coin.replace("USDT", ""))) {
-                            Thread.sleep(300)
+                            Thread.sleep(200)
                             if (coin.contains("SHIB")) {
                                 getSPOTAccountTrades("SHIBUSDT")
                             } else {
@@ -450,22 +431,44 @@ class DownPercentActivity : AppCompatActivity() {
 
             val item = list[index]
 
-            val current = item.current
+            totalSum += item.sumBuy
+
             val avgPrice = item.avgPrice
-            val roi = item.roi
+            var currentPrice = BigDecimal.ZERO
+
             val coin = item.coin
+            for (downPerItem in resultList) {
+                if (downPerItem.coin.equals(coin)) {
+                    currentPrice = downPerItem.current
+                    break
+                }
+            }
+            if (currentPrice >= avgPrice) {
+                item.roi = currentPrice / avgPrice
+            } else {
+                item.roi = -(BigDecimal.ONE.minus(currentPrice / avgPrice))
+            }
+            val roi = item.roi
+
+            var win = (currentPrice - avgPrice) * item.holdNum
+            totalWin += win
 
             roiStringBuilder.append("${index + 1}. ")
 
-            roiStringBuilder.append("$coin $current / $avgPrice /")
+            roiStringBuilder.append("$coin $currentPrice / $avgPrice /")
 
             roiStringBuilder.append("$roi / ")
 
 //            downPerColor(item, dailyStringBuilder)
 //            roiStringBuilder.append("$downPer")
 
-            roiStringBuilder.append("\n \n")
+            roiStringBuilder.append("\n ")
         }
+        var totalROI = BigDecimal.ZERO
+        if (totalSum > BigDecimal.ZERO) {
+            totalROI = totalWin / totalSum
+        }
+        roiStringBuilder.append("totalSum:$totalSum totalWin:$totalWin totalROI:${totalROI} \n ")
     }
 
 
@@ -498,6 +501,22 @@ class DownPercentActivity : AppCompatActivity() {
             runOnUiThread {
                 tvTitle.text = ""
                 tvTitle.text = stringBuilder
+            }
+
+            if (latestAvgPriceItemListJsonStr.isNotEmpty()) {
+
+                avgPriceItemList =
+                    Gson().fromJson(
+                        latestAvgPriceItemListJsonStr,
+                        object : TypeToken<List<AvgPriceItem>>() {}
+                            .type) as List<AvgPriceItem>
+
+                processROIData()
+
+                runOnUiThread {
+                    tvRoi.text = ""
+                    tvRoi.text = roiStringBuilder
+                }
             }
         }
 

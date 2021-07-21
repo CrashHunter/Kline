@@ -4,92 +4,111 @@ import java.math.BigDecimal;
 
 public class AvgPriceItem {
 
-    private String coin;
+  private String coin;
 
-    private BigDecimal max;
+  private BigDecimal max;
 
-    private BigDecimal min;
+  private BigDecimal min;
 
-    private BigDecimal current;
+  //    private BigDecimal current;
+  private BigDecimal holdNum = BigDecimal.ZERO;
+  ;
+  private BigDecimal sumBuy = BigDecimal.ZERO;
 
-    public BigDecimal getRoi() {
-        return roi;
-    }
+  public BigDecimal getRoi() {
+    return roi;
+  }
 
-    public void setRoi(BigDecimal roi) {
-        this.roi = roi;
-    }
+  public BigDecimal getHoldNum() {
+    return holdNum;
+  }
 
-    private BigDecimal roi;
+  public void setHoldNum(BigDecimal holdNum) {
+    this.holdNum = holdNum;
+  }
 
-    public BigDecimal getAvgPrice() {
-        return avgPrice;
-    }
+  public BigDecimal getSumBuy() {
+    return sumBuy;
+  }
 
-    public void setAvgPrice(BigDecimal avgPrice) {
-        this.avgPrice = avgPrice;
-    }
+  public void setSumBuy(BigDecimal sumBuy) {
+    this.sumBuy = sumBuy;
+  }
 
-    private BigDecimal avgPrice;
+  public void setRoi(BigDecimal roi) {
+    this.roi = roi;
+  }
 
-    public BigDecimal getMin() {
-        return min;
-    }
+  private BigDecimal roi;
 
-    public void setMin(BigDecimal min) {
-        this.min = min;
-    }
+  public BigDecimal getAvgPrice() {
+    return avgPrice;
+  }
 
-    public BigDecimal getUpPer() {
-        return upPer;
-    }
+  public void setAvgPrice(BigDecimal avgPrice) {
+    this.avgPrice = avgPrice;
+  }
 
-    public void setUpPer(BigDecimal upPer) {
-        this.upPer = upPer;
-    }
+  private BigDecimal avgPrice;
 
-    private BigDecimal downPer;
-    private BigDecimal upPer;
+  public BigDecimal getMin() {
+    return min;
+  }
 
-    private BigDecimal rateInc;
+  public void setMin(BigDecimal min) {
+    this.min = min;
+  }
 
-    public BigDecimal getRateInc() {
-        return rateInc;
-    }
+  public BigDecimal getUpPer() {
+    return upPer;
+  }
 
-    public void setRateInc(BigDecimal rateInc) {
-        this.rateInc = rateInc;
-    }
+  public void setUpPer(BigDecimal upPer) {
+    this.upPer = upPer;
+  }
 
-    public String getCoin() {
-        return coin;
-    }
+  private BigDecimal downPer;
+  private BigDecimal upPer;
 
-    public void setCoin(String coin) {
-        this.coin = coin;
-    }
+  private BigDecimal rateInc;
 
-    public BigDecimal getMax() {
-        return max;
-    }
+  public BigDecimal getRateInc() {
+    return rateInc;
+  }
 
-    public void setMax(BigDecimal max) {
-        this.max = max;
-    }
+  public void setRateInc(BigDecimal rateInc) {
+    this.rateInc = rateInc;
+  }
 
-    public BigDecimal getCurrent() {
-        return current;
-    }
+  public String getCoin() {
+    return coin;
+  }
 
-    public void setCurrent(BigDecimal current) {
-        this.current = current;
-    }
+  public void setCoin(String coin) {
+    this.coin = coin;
+  }
 
-    public BigDecimal getDownPer() {
-        return downPer;
-    }
+  public BigDecimal getMax() {
+    return max;
+  }
 
-    public void setDownPer(BigDecimal downPer) {
-        this.downPer = downPer;
-    }
+  public void setMax(BigDecimal max) {
+    this.max = max;
+  }
+
+  //    public BigDecimal getCurrent() {
+  //        return current;
+  //    }
+  //
+  //    public void setCurrent(BigDecimal current) {
+  //        this.current = current;
+  //    }
+
+  public BigDecimal getDownPer() {
+    return downPer;
+  }
+
+  public void setDownPer(BigDecimal downPer) {
+    this.downPer = downPer;
+  }
 }
