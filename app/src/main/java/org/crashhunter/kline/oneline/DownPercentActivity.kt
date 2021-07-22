@@ -389,6 +389,7 @@ class DownPercentActivity : AppCompatActivity() {
 
     private fun getAllCoinsAvg() {
         avgPriceItemList = ArrayList<AvgPriceItem>()
+        avgList = ArrayList<AvgPriceItem>()
         if (Constant.ownCoinListName.isEmpty()) {
             Toast.makeText(applicationContext, "no ownCoinListName", Toast.LENGTH_LONG).show()
             return
@@ -470,10 +471,9 @@ class DownPercentActivity : AppCompatActivity() {
 
             roiStringBuilder.append("$coin $currentPrice / $avgPrice /")
 
-            roiStringBuilder.append("$roi / ")
+            //roiStringBuilder.append("$roi / ")
 
-//            downPerColor(item, dailyStringBuilder)
-//            roiStringBuilder.append("$downPer")
+            ROIColor(roi, roiStringBuilder)
 
             roiStringBuilder.append("\n")
         }
@@ -482,6 +482,22 @@ class DownPercentActivity : AppCompatActivity() {
             totalROI = totalWin / totalSum
         }
         roiStringBuilder.append("totalSum:$totalSum \ntotalWin:$totalWin \ntotalROI:${totalROI} \n ")
+    }
+
+    private fun ROIColor(roi: BigDecimal, stringBuilder: SpannableStringBuilder) {
+        if (roi > BigDecimal(0)) {
+            val span = SpannableStringBuilder("$roi")
+            span.setSpan(
+                ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+                0,
+                roi.toString().length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            stringBuilder.append(span)
+        } else {
+            stringBuilder.append("$roi")
+        }
     }
 
 
