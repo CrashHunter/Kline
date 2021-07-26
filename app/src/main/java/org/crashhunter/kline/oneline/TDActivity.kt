@@ -76,7 +76,11 @@ class TDActivity : AppCompatActivity() {
 //                    getCoinKlineData("XLMUSDT")
                     for (coin in Constant.coinList) {
                         var n = async {
-                            getCoinKlineData(coin)
+                            if (coin.contains("SHIB")) {
+                                getCoinKlineData("SHIBUSDT")
+                            } else {
+                                getCoinKlineData(coin)
+                            }
                         }
                     }
                     amount
