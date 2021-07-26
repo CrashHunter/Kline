@@ -249,6 +249,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             R.id.downPercent -> {
                 startActivity(Intent(this, DownPercentActivity::class.java))
             }
+            R.id.TD -> {
+                startActivity(Intent(this, TDActivity::class.java))
+            }
             else -> {
             }
         }

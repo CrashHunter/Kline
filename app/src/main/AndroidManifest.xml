@@ -15,6 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".oneline.TDActivity"/>
         <activity android:name=".oneline.ROIActivity"/>
         <activity android:name=".oneline.DownPercentActivity"/>
         <activity android:name=".oneline.DataAnalysisActivity" />

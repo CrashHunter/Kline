@@ -79,4 +79,9 @@
         android:id="@+id/downPercent"
         android:title="downPercent"
         />
+
+    <item
+        android:id="@+id/TD"
+        android:title="TD"
+        />
 </menu>
