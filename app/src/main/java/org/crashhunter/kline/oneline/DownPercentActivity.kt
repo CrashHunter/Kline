@@ -1,5 +1,6 @@
 package org.crashhunter.kline.oneline
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -213,7 +214,8 @@ class DownPercentActivity : AppCompatActivity() {
             }
             R.id.ROI -> {
 
-                getAllCoinsAvg()
+//                getAllCoinsAvg()
+                startActivity(Intent(this,ROIActivity::class.java))
 
             }
             else -> {
@@ -532,21 +534,7 @@ class DownPercentActivity : AppCompatActivity() {
                 tvTitle.text = stringBuilder
             }
 
-            if (latestAvgPriceItemListJsonStr.isNotEmpty()) {
 
-                avgPriceItemList =
-                    Gson().fromJson(
-                        latestAvgPriceItemListJsonStr,
-                        object : TypeToken<List<AvgPriceItem>>() {}
-                            .type) as List<AvgPriceItem>
-
-                processROIData()
-
-                runOnUiThread {
-                    tvRoi.text = ""
-                    tvRoi.text = roiStringBuilder
-                }
-            }
         }
 
 

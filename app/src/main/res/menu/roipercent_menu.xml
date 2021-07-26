@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <item
+        android:id="@+id/ROI"
+        android:title="ROI"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/DownPer"
+        android:title="Down"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/UpPer"
+        android:title="Up"
+        app:showAsAction="always"
+        />
+
+<!--    <item-->
+<!--        android:id="@+id/Daily"-->
+<!--        android:title="D"-->
+<!--        app:showAsAction="always"-->
+<!--        />-->
+
+<!--    <item-->
+<!--        android:id="@+id/Week"-->
+<!--        android:title="W"-->
+<!--        app:showAsAction="always"-->
+<!--        />-->
+<!--    <item-->
+<!--        android:id="@+id/Month"-->
+<!--        android:title="M"-->
+<!--        app:showAsAction="always"-->
+        />
+</menu>
