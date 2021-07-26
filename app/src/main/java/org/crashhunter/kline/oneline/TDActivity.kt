@@ -251,7 +251,7 @@ class TDActivity : AppCompatActivity() {
             var format = SimpleDateFormat("MM.dd")
             val date = Date(item.closeTime.toLong())
             var day = format.format(date)
-            Log.d("TDtag", "TD HIGHER ${TDSum} ${day} $item.close}")
+            Log.d("TDtag", "TD HIGHER ${TDSum} ${day} ${item.close}")
             return TDSum
         }
     }
@@ -271,7 +271,7 @@ class TDActivity : AppCompatActivity() {
             var format = SimpleDateFormat("MM.dd")
             val date = Date(item.closeTime.toLong())
             var day = format.format(date)
-            Log.d("TDtag", "TD LOWER ${TDSum} ${day} $item.close}")
+            Log.d("TDtag", "TD LOWER ${TDSum} ${day} ${item.close}")
             return TDSum
         }
     }
