@@ -23,14 +23,6 @@
             tools:context=".MainActivity"
             >
 
-            <EditText
-                android:id="@+id/startTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.0"
-                android:text="2020-08-XX 08:00"
-                android:hint="Start Time 2020-08-02 08:00"
-                />
 
             <TextView
                 android:id="@+id/activityName"
@@ -38,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
-                android:text="KeyLineActivity"
+                android:text="TDActivity"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 />
@@ -54,15 +46,6 @@
                 android:textStyle="bold"
                 />
 
-            <SeekBar
-                android:id="@+id/seekBar"
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.0"
-                android:max="10"
-                android:progress="1"
-                />
 
             <TextView
                 android:id="@+id/tvTitle"

@@ -8,17 +8,22 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.alibaba.fastjson.JSON
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
+import kotlinx.android.synthetic.main.activity_roi_percent.*
 import kotlinx.android.synthetic.main.activity_td.header
 import kotlinx.android.synthetic.main.activity_td.tvTitle
 import kotlinx.coroutines.*
+import org.crashhunter.kline.AppController
 import org.crashhunter.kline.Constant
 import org.crashhunter.kline.R
-import java.math.BigDecimal
+import org.crashhunter.kline.data.BaseSharedPreference
+import org.crashhunter.kline.data.LATESTTDLISTJSONSTR
+import org.crashhunter.kline.data.SharedPreferenceUtil
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -48,7 +53,14 @@ class TDActivity : AppCompatActivity() {
 
     var currentItemId = R.id.oneDay
 
+    var TDJsonList: List<Candlestick> = ArrayList<Candlestick>()
     var TDList = ArrayList<Candlestick>()
+
+    private var latestTDListJsonStr by BaseSharedPreference(
+        AppController.instance.applicationContext,
+        LATESTTDLISTJSONSTR,
+        ""
+    )
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,12 +74,38 @@ class TDActivity : AppCompatActivity() {
             options
         )
 
+        candlestickInterval = CandlestickInterval.DAILY
+        getTDData()
 
-        getAllCoins()
+    }
+
+    private fun getTDData() {
+        var jsonList =
+            SharedPreferenceUtil.loadData(
+                AppController.instance.applicationContext,
+                "KeyLine-TD-$candlestickInterval"
+            )
+
+        if (jsonList.isNotEmpty()) {
+            TDJsonList = JSON.parseArray(jsonList, Candlestick::class.java)
+
+            var list = TDJsonList.sortedBy { it.symbol }
+            processData(list)
+        } else {
+            getAllCoins()
+
+        }
     }
 
 
     private fun getAllCoins() {
+        TDJsonList = ArrayList<Candlestick>()
+        TDList = ArrayList<Candlestick>()
+        SharedPreferenceUtil.saveData(
+            AppController.instance.applicationContext,
+            "KeyLine-TD-$candlestickInterval",
+            ""
+        )
 
         GlobalScope.launch {
             val time = measureTimeMillis {
@@ -75,6 +113,7 @@ class TDActivity : AppCompatActivity() {
                     var amount = 0
 //                    getCoinKlineData("XLMUSDT")
                     for (coin in Constant.coinList) {
+
                         var n = async {
                             if (coin.contains("SHIB")) {
                                 getCoinKlineData("SHIBUSDT")
@@ -87,7 +126,20 @@ class TDActivity : AppCompatActivity() {
                 }
             }
 
-            processData()
+            SharedPreferenceUtil.saveData(
+                AppController.instance.applicationContext,
+                "KeyLine-TD-$candlestickInterval",
+                JSON.toJSONString(TDList)
+            )
+
+            var jsonList =
+                SharedPreferenceUtil.loadData(
+                    AppController.instance.applicationContext,
+                    "KeyLine-TD-$candlestickInterval"
+                )
+            TDJsonList = JSON.parseArray(jsonList, Candlestick::class.java)
+            var list = TDJsonList.sortedBy { it.symbol }
+            processData(list)
 
             runOnUiThread {
                 tvTitle.text = ""
@@ -97,9 +149,8 @@ class TDActivity : AppCompatActivity() {
         }
     }
 
-    private fun processData() {
+    private fun processData(list: List<Candlestick>) {
 
-        var list = TDList.sortedBy { it.symbol }
         stringBuilder.clear()
 
         for (index in list.indices) {
@@ -119,6 +170,11 @@ class TDActivity : AppCompatActivity() {
             lowColor(item, stringBuilder)
 
             stringBuilder.append("\n")
+        }
+
+        runOnUiThread {
+            tvTitle.text = ""
+            tvTitle.text = stringBuilder
         }
     }
 
@@ -157,7 +213,7 @@ class TDActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
-        inflater.inflate(R.menu.keyline_menu, menu)
+        inflater.inflate(R.menu.tdlist_menu, menu)
         return true
     }
 
@@ -171,29 +227,54 @@ class TDActivity : AppCompatActivity() {
 
     private fun routeItem() {
         when (currentItemId) {
+            R.id.D -> {
+                header.text = "DAILY"
+                candlestickInterval = CandlestickInterval.DAILY
+                getTDData()
+
+            }
+            R.id.W -> {
+                header.text = "WEEKLY"
+                candlestickInterval = CandlestickInterval.WEEKLY
+                getTDData()
+
+            }
             R.id.oneDay -> {
                 header.text = "DAILY"
-                candlestickIntervalList.clear()
-                candlestickIntervalList.add(CandlestickInterval.DAILY)
+                candlestickInterval = CandlestickInterval.DAILY
+                getAllCoins()
 
             }
             R.id.oneWeek -> {
                 header.text = "WEEKLY"
-                candlestickIntervalList.clear()
-                candlestickIntervalList.add(CandlestickInterval.WEEKLY)
+                candlestickInterval = CandlestickInterval.WEEKLY
+                getAllCoins()
 
             }
             R.id.oneMonth -> {
                 header.text = "MONTHLY"
-                candlestickIntervalList.clear()
-                candlestickIntervalList.add(CandlestickInterval.MONTHLY)
+                candlestickInterval = CandlestickInterval.MONTHLY
+                getAllCoins()
 
             }
             R.id.oneyear -> {
                 header.text = "YEAR"
-                candlestickIntervalList.clear()
-                candlestickIntervalList.add(CandlestickInterval.YEAR)
 
+            }
+
+            R.id.abcd -> {
+                var list = TDJsonList.sortedBy { it.symbol }
+                processData(list)
+
+            }
+            R.id.up -> {
+                var list = TDJsonList.sortedByDescending { it.tDhigh }
+                processData(list)
+            }
+
+            R.id.down -> {
+                var list = TDJsonList.sortedByDescending { it.tDlow }
+                processData(list)
             }
 
             else -> {
@@ -203,7 +284,9 @@ class TDActivity : AppCompatActivity() {
 
 
     private fun getCoinKlineData(coin: String): List<Candlestick> {
-
+        runOnUiThread {
+            tvTitle.text = "load... $coin"
+        }
         try {
             var list = syncRequestClient.getSPOTCandlestick(
                 coin,

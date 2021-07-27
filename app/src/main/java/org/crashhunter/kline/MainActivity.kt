@@ -763,6 +763,9 @@ class MainActivity : AppCompatActivity() {
 
         titleStr.append("All: ${allCoinList.size} ")
 
+        if (allCoinList.isEmpty()){
+            return
+        }
         var item = allCoinList[0]
         Log.e("sss", item.name.toString())
 

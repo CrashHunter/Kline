@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <item
+        android:id="@+id/abcd"
+        android:title="abc"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/up"
+        android:title="H"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/down"
+        android:title="L"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/D"
+        android:title="D"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/W"
+        android:title="W"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/oneDay"
+        android:title="refresh D"
+        />
+    <item
+        android:id="@+id/oneWeek"
+        android:title="refresh w"
+        />
+
+    <item
+        android:id="@+id/oneMonth"
+        android:title="refresh M"
+        />
+
+    <item
+        android:id="@+id/oneyear"
+        android:title="refresh y"
+        />
+
+
+
+
+</menu>
