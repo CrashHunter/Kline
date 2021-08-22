@@ -100,8 +100,10 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                     it.symbol.contains("USDT")
                 };
 
-                list = list.filterNot { it.symbol.contains("_")
-                        || it.symbol.contains("CELR") }
+                list = list.filterNot {
+                    it.symbol.contains("_")
+                            || it.symbol.contains("CELR")
+                }
 
                 list = list.sortedBy { it.symbol }
 
@@ -114,14 +116,18 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                         var name = symbol.symbol.replace("1000", "")
                         Constant.coinList.add(name)
 
-                        stringBuilder.append("   ${++num}. ${name}")
-                        stringBuilder.append("\n")
-                        Log.d("sss", "coinList: ${name}")
-                    }else {
-                        stringBuilder.append("   ${++num}. ${symbol.symbol}")
-                        stringBuilder.append("\n")
+                    } else {
+
                     }
 
+                }
+
+
+                for (item in Constant.coinList) {
+                    stringBuilder.append("   ${++num}. ${item}")
+                    stringBuilder.append("\n")
+
+                    Log.d("sss", "coinList: ${name}")
                 }
 
 
