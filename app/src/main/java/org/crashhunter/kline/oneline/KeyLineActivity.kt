@@ -95,28 +95,31 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 stringBuilder.clear()
 
                 var data = syncRequestClient.getExchangeInformation()
-                data.symbols.sortBy { it.symbol }
+
+                var list = data.symbols.filter {
+                    it.symbol.contains("USDT")
+                };
+
+                list = list.filterNot { it.symbol.contains("_")
+                        || it.symbol.contains("CELR") }
+
+                list = list.sortedBy { it.symbol }
 
                 var num = 0;
-                for (index in data.symbols.indices) {
-                    var symbol = data.symbols.get(index)
-
-                    if (symbol.symbol.contains("_")) {
-                        continue;
-                    }
-
-                    if (symbol.symbol.contains("CELR")) {
-                        continue;
-                    }
-
-
-                    stringBuilder.append("   ${++num}. ${symbol.symbol}")
-                    stringBuilder.append("\n")
+                for (index in list.indices) {
+                    var symbol = list.get(index)
 
                     if (!Constant.coinList.contains(symbol.symbol)) {
-                        Constant.coinList.add(symbol.symbol)
 
-                        Log.d("sss", "coinList: ${symbol.symbol}")
+                        var name = symbol.symbol.replace("1000", "")
+                        Constant.coinList.add(name)
+
+                        stringBuilder.append("   ${++num}. ${name}")
+                        stringBuilder.append("\n")
+                        Log.d("sss", "coinList: ${name}")
+                    }else {
+                        stringBuilder.append("   ${++num}. ${symbol.symbol}")
+                        stringBuilder.append("\n")
                     }
 
                 }
