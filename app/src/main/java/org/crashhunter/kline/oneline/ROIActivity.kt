@@ -110,10 +110,11 @@ class ROIActivity : AppCompatActivity() {
             //获取当前持有数
             for (item in Constant.ownCoinList) {
                 if (coin.equals(item.asset + "USDT")) {
-                    holdNum = BigDecimal(item.free)
+                    holdNum = BigDecimal(item.free) + BigDecimal(item.locked)
+
                     Log.d(
                         "Trades",
-                        "$coin holdNum:$holdNum"
+                        "$coin free:${item.free} locked:${item.locked}  holdNum:$holdNum"
                     )
                     break
                 }
