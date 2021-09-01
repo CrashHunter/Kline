@@ -100,8 +100,8 @@ class CalculateActivity : AppCompatActivity() {
             lastUp *= (1 + rate1Num / 100).toFloat()
             lastDown *= (1 - rate1Num / 100).toFloat()
 
-            upStr += "+${i * rate1Num}% : ${lastUp} \n"
-            downStr += "-${i * rate1Num}% : ${lastDown} \n"
+            upStr += "$i. ${lastUp} \n"
+            downStr += "$i. ${lastDown} \n"
 
         }
 
@@ -113,8 +113,8 @@ class CalculateActivity : AppCompatActivity() {
         for (i in 1..20) {
             lastUp5 = (1 + rate2Num * i / 100) * num
             lastDown5 = (1 - rate2Num * i / 100) * num
-            upStr5 += "+${i * rate2Num}% : ${lastUp5} \n"
-            downStr5 += "-${i * rate2Num}% : ${lastDown5} \n"
+            upStr5 += "$i. ${lastUp5} \n"
+            downStr5 += "$i. ${lastDown5} \n"
 
         }
 
