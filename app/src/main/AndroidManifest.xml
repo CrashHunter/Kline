@@ -36,7 +36,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CountActivity" />
+        <activity android:name=".CalculateActivity" />
         <activity android:name=".VolumeActivity" />
         <activity android:name=".VolumeActivity_binance" />
         <activity android:name=".VolumeRankActivity" />

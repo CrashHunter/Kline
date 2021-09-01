@@ -3,10 +3,10 @@ package org.crashhunter.kline
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
-import kotlinx.android.synthetic.main.activity_count.*
+import kotlinx.android.synthetic.main.activity_calculate.*
 
 
-class CountActivity : AppCompatActivity() {
+class CalculateActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,7 +14,7 @@ class CountActivity : AppCompatActivity() {
 
 //        supportActionBar?.hide()
 
-        setContentView(R.layout.activity_count)
+        setContentView(R.layout.activity_calculate)
 
 
         initAction()
@@ -96,7 +96,7 @@ class CountActivity : AppCompatActivity() {
         var lastUp = num
         var lastDown = num
 
-        for (i in 1..10) {
+        for (i in 1..20) {
             lastUp *= (1 + rate1Num / 100).toFloat()
             lastDown *= (1 - rate1Num / 100).toFloat()
 
@@ -110,7 +110,7 @@ class CountActivity : AppCompatActivity() {
         var lastUp5 = num
         var lastDown5 = num
 
-        for (i in 1..10) {
+        for (i in 1..20) {
             lastUp5 = (1 + rate2Num * i / 100) * num
             lastDown5 = (1 - rate2Num * i / 100) * num
             upStr5 += "+${i * rate2Num}% : ${lastUp5} \n"

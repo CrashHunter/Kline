@@ -577,7 +577,7 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.count -> {
 
-                var intent = Intent(this, CountActivity::class.java)
+                var intent = Intent(this, CalculateActivity::class.java)
                 startActivity(intent)
                 return true
             }
