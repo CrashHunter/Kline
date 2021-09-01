@@ -111,10 +111,11 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 for (index in list.indices) {
                     var symbol = list.get(index)
 
-                    if (!Constant.coinList.contains(symbol.symbol)) {
+                    //处理1000shib 特殊情况
+                    var symbolName = symbol.symbol.replace("1000", "");
+                    if (!Constant.coinList.contains(symbolName)) {
 
-                        var name = symbol.symbol.replace("1000", "")
-                        Constant.coinList.add(name)
+                        Constant.coinList.add(symbolName)
 
                     } else {
 

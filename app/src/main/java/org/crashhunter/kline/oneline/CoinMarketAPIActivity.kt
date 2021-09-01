@@ -139,19 +139,19 @@ class CoinMarketAPIActivity : AppCompatActivity() {
                         100_000_000
                     )
                 ) {
-                    str.append("-----------------------一亿-------------------------------\n")
+                    str.append("-------------------- 一亿 --------------------\n")
                 }
                 if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(1_000_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
                         1_000_000_000
                     )
                 ) {
-                    str.append("------------------------十亿------------------------------\n")
+                    str.append("-------------------- 十亿 --------------------\n")
                 }
                 if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(10_000_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
                         10_000_000_000
                     )
                 ) {
-                    str.append("------------------------一百亿------------------------------\n")
+                    str.append("-------------------- 百亿 --------------------\n")
                 }
             }
 

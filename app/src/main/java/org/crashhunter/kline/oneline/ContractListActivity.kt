@@ -53,9 +53,9 @@ class ContractListActivity : AppCompatActivity() {
             stringBuilder.append("   ${index + 1}. ${symbol.symbol}")
             stringBuilder.append("\n")
 
-            if(Constant.coinList.contains(symbol.symbol)){
-                Constant.coinList.add(symbol.symbol)
-            }
+            //if(Constant.coinList.contains(symbol.symbol)){
+            //    Constant.coinList.add(symbol.symbol)
+            //}
 
         }
 

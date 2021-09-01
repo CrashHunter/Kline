@@ -280,7 +280,7 @@ class ROIActivity : AppCompatActivity() {
             }
             if (avgPrice <= BigDecimal.ZERO) {
                 //optimize
-                item.roi = BigDecimal(100)
+                item.roi = BigDecimal(99999)
             } else if (currentPrice >= avgPrice) {
                 item.roi = currentPrice / avgPrice
             } else {
