@@ -12,7 +12,9 @@ public class AvgPriceItem {
 
   //    private BigDecimal current;
   private BigDecimal holdNum = BigDecimal.ZERO;
-  ;
+
+
+  //持仓成本
   private BigDecimal sumBuy = BigDecimal.ZERO;
 
   public BigDecimal getRoi() {

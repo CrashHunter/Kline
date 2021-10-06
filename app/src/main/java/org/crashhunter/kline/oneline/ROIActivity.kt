@@ -13,7 +13,6 @@ import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.custom.AvgPriceItem
-import com.binance.client.model.custom.DownPerItem
 import com.binance.client.model.trade.MyTrade
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -76,7 +75,9 @@ class ROIActivity : AppCompatActivity() {
                     object : TypeToken<List<AvgPriceItem>>() {}
                         .type) as List<AvgPriceItem>
 
-            processROIData()
+
+            var list = avgPriceItemList.sortedBy { it.roi }
+            processROIData(list)
 
             runOnUiThread {
                 tvRoi.text = ""
@@ -192,15 +193,32 @@ class ROIActivity : AppCompatActivity() {
 
     private fun routeItem() {
         when (currentItemId) {
-            R.id.UpPer -> {
+            R.id.Alpha -> {
+                var list = avgPriceItemList.sortedBy { it.coin }
 
-//                runOnUiThread {
-//                    tvTitle.text = ""
-//                    tvTitle.text = stringBuilder
-//                }
+                processROIData(list)
+
+                runOnUiThread {
+                    tvRoi.text = ""
+                    tvRoi.text = roiStringBuilder
+                }
             }
             R.id.DownPer -> {
-                processROIData()
+
+                var list = avgPriceItemList.sortedBy { it.roi }
+
+                processROIData(list)
+
+                runOnUiThread {
+                    tvRoi.text = ""
+                    tvRoi.text = roiStringBuilder
+                }
+            }
+
+            R.id.SumBuy -> {
+                var list = avgPriceItemList.sortedByDescending { it.sumBuy }
+
+                processROIData(list)
 
                 runOnUiThread {
                     tvRoi.text = ""
@@ -244,7 +262,8 @@ class ROIActivity : AppCompatActivity() {
             var jsonStr = Gson().toJson(avgPriceItemList)
             latestAvgPriceItemListJsonStr = jsonStr
 
-            processROIData()
+            var list = avgPriceItemList.sortedBy { it.roi }
+            processROIData(list)
 
             runOnUiThread {
                 tvRoi.text = ""
@@ -255,9 +274,11 @@ class ROIActivity : AppCompatActivity() {
     }
 
 
-    private fun processROIData() {
+    private fun processROIData(list: List<AvgPriceItem>) {
 
-        var list = avgPriceItemList.sortedBy { it.roi }
+
+
+
         roiStringBuilder.clear()
         var totalSum = BigDecimal.ZERO
         var totalWin = BigDecimal.ZERO
@@ -296,7 +317,7 @@ class ROIActivity : AppCompatActivity() {
 
             roiStringBuilder.append("${index + 1}. ")
 
-            roiStringBuilder.append("$coin $currentPrice / $avgPrice /")
+            roiStringBuilder.append(" $coin ${item.sumBuy} $currentPrice / $avgPrice /")
 
             //roiStringBuilder.append("$roi / ")
 

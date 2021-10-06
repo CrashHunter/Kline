@@ -15,12 +15,19 @@
         />
 
     <item
-        android:id="@+id/UpPer"
-        android:title="Up"
+        android:id="@+id/Alpha"
+        android:title="Alpha"
         app:showAsAction="always"
         />
 
-<!--    <item-->
+    <item
+        android:id="@+id/SumBuy"
+        android:title="SumBuy"
+        app:showAsAction="always"
+        />
+
+
+    <!--    <item-->
 <!--        android:id="@+id/Daily"-->
 <!--        android:title="D"-->
 <!--        app:showAsAction="always"-->
