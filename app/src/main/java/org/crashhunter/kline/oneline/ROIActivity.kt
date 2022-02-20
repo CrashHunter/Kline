@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.activity_roi_percent.tvRoi
 import kotlinx.coroutines.*
 import org.crashhunter.kline.AppController
 import org.crashhunter.kline.Constant
+import org.crashhunter.kline.Constant.avgPriceItemList
 import org.crashhunter.kline.R
 import org.crashhunter.kline.data.BaseSharedPreference
 import org.crashhunter.kline.data.LATESTAVGPRICEITEMLISTJSONSTR
@@ -42,7 +43,6 @@ class ROIActivity : AppCompatActivity() {
 
     var roiStringBuilder = SpannableStringBuilder()
 
-    var avgPriceItemList: List<AvgPriceItem> = ArrayList<AvgPriceItem>()
     var avgList = ArrayList<AvgPriceItem>()
 
     var totalSum = BigDecimal.ZERO

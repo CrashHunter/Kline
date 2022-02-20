@@ -165,6 +165,16 @@ class TDActivity : AppCompatActivity() {
 
             lowColor(item, stringBuilder)
 
+            if (Constant.avgPriceItemList.isNotEmpty()){
+
+                for(avg in Constant.avgPriceItemList){
+                    if (avg.coin.equals(item.symbol)){
+                        stringBuilder.append(" "+ avg.roi.toString()+" ")
+                    }
+                }
+
+            }
+
             stringBuilder.append("\n")
         }
 

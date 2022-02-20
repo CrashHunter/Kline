@@ -1,5 +1,6 @@
 package org.crashhunter.kline
 
+import com.binance.client.model.custom.AvgPriceItem
 import com.binance.client.model.custom.DownPerItem
 import com.binance.client.model.trade.BalancesItem
 
@@ -13,4 +14,7 @@ object Constant {
 
     var ownCoinListName = ArrayList<String>()
     var ownCoinList = ArrayList<BalancesItem>()
+
+
+    var avgPriceItemList: List<AvgPriceItem> = ArrayList<AvgPriceItem>()
 }
