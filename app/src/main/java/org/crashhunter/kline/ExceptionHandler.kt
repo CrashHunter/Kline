@@ -8,7 +8,7 @@ import org.crashhunter.app_record.AppRecord
  * Created by CrashHunter on 2020/7/10.
  */
 
-class CelerExceptionHandler : Thread.UncaughtExceptionHandler {
+class ExceptionHandler : Thread.UncaughtExceptionHandler {
     private val originalDefaultExceptionHandler: Thread.UncaughtExceptionHandler? =
         Thread.getDefaultUncaughtExceptionHandler()
 
@@ -48,12 +48,12 @@ class CelerExceptionHandler : Thread.UncaughtExceptionHandler {
     companion object {
         private const val TAG = "CelerExceptionHandler"
         private const val SLEEP_TIMEOUT_MS = 400
-        private var sInstance: CelerExceptionHandler? = null
+        private var sInstance: ExceptionHandler? = null
         fun init() {
             if (sInstance == null) {
-                synchronized(CelerExceptionHandler::class.java) {
+                synchronized(ExceptionHandler::class.java) {
                     if (sInstance == null) {
-                        sInstance = CelerExceptionHandler()
+                        sInstance = ExceptionHandler()
                     }
                 }
             }

@@ -52,8 +52,9 @@ class MainActivity : AppCompatActivity() {
     var leverList = ArrayList<String>()
 
     var stableList = arrayListOf(
-        "DAI", "TUSD", "USDC", "BITCNY",
-        "PAX", "GUSD", "USDK", "BUSD"
+//        "DAI", "TUSD", "USDC", "BITCNY",
+//        "PAX", "GUSD", "USDK", "BUSD"
+    ""
     )
 
 

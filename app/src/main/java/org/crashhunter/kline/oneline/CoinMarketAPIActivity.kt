@@ -60,10 +60,11 @@ class CoinMarketAPIActivity : AppCompatActivity() {
             override fun run() {
                 super.run()
 
+                //获取币安持有现货列表
                 var data = syncRequestClient.getAccountSPOT()
                 Constant.ownCoinListName.clear()
                 Constant.ownCoinList.clear()
-                var filter = data.balances.filter { it.free.toBigDecimal() > BigDecimal.ZERO }
+                var filter = data.balances.filter { it.free.toBigDecimal() > BigDecimal.ZERO ||it.locked.toBigDecimal() > BigDecimal.ZERO }
                 for (item in filter) {
                     Log.d("sss", "${item.asset}:${item.free}")
                     Constant.ownCoinListName.add(item.asset)

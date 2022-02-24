@@ -250,7 +250,7 @@ class ROIActivity : AppCompatActivity() {
 //                    getSPOTAccountTrades("SXPUSDT")
                     for (coin in Constant.coinList) {
                         if (Constant.ownCoinListName.contains(coin.replace("USDT", ""))) {
-                            Thread.sleep(100)
+                            Thread.sleep(50)
                             getSPOTAccountTrades(coin)
                         }
                     }
