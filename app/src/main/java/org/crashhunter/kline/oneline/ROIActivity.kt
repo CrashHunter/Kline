@@ -303,9 +303,9 @@ class ROIActivity : AppCompatActivity() {
                 //optimize
                 item.roi = BigDecimal(99999)
             } else if (currentPrice >= avgPrice) {
-                item.roi = currentPrice / avgPrice
+                item.roi = currentPrice.divide(avgPrice,4, BigDecimal.ROUND_HALF_UP)
             } else {
-                item.roi = -(BigDecimal.ONE.minus(currentPrice / avgPrice)).setScale(
+                item.roi = -(BigDecimal.ONE.minus(currentPrice.divide(avgPrice,4, BigDecimal.ROUND_HALF_UP))).setScale(
                     4,
                     BigDecimal.ROUND_HALF_UP
                 )
