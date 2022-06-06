@@ -1,5 +1,6 @@
 package org.crashhunter.kline.oneline
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -20,6 +21,7 @@ import kotlinx.android.synthetic.main.activity_down_percent.*
 import kotlinx.android.synthetic.main.activity_roi_percent.tvRoi
 import kotlinx.coroutines.*
 import org.crashhunter.kline.AppController
+import org.crashhunter.kline.CalculateActivity
 import org.crashhunter.kline.Constant
 import org.crashhunter.kline.Constant.avgPriceItemList
 import org.crashhunter.kline.R
@@ -230,6 +232,11 @@ class ROIActivity : AppCompatActivity() {
                 getAllCoinsAvg()
 
             }
+            R.id.calculate -> {
+
+                startActivity(Intent(this, CalculateActivity::class.java))
+
+            }
             else -> {
             }
         }
@@ -248,10 +255,12 @@ class ROIActivity : AppCompatActivity() {
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
 //                    getSPOTAccountTrades("SXPUSDT")
-                    for (coin in Constant.coinList) {
-                        if (Constant.ownCoinListName.contains(coin.replace("USDT", ""))) {
-                            Thread.sleep(50)
-                            getSPOTAccountTrades(coin)
+                    for (coin in Constant.ownCoinListName.sorted()) {
+                        if (Constant.coinList.contains(coin + "USDT")
+                            || Constant.coinList.contains(coin + "BUSD")
+                        ) {
+                            Thread.sleep(30)
+                            getSPOTAccountTrades(coin + "USDT")
                         }
                     }
                 }
@@ -275,9 +284,6 @@ class ROIActivity : AppCompatActivity() {
 
 
     private fun processROIData(list: List<AvgPriceItem>) {
-
-
-
 
         roiStringBuilder.clear()
         var totalSum = BigDecimal.ZERO
@@ -303,9 +309,15 @@ class ROIActivity : AppCompatActivity() {
                 //optimize
                 item.roi = BigDecimal(99999)
             } else if (currentPrice >= avgPrice) {
-                item.roi = currentPrice.divide(avgPrice,4, BigDecimal.ROUND_HALF_UP)
+                item.roi = currentPrice.divide(avgPrice, 4, BigDecimal.ROUND_HALF_UP)
             } else {
-                item.roi = -(BigDecimal.ONE.minus(currentPrice.divide(avgPrice,4, BigDecimal.ROUND_HALF_UP))).setScale(
+                item.roi = -(BigDecimal.ONE.minus(
+                    currentPrice.divide(
+                        avgPrice,
+                        4,
+                        BigDecimal.ROUND_HALF_UP
+                    )
+                )).setScale(
                     4,
                     BigDecimal.ROUND_HALF_UP
                 )

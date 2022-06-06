@@ -97,7 +97,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 var data = syncRequestClient.getExchangeInformation()
 
                 var list = data.symbols.filter {
-                    it.symbol.contains("USDT")
+                    it.symbol.contains("USDT") || it.symbol.contains("BUSD")
                 };
 
                 list = list.filterNot {

@@ -26,6 +26,12 @@
         app:showAsAction="always"
         />
 
+    <item
+        android:id="@+id/calculate"
+        android:title="算"
+        app:showAsAction="always"
+        />
+
 
     <!--    <item-->
 <!--        android:id="@+id/Daily"-->
