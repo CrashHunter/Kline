@@ -114,7 +114,6 @@ class ROIActivity : AppCompatActivity() {
             for (item in Constant.ownCoinList) {
                 if (coin.equals(item.asset + "USDT")) {
                     holdNum = BigDecimal(item.free) + BigDecimal(item.locked)
-
                     Log.d(
                         "Trades",
                         "$coin free:${item.free} locked:${item.locked}  holdNum:$holdNum"
@@ -300,7 +299,7 @@ class ROIActivity : AppCompatActivity() {
 
             val coin = item.coin
             for (downPerItem in Constant.downPerItemList) {
-                if (downPerItem.coin.equals(coin)) {
+                if (downPerItem.coin.contains(coin.replace("USDT", ""))) {
                     currentPrice = downPerItem.current
                     break
                 }
