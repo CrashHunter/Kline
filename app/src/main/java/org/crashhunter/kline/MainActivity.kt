@@ -10,6 +10,9 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.binance.client.RequestOptions
+import com.binance.client.SyncRequestClient
+import com.binance.client.examples.constants.PrivateConfig
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
@@ -54,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     var stableList = arrayListOf(
 //        "DAI", "TUSD", "USDC", "BITCNY",
 //        "PAX", "GUSD", "USDK", "BUSD"
-    ""
+        ""
     )
 
 
@@ -124,6 +127,20 @@ class MainActivity : AppCompatActivity() {
 
     var volumeEnoughNum = 0
 
+
+    val options = RequestOptions()
+    var syncRequestClient = SyncRequestClient.create(
+        PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
+        options
+    )
+
+    val options_contract = RequestOptions()
+    var syncRequestClient_contract = SyncRequestClient.create(
+        PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
+        options_contract
+    )
+
+
     private var latestCoinListJsonStr by BaseSharedPreference(
         AppController.instance.applicationContext,
         LATEST_COIN_LIST,
@@ -160,7 +177,76 @@ class MainActivity : AppCompatActivity() {
 //        getFromAPi()
 
 
+        getContractList()
+        getOwnAccountCoins()
     }
+
+    private fun getOwnAccountCoins() {
+        Log.d("sss", "getOwnAccountCoins")
+        options.url = "https://api.binance.com"
+        syncRequestClient = SyncRequestClient.create(
+            PrivateConfig.API_KEY, PrivateConfig.SECRET_KEY,
+            options
+        )
+        object : Thread() {
+            override fun run() {
+                super.run()
+
+                //获取币安持有现货列表
+                var data = syncRequestClient.getAccountSPOT()
+                Constant.ownCoinListName.clear()
+                Constant.ownCoinList.clear()
+                var filter =
+                    data.balances.filter { it.free.toBigDecimal() > BigDecimal.ZERO || it.locked.toBigDecimal() > BigDecimal.ZERO }
+                Log.d("sss", "own coin size: ${filter.size}")
+                for (item in filter) {
+//                    Log.d("sss", "own coin : ${item.asset}:${item.free}")
+                    Constant.ownCoinListName.add(item.asset)
+                    Constant.ownCoinList.add(item)
+                }
+            }
+        }.start()
+    }
+
+    private fun getContractList() {
+        Log.d("sss", "getContractList")
+        options_contract.url = "https://fapi.binance.com"
+        object : Thread() {
+            override fun run() {
+                super.run()
+
+
+                var data = syncRequestClient_contract.getExchangeInformation()
+
+                var list = data.symbols
+                list = list.filterNot {
+                    it.symbol.contains("_")
+                }
+                list = list.sortedBy { it.symbol }
+                Log.d("sss", "contract coin size: ${list.size}")
+                for (index in list.indices) {
+
+                    var symbol = list.get(index)
+//                    Log.d("sss", "contract coin:" + symbol.symbol)
+                    //处理1000shib 特殊情况
+
+                    //提取币名
+                    var symbolName = symbol.symbol
+                        .replace("1000", "")
+                        .replace("USDT", "")
+                        .replace("BUSD", "");
+                    if (!Constant.contractCoins.contains(symbolName)) {
+                        Constant.contractCoins.add(symbolName)
+                    } else {
+
+                    }
+
+                }
+
+            }
+        }.start()
+    }
+
 
     private fun setLever() {
 
@@ -603,6 +689,7 @@ class MainActivity : AppCompatActivity() {
             R.id.refresh -> {
                 allCoinList.clear()
                 getFromAPi()
+                getContractList()
                 return true
             }
             R.id.allcap -> {
@@ -764,7 +851,7 @@ class MainActivity : AppCompatActivity() {
 
         titleStr.append("All: ${allCoinList.size} ")
 
-        if (allCoinList.isEmpty()){
+        if (allCoinList.isEmpty()) {
             return
         }
         var item = allCoinList[0]

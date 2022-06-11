@@ -14,7 +14,6 @@ import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
-import kotlinx.android.synthetic.main.activity_roi_percent.*
 import kotlinx.android.synthetic.main.activity_td.header
 import kotlinx.android.synthetic.main.activity_td.tvTitle
 import kotlinx.coroutines.*
@@ -112,7 +111,7 @@ class TDActivity : AppCompatActivity() {
                 val sum = withContext(Dispatchers.IO) {
                     var amount = 0
 //                    getCoinKlineData("XLMUSDT")
-                    for (coin in Constant.coinList) {
+                    for (coin in Constant.contractCoins) {
 
                         var n = async {
                             getCoinKlineData(coin)

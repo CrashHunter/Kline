@@ -8,23 +8,16 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.alibaba.fastjson.JSON
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_volume.*
 import kotlinx.android.synthetic.main.activity_volume.tvTitle
 import kotlinx.android.synthetic.main.activity_volume_rank.*
 import kotlinx.coroutines.*
 import org.crashhunter.kline.data.SharedPreferenceUtil
-import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Query
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,7 +27,7 @@ import kotlin.system.measureTimeMillis
 
 class VolumeRankActivity_binance : AppCompatActivity() {
 
-    var coinList = Constant.coinList
+    var coinList = Constant.contractCoins
     var coinsVolume = ArrayList<CoinVolume2>()
     var allStr = SpannableStringBuilder()
 

@@ -198,7 +198,7 @@ class DataAnalysisActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshLi
                     var amount = 0
 //                    var n  = ArrayList<Deferred<Int>>(10)
 //                    n.add(Deferred)
-                    for (coin in Constant.coinList) {
+                    for (coin in Constant.contractCoins) {
                         var n = async {
                             getCoinInfo(coin)
                         }

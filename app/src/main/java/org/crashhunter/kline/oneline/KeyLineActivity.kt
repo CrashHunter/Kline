@@ -87,59 +87,15 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     private fun getContractList() {
         tvTitle.text = "Loading..."
+        var num = 0;
+        for (item in Constant.contractCoins.sorted()) {
+            stringBuilder.append("   ${++num}. ${item}")
+            stringBuilder.append("\n")
 
-        object : Thread() {
-            override fun run() {
-                super.run()
+            Log.d("sss", "coinList: ${item}")
+        }
 
-                stringBuilder.clear()
-
-                var data = syncRequestClient.getExchangeInformation()
-
-                var list = data.symbols.filter {
-                    it.symbol.contains("USDT") || it.symbol.contains("BUSD")
-                };
-
-                list = list.filterNot {
-                    it.symbol.contains("_")
-                            || it.symbol.contains("CELR")
-                }
-
-                list = list.sortedBy { it.symbol }
-
-                var num = 0;
-                for (index in list.indices) {
-                    var symbol = list.get(index)
-
-                    //处理1000shib 特殊情况
-                    var symbolName = symbol.symbol.replace("1000", "");
-                    if (!Constant.coinList.contains(symbolName)) {
-
-                        Constant.coinList.add(symbolName)
-
-                    } else {
-
-                    }
-
-                }
-
-
-                for (item in Constant.coinList) {
-                    stringBuilder.append("   ${++num}. ${item}")
-                    stringBuilder.append("\n")
-
-                    Log.d("sss", "coinList: ${name}")
-                }
-
-
-                runOnUiThread {
-
-                    tvTitle.text = stringBuilder
-
-                }
-
-            }
-        }.start()
+        tvTitle.text = stringBuilder
     }
 
 
@@ -374,7 +330,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             }
         }
         var itemStr = SpannableStringBuilder()
-        for (coin in Constant.coinList) {
+        for (coin in Constant.contractCoins) {
 
             var coinHistory = lastestCoinsRange.filter { it.name == coin }
 
@@ -478,7 +434,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                     var amount = 0
 //                    var n  = ArrayList<Deferred<Int>>(10)
 //                    n.add(Deferred)
-                    for (coin in Constant.coinList) {
+                    for (coin in Constant.contractCoins) {
                         var n = async {
                             getCoinInfo(coin)
                         }
@@ -597,7 +553,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     private fun getCoinFilter() {
 
-        for (coin in Constant.coinList) {
+        for (coin in Constant.contractCoins) {
             isCoinInFilter = false
             var jsonList =
                 SharedPreferenceUtil.loadData(
@@ -824,6 +780,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
     }
 
 
+    //获取币日线图
     private fun getCoinKlineData(coin: String): List<Candlestick> {
         TimeUtils.stringToLong("2020-7-27 08:00", "yyyy-MM-dd HH:mm")
 
@@ -833,15 +790,17 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             startTimeLong = TimeUtils.stringToLong(startTimeStr, "yyyy-MM-dd HH:mm")
         }
 
+        var coinPair = coin + "USDT"
+
         try {
             var list = syncRequestClient.getCandlestick(
-                coin,
+                coinPair,
                 candlestickInterval,
                 startTimeLong,
                 null,
                 historyRange
             )
-            Log.d("sss", "showData: $coin")
+            Log.d("sss", "showData: $coinPair")
 
             //Log.d("sss", list.toString())
             SharedPreferenceUtil.saveData(

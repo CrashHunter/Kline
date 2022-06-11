@@ -127,7 +127,7 @@ class CoinMarketAPIActivity : AppCompatActivity() {
 
     private fun showInfo(datas: List<Data>) {
         var filterList =
-            datas.filter { Constant.coinList.contains(it.symbol.toUpperCase() + "USDT") || it.symbol.contains("SHIB")}
+            datas.filter { Constant.contractCoins.contains(it.symbol.toUpperCase() + "USDT") || it.symbol.contains("SHIB")}
         var sortedList =
             filterList.sortedByDescending { it.quote.USD.market_cap.toBigDecimal() }
         var str = SpannableStringBuilder()

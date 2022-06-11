@@ -19,7 +19,6 @@ import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
 import com.binance.client.model.trade.MyTrade
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_down_percent.*
 import kotlinx.android.synthetic.main.activity_down_percent.tvTitle
 import kotlinx.coroutines.*
@@ -215,7 +214,7 @@ class DownPercentActivity : AppCompatActivity() {
             R.id.ROI -> {
 
 //                getAllCoinsAvg()
-                startActivity(Intent(this,ROIActivity::class.java))
+                startActivity(Intent(this, ROIActivity::class.java))
 
             }
             else -> {
@@ -401,7 +400,7 @@ class DownPercentActivity : AppCompatActivity() {
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
 //                    getSPOTAccountTrades("SXPUSDT")
-                    for (coin in Constant.coinList) {
+                    for (coin in Constant.contractCoins) {
                         if (Constant.ownCoinListName.contains(coin.replace("USDT", ""))) {
                             Thread.sleep(200)
                             if (coin.contains("SHIB")) {
@@ -504,22 +503,15 @@ class DownPercentActivity : AppCompatActivity() {
 
 
     private fun getAllCoins() {
-
         GlobalScope.launch {
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
                     var amount = 0
-                    for (coin in Constant.coinList) {
+                    for (coin in Constant.contractCoins) {
                         var n = async {
 
-                            if (coin.contains("SHIB")) {
-                                getCoinKlineData("SHIBUSDT")
-                            } else {
-                                getCoinKlineData(coin)
-                            }
-
+                            getCoinKlineData(coin + "USDT")
                         }
-
                     }
                     amount
                 }
@@ -533,11 +525,7 @@ class DownPercentActivity : AppCompatActivity() {
                 tvTitle.text = ""
                 tvTitle.text = stringBuilder
             }
-
-
         }
-
-
     }
 
     private fun processDailyData() {
@@ -573,6 +561,7 @@ class DownPercentActivity : AppCompatActivity() {
         }
 
         try {
+            Log.d("sss", "showData:$coin")
             //没有YEAR的维度，最大到月
             var list = syncRequestClient.getSPOTCandlestick(
                 coin,
@@ -581,7 +570,7 @@ class DownPercentActivity : AppCompatActivity() {
                 null,
                 36
             )
-            Log.d("sss", "showData:$coin")
+
 
             var max = BigDecimal.ZERO
             var min = BigDecimal(9999999999)
@@ -621,7 +610,7 @@ class DownPercentActivity : AppCompatActivity() {
             Constant.downPerItemList = resultList
             return list
         } catch (e: Exception) {
-            Log.e("sss", "$coin: " + Log.getStackTraceString(e))
+            Log.e("sss", "Error Coin $coin: " + Log.getStackTraceString(e))
         }
         return ArrayList<Candlestick>(0)
     }
