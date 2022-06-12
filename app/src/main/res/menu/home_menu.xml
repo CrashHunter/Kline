@@ -11,10 +11,14 @@
         android:title="Kline"
         app:showAsAction="always" />
     <item
-        android:id="@+id/volumeHistory"
-        android:title="量历史"
+        android:id="@+id/ROI"
+        android:title="ROI"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/TD"
+        android:title="TD"
+        app:showAsAction="always" />
     <item
         android:id="@+id/refresh"
         android:title="刷新"
@@ -22,29 +26,45 @@
 
     <item
         android:id="@+id/coinmarketapi"
-        android:title="coinmarketapi" />
+        android:title="合约市值" />
+    <item
+        android:id="@+id/DownPer"
+        android:title="合约跌幅" />
+
+
+
+
+    <item
+        android:id="@+id/volumeHistory"
+        android:title="量历史"
+        app:showAsAction="never" />
+
 
     <item
         android:id="@+id/allcap"
         android:title="全部" />
 
     <item
-            android:id="@+id/leverList"
-            android:title="杠杆" />
+        android:id="@+id/leverList"
+        android:title="杠杆" />
 
     <item
-            android:id="@+id/bigcap"
-            android:title="大盘子" />
+        android:id="@+id/bigcap"
+        android:title="大盘子"
+        app:showAsAction="never" />
     <item
-            android:id="@+id/smallcap"
-            android:title="小盘子" />
+        android:id="@+id/smallcap"
+        android:title="小盘子"
+        app:showAsAction="never" />
 
     <item
-            android:id="@+id/smallVolume"
-            android:title="小成交量" />
+        android:id="@+id/smallVolume"
+        android:title="小成交量"
+        app:showAsAction="never" />
 
 
     <item
-            android:id="@+id/candidate"
-            android:title="候选" />
+        android:id="@+id/candidate"
+        android:title="候选"
+        app:showAsAction="never" />
 </menu>

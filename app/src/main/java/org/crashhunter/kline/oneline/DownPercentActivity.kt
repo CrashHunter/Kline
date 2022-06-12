@@ -32,7 +32,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.system.measureTimeMillis
-
+//合约的跌幅
 class DownPercentActivity : AppCompatActivity() {
 
     val options = RequestOptions()

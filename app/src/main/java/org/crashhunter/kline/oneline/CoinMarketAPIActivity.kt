@@ -26,7 +26,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.math.BigDecimal
 import kotlin.collections.ArrayList
 
-
+//合约的市值
 class CoinMarketAPIActivity : AppCompatActivity() {
     val options = RequestOptions()
     var syncRequestClient = SyncRequestClient.create(
