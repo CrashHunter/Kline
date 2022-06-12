@@ -13,20 +13,19 @@ import androidx.appcompat.app.AppCompatActivity
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
-import com.binance.client.model.custom.AvgPriceItem
+import com.binance.client.model.custom.CostPriceItem
 import com.binance.client.model.custom.DownPerItem
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
 import com.binance.client.model.trade.MyTrade
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.activity_down_percent.*
 import kotlinx.android.synthetic.main.activity_roi_percent.tvRoi
 import kotlinx.coroutines.*
 import org.crashhunter.kline.AppController
 import org.crashhunter.kline.CalculateActivity
 import org.crashhunter.kline.Constant
-import org.crashhunter.kline.Constant.avgPriceItemList
+import org.crashhunter.kline.Constant.costPriceItemList
 import org.crashhunter.kline.R
 import org.crashhunter.kline.data.BaseSharedPreference
 import org.crashhunter.kline.data.LATESTAVGPRICEITEMLISTJSONSTR
@@ -48,7 +47,7 @@ class ROIActivity : AppCompatActivity() {
 
     var roiStringBuilder = SpannableStringBuilder()
 
-    var avgList = ArrayList<AvgPriceItem>()
+    var avgList = ArrayList<CostPriceItem>()
 
     var totalSum = BigDecimal.ZERO
     var totalWin = BigDecimal.ZERO
@@ -74,14 +73,14 @@ class ROIActivity : AppCompatActivity() {
 
         if (latestAvgPriceItemListJsonStr.isNotEmpty()) {
 
-            avgPriceItemList =
+            costPriceItemList =
                 Gson().fromJson(
                     latestAvgPriceItemListJsonStr,
-                    object : TypeToken<List<AvgPriceItem>>() {}
-                        .type) as List<AvgPriceItem>
+                    object : TypeToken<List<CostPriceItem>>() {}
+                        .type) as List<CostPriceItem>
 
 
-            var list = avgPriceItemList.sortedBy { it.roi }
+            var list = costPriceItemList.sortedBy { it.roi }
             processROIData(list)
 
             runOnUiThread {
@@ -234,7 +233,8 @@ class ROIActivity : AppCompatActivity() {
                 }
                 Log.d("Trades", "$coin: sum:$sum holdNum:$holdNum avgPrice:${avgPrice} ")
 
-                var avgPriceItem = AvgPriceItem()
+                var avgPriceItem =
+                    CostPriceItem()
                 avgPriceItem.coin = coin
                 avgPriceItem.avgPrice = avgPrice
                 avgPriceItem.sumBuy = sum
@@ -271,7 +271,7 @@ class ROIActivity : AppCompatActivity() {
     private fun routeItem() {
         when (currentItemId) {
             R.id.Alpha -> {
-                var list = avgPriceItemList.sortedBy { it.coin }
+                var list = costPriceItemList.sortedBy { it.coin }
 
                 processROIData(list)
 
@@ -282,7 +282,7 @@ class ROIActivity : AppCompatActivity() {
             }
             R.id.DownPer -> {
 
-                var list = avgPriceItemList.sortedBy { it.roi }
+                var list = costPriceItemList.sortedBy { it.roi }
 
                 processROIData(list)
 
@@ -293,7 +293,7 @@ class ROIActivity : AppCompatActivity() {
             }
 
             R.id.SumBuy -> {
-                var list = avgPriceItemList.sortedByDescending { it.sumBuy }
+                var list = costPriceItemList.sortedByDescending { it.sumBuy }
 
                 processROIData(list)
 
@@ -304,7 +304,8 @@ class ROIActivity : AppCompatActivity() {
             }
             R.id.ROI -> {
 
-                getAllCoinsAvg()
+                getAllCoinsAvgs()
+                getOwnCoinsCost()
 
             }
             R.id.calculate -> {
@@ -319,9 +320,9 @@ class ROIActivity : AppCompatActivity() {
 
 
     //获取成本价
-    private fun getAllCoinsAvg() {
-        avgPriceItemList = ArrayList<AvgPriceItem>()
-        avgList = ArrayList<AvgPriceItem>()
+    private fun getOwnCoinsCost() {
+        costPriceItemList = ArrayList<CostPriceItem>()
+        avgList = ArrayList<CostPriceItem>()
         if (Constant.ownCoinListName.isEmpty()) {
             Toast.makeText(applicationContext, "no ownCoinListName", Toast.LENGTH_LONG).show()
             return
@@ -332,18 +333,18 @@ class ROIActivity : AppCompatActivity() {
                 val sum = withContext(Dispatchers.IO) {
 //                    getSPOTAccountTrades("SXPUSDT")
                     for (coin in Constant.ownCoinListName.sorted()) {
-                        Thread.sleep(20)
+                        Thread.sleep(10)
                         getSPOTAccountTrades(coin + "USDT")
                     }
                 }
             }
 
-            avgPriceItemList = avgList
+            costPriceItemList = avgList
 
-            var jsonStr = Gson().toJson(avgPriceItemList)
+            var jsonStr = Gson().toJson(costPriceItemList)
             latestAvgPriceItemListJsonStr = jsonStr
 
-            var list = avgPriceItemList.sortedBy { it.roi }
+            var list = costPriceItemList.sortedBy { it.roi }
             processROIData(list)
 
             runOnUiThread {
@@ -355,7 +356,7 @@ class ROIActivity : AppCompatActivity() {
     }
 
 
-    private fun processROIData(list: List<AvgPriceItem>) {
+    private fun processROIData(list: List<CostPriceItem>) {
 
         roiStringBuilder.clear()
         var totalSum = BigDecimal.ZERO

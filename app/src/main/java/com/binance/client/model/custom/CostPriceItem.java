@@ -2,7 +2,7 @@ package com.binance.client.model.custom;
 
 import java.math.BigDecimal;
 
-public class AvgPriceItem {
+public class CostPriceItem {
 
   private String coin;
 

@@ -64,7 +64,8 @@ class CoinMarketAPIActivity : AppCompatActivity() {
                 var data = syncRequestClient.getAccountSPOT()
                 Constant.ownCoinListName.clear()
                 Constant.ownCoinList.clear()
-                var filter = data.balances.filter { it.free.toBigDecimal() > BigDecimal.ZERO ||it.locked.toBigDecimal() > BigDecimal.ZERO }
+                var filter =
+                    data.balances.filter { it.free.toBigDecimal() > BigDecimal.ZERO || it.locked.toBigDecimal() > BigDecimal.ZERO }
                 for (item in filter) {
                     Log.d("sss", "${item.asset}:${item.free}")
                     Constant.ownCoinListName.add(item.asset)
@@ -127,7 +128,11 @@ class CoinMarketAPIActivity : AppCompatActivity() {
 
     private fun showInfo(datas: List<Data>) {
         var filterList =
-            datas.filter { Constant.contractCoins.contains(it.symbol.toUpperCase() + "USDT") || it.symbol.contains("SHIB")}
+            datas.filter {
+                Constant.contractCoins.contains(it.symbol.toUpperCase()) || it.symbol.contains(
+                    "SHIB"
+                )
+            }
         var sortedList =
             filterList.sortedByDescending { it.quote.USD.market_cap.toBigDecimal() }
         var str = SpannableStringBuilder()
@@ -176,12 +181,12 @@ class CoinMarketAPIActivity : AppCompatActivity() {
             }
 
 
-    //                    str.append(StringUtils.getFormattedVolume(item.quote.USD.market_cap))
+            //                    str.append(StringUtils.getFormattedVolume(item.quote.USD.market_cap))
 
             str.append(" " + NumberTools.amountConversion(item.quote.USD.market_cap.toDouble()))
 
-            for (item in Constant.downPerItemList){
-                if (item.coin.replace("USDT","").equals(symbol.trim())){
+            for (item in Constant.downPerItemList) {
+                if (item.coin.replace("USDT", "").equals(symbol.trim())) {
                     val max = item.max
                     val current = item.current
                     val downPer = item.downPer

@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
-import com.binance.client.model.custom.AvgPriceItem
+import com.binance.client.model.custom.CostPriceItem
 import com.binance.client.model.custom.DownPerItem
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
@@ -53,8 +53,8 @@ class DownPercentActivity : AppCompatActivity() {
 
     var dailyResultList = ArrayList<DownPerItem>()
 
-    var avgPriceItemList: List<AvgPriceItem> = ArrayList<AvgPriceItem>()
-    var avgList = ArrayList<AvgPriceItem>()
+    var avgPriceItemList: List<CostPriceItem> = ArrayList<CostPriceItem>()
+    var avgList = ArrayList<CostPriceItem>()
 
     var totalSum = BigDecimal.ZERO
     var totalWin = BigDecimal.ZERO
@@ -150,7 +150,8 @@ class DownPercentActivity : AppCompatActivity() {
                 }
                 Log.d("Trades", "$coin: sum:$sum holdNum:$holdNum avgPrice:${avgPrice} ")
 
-                var avgPriceItem = AvgPriceItem()
+                var avgPriceItem =
+                    CostPriceItem()
                 avgPriceItem.coin = coin
                 avgPriceItem.avgPrice = avgPrice
                 avgPriceItem.sumBuy = sum
@@ -389,8 +390,8 @@ class DownPercentActivity : AppCompatActivity() {
     }
 
     private fun getAllCoinsAvg() {
-        avgPriceItemList = ArrayList<AvgPriceItem>()
-        avgList = ArrayList<AvgPriceItem>()
+        avgPriceItemList = ArrayList<CostPriceItem>()
+        avgList = ArrayList<CostPriceItem>()
         if (Constant.ownCoinListName.isEmpty()) {
             Toast.makeText(applicationContext, "no ownCoinListName", Toast.LENGTH_LONG).show()
             return

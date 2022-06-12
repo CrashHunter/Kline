@@ -114,7 +114,7 @@ class TDActivity : AppCompatActivity() {
                     for (coin in Constant.contractCoins) {
 
                         var n = async {
-                            getCoinKlineData(coin)
+                            getCoinKlineData(coin + "USDT")
                         }
                     }
                     amount
@@ -164,11 +164,11 @@ class TDActivity : AppCompatActivity() {
 
             lowColor(item, stringBuilder)
 
-            if (Constant.avgPriceItemList.isNotEmpty()){
+            if (Constant.costPriceItemList.isNotEmpty()) {
 
-                for(avg in Constant.avgPriceItemList){
-                    if (avg.coin.equals(item.symbol)){
-                        stringBuilder.append(" "+ avg.roi.toString()+" ")
+                for (avg in Constant.costPriceItemList) {
+                    if (avg.coin.equals(item.symbol)) {
+                        stringBuilder.append(" " + avg.roi.toString() + " ")
                     }
                 }
 
