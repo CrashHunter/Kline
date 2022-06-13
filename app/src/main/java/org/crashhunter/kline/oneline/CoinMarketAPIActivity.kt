@@ -34,7 +34,7 @@ class CoinMarketAPIActivity : AppCompatActivity() {
         options
     )
 
-
+    //coinmarket 前500
     private var latestCoinListJsonStr by BaseSharedPreference(
         AppController.instance.applicationContext,
         LATEST_COIN_LIST,
@@ -129,37 +129,35 @@ class CoinMarketAPIActivity : AppCompatActivity() {
     private fun showInfo(datas: List<Data>) {
         var filterList =
             datas.filter {
-                Constant.contractCoins.contains(it.symbol.toUpperCase()) || it.symbol.contains(
-                    "SHIB"
-                )
+                Constant.contractCoins.contains(it.symbol.toUpperCase())
             }
         var sortedList =
-            filterList.sortedByDescending { it.quote.USD.market_cap.toBigDecimal() }
+            filterList.sortedByDescending { it.quote.USD.volume_24h.toBigDecimal() }
         var str = SpannableStringBuilder()
 
         for (index in sortedList.indices) {
             val item = sortedList[index]
 
-            if (index != 0) {
-                if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(100_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
-                        100_000_000
-                    )
-                ) {
-                    str.append("-------------------- 一亿 --------------------\n")
-                }
-                if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(1_000_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
-                        1_000_000_000
-                    )
-                ) {
-                    str.append("-------------------- 十亿 --------------------\n")
-                }
-                if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(10_000_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
-                        10_000_000_000
-                    )
-                ) {
-                    str.append("-------------------- 百亿 --------------------\n")
-                }
-            }
+//            if (index != 0) {
+//                if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(100_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
+//                        100_000_000
+//                    )
+//                ) {
+//                    str.append("-------------------- 一亿 --------------------\n")
+//                }
+//                if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(1_000_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
+//                        1_000_000_000
+//                    )
+//                ) {
+//                    str.append("-------------------- 十亿 --------------------\n")
+//                }
+//                if (item.quote.USD.market_cap.toBigDecimal() < BigDecimal(10_000_000_000) && sortedList[index - 1].quote.USD.market_cap.toBigDecimal() >= BigDecimal(
+//                        10_000_000_000
+//                    )
+//                ) {
+//                    str.append("-------------------- 百亿 --------------------\n")
+//                }
+//            }
 
 
             str.append("${index + 1}. ")
@@ -179,7 +177,7 @@ class CoinMarketAPIActivity : AppCompatActivity() {
             } else {
                 str.append(symbol)
             }
-
+            str.append(" ${NumberTools.amountConversion(item.quote.USD.volume_24h.toDouble())} ")
 
             //                    str.append(StringUtils.getFormattedVolume(item.quote.USD.market_cap))
 
