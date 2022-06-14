@@ -23,6 +23,8 @@ import org.crashhunter.kline.R
 import org.crashhunter.kline.data.BaseSharedPreference
 import org.crashhunter.kline.data.LATESTTDLISTJSONSTR
 import org.crashhunter.kline.data.SharedPreferenceUtil
+import org.crashhunter.kline.utils.NumberTools
+import org.crashhunter.kline.utils.StringUtils
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -153,25 +155,35 @@ class TDActivity : AppCompatActivity() {
             val item = list[index]
 
 
-            stringBuilder.append("${index + 1}. ")
+            var numStr = "${index + 1}."
+            stringBuilder.append("${StringUtils.addZeroForNum(numStr, 5)}")
 
-            stringBuilder.append("${item.symbol} / H ")
-
+            stringBuilder.append("${StringUtils.addZeroForNum(item.symbol, 15)} / H ")
 
             highColor(item, stringBuilder)
 
             stringBuilder.append(" / L ")
 
             lowColor(item, stringBuilder)
+            //获取24H交易量
+            if (Constant.coinMarketList.isNotEmpty()) {
 
-            if (Constant.costPriceItemList.isNotEmpty()) {
-
-                for (avg in Constant.costPriceItemList) {
-                    if (avg.coin.equals(item.symbol)) {
-                        stringBuilder.append(" " + avg.roi.toString() + " ")
+                for (coin in Constant.coinMarketList) {
+                    if (item.symbol.equals(coin.symbol + "USDT")) {
+                        stringBuilder.append(" ${NumberTools.amountConversion(coin.quote.USD.volume_24h.toDouble())} ")
+                        break
                     }
                 }
+            }
+            //获取roi
+            if (Constant.costPriceItemList.isNotEmpty()) {
 
+                for (coin in Constant.costPriceItemList) {
+                    if (coin.coin.equals(item.symbol)) {
+                        stringBuilder.append(" " + coin.roi.toString() + " ")
+                        break
+                    }
+                }
             }
 
             stringBuilder.append("\n")

@@ -279,6 +279,7 @@ class MainActivity : AppCompatActivity() {
                 var datas = response.body()?.data!!
 
                 coinMarketList = datas
+                Constant.coinMarketList = ArrayList(datas)
 
                 var coinVolumeJsonStr = Gson().toJson(datas)
 //                var jsonList = Gson().toJson(allCoinList)

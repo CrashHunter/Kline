@@ -3,6 +3,7 @@ package org.crashhunter.kline
 import com.binance.client.model.custom.CostPriceItem
 import com.binance.client.model.custom.DownPerItem
 import com.binance.client.model.trade.BalancesItem
+import org.crashhunter.kline.data.Data
 
 /**
  * Created by CrashHunter on 2021/1/10.
@@ -20,6 +21,10 @@ object Constant {
 
     //拥有的币 名字
     var ownCoinListName = ArrayList<String>()
+
+
+    //拥有的币 名字
+    var coinMarketList = ArrayList<Data>()
 
 
     var costPriceItemList: List<CostPriceItem> = ArrayList<CostPriceItem>()
