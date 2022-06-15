@@ -1,5 +1,6 @@
 package org.crashhunter.kline.oneline
 
+import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -9,13 +10,16 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.alibaba.fastjson.JSON
+import com.bin.david.form.data.column.Column
+import com.bin.david.form.data.format.IFormat
+import com.bin.david.form.data.style.FontStyle
+import com.bin.david.form.data.table.TableData
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
-import kotlinx.android.synthetic.main.activity_td.header
-import kotlinx.android.synthetic.main.activity_td.tvTitle
+import kotlinx.android.synthetic.main.activity_td.*
 import kotlinx.coroutines.*
 import org.crashhunter.kline.AppController
 import org.crashhunter.kline.Constant
@@ -27,7 +31,6 @@ import org.crashhunter.kline.utils.NumberTools
 import org.crashhunter.kline.utils.StringUtils
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.system.measureTimeMillis
 
 
@@ -43,7 +46,7 @@ class TDActivity : AppCompatActivity() {
     )
     var stringBuilder = SpannableStringBuilder()
 
-    var candlestickInterval = CandlestickInterval.DAILY
+    var candlestickInterval = CandlestickInterval.WEEKLY
 
     var candlestickIntervalList = ArrayList<CandlestickInterval>()
 
@@ -64,10 +67,17 @@ class TDActivity : AppCompatActivity() {
     )
 
 
+    val coin = Column<String>("coin", "symbol")
+    val H = Column<Integer>("H", "TDhigh")
+    val L = Column<Integer>("L", "TDlow")
+    val volume = Column<Double>("volume_24h", "volume_24h")
+    val roi = Column<Double>("roi", "roi")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_td)
+
 
         options.url = "https://api.binance.com"
         syncRequestClient = SyncRequestClient.create(
@@ -78,6 +88,41 @@ class TDActivity : AppCompatActivity() {
         candlestickInterval = CandlestickInterval.DAILY
         getTDData()
 
+        val format = IFormat<Double> { NumberTools.amountConversion(it) }
+        volume.format = format
+
+
+        //表格数据 datas 是需要填充的数据
+        val tableData: TableData<Candlestick> = TableData<Candlestick>(
+            "表格名",
+            TDList,
+            coin,
+            H,
+            L, volume, roi
+        )
+        table.tableData = tableData
+        table.getConfig().setContentStyle(FontStyle(50, Color.BLUE))
+        H.setOnColumnItemClickListener { column, value, t, position ->
+
+            table.setSortColumn(H, !H.isReverseSort)
+
+        }
+        L.setOnColumnItemClickListener { column, value, t, position ->
+
+            table.setSortColumn(L, !L.isReverseSort)
+
+        }
+
+        volume.setOnColumnItemClickListener { column, value, t, position ->
+
+            table.setSortColumn(volume, !volume.isReverseSort)
+
+        }
+        roi.setOnColumnItemClickListener { column, value, t, position ->
+
+            table.setSortColumn(roi, !roi.isReverseSort)
+
+        }
     }
 
     private fun getTDData() {
@@ -91,6 +136,17 @@ class TDActivity : AppCompatActivity() {
             TDJsonList = JSON.parseArray(jsonList, Candlestick::class.java)
 
             var list = TDJsonList.sortedBy { it.symbol }
+            TDList = ArrayList(list)
+
+            val tableData: TableData<Candlestick> = TableData<Candlestick>(
+                "表格名",
+                TDList,
+                coin,
+                H,
+                L, volume, roi
+            )
+            table.tableData = tableData
+
             processData(list)
         } else {
             getAllCoins()
@@ -170,6 +226,7 @@ class TDActivity : AppCompatActivity() {
 
                 for (coin in Constant.coinMarketList) {
                     if (item.symbol.equals(coin.symbol + "USDT")) {
+                        item.volume_24h = coin.quote.USD.volume_24h.toDouble()
                         stringBuilder.append(" ${NumberTools.amountConversion(coin.quote.USD.volume_24h.toDouble())} ")
                         break
                     }
@@ -180,6 +237,7 @@ class TDActivity : AppCompatActivity() {
 
                 for (coin in Constant.costPriceItemList) {
                     if (coin.coin.equals(item.symbol)) {
+                        item.roi = coin.roi.toDouble()
                         stringBuilder.append(" " + coin.roi.toString() + " ")
                         break
                     }

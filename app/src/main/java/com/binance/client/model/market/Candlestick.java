@@ -30,6 +30,26 @@ public class Candlestick {
 
   private Long closeTime;
 
+  private Double volume_24h = 0.0;
+
+  private Double roi = 0.0;
+
+  public Double getVolume_24h() {
+    return volume_24h;
+  }
+
+  public void setVolume_24h(Double volume_24h) {
+    this.volume_24h = volume_24h;
+  }
+
+  public Double getRoi() {
+    return roi;
+  }
+
+  public void setRoi(Double roi) {
+    this.roi = roi;
+  }
+
   public Integer getTDhigh() {
     return TDhigh;
   }
