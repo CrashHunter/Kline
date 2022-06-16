@@ -1,5 +1,7 @@
 package com.binance.client.model.custom;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.math.BigDecimal;
 
 public class CostPriceItem {
@@ -13,9 +15,9 @@ public class CostPriceItem {
   //    private BigDecimal current;
   private BigDecimal holdNum = BigDecimal.ZERO;
 
-
-  //持仓成本
+  // 持仓成本
   private BigDecimal sumBuy = BigDecimal.ZERO;
+  @Nullable public BigDecimal currentPrice = BigDecimal.ZERO;
 
   public BigDecimal getRoi() {
     return roi;
@@ -41,7 +43,7 @@ public class CostPriceItem {
     this.roi = roi;
   }
 
-  private BigDecimal roi= new BigDecimal(-1.0);
+  private BigDecimal roi = new BigDecimal(-1.0);
 
   public BigDecimal getAvgPrice() {
     return avgPrice;

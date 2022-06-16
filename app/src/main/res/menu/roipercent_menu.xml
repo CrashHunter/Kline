@@ -5,24 +5,7 @@
     >
     <item
         android:id="@+id/ROI"
-        android:title="ROI"
-        app:showAsAction="always"
-        />
-    <item
-        android:id="@+id/DownPer"
-        android:title="Down"
-        app:showAsAction="always"
-        />
-
-    <item
-        android:id="@+id/Alpha"
-        android:title="Alpha"
-        app:showAsAction="always"
-        />
-
-    <item
-        android:id="@+id/SumBuy"
-        android:title="SumBuy"
+        android:title="refresh"
         app:showAsAction="always"
         />
 
@@ -33,20 +16,4 @@
         />
 
 
-    <!--    <item-->
-<!--        android:id="@+id/Daily"-->
-<!--        android:title="D"-->
-<!--        app:showAsAction="always"-->
-<!--        />-->
-
-<!--    <item-->
-<!--        android:id="@+id/Week"-->
-<!--        android:title="W"-->
-<!--        app:showAsAction="always"-->
-<!--        />-->
-<!--    <item-->
-<!--        android:id="@+id/Month"-->
-<!--        android:title="M"-->
-<!--        app:showAsAction="always"-->
-        />
 </menu>

@@ -10,6 +10,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.bin.david.form.data.column.Column
+import com.bin.david.form.data.table.TableData
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
@@ -20,7 +22,8 @@ import com.binance.client.model.market.Candlestick
 import com.binance.client.model.trade.MyTrade
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.activity_roi_percent.tvRoi
+import kotlinx.android.synthetic.main.activity_roi_percent.*
+
 import kotlinx.coroutines.*
 import org.crashhunter.kline.AppController
 import org.crashhunter.kline.CalculateActivity
@@ -59,6 +62,12 @@ class ROIActivity : AppCompatActivity() {
     )
 
 
+    val coin = Column<String>("coin", "coin")
+    val totalCost = Column<BigDecimal>("成本", "sumBuy")
+    val costPrice = Column<BigDecimal>("成本价", "avgPrice")
+    val currentPrice = Column<BigDecimal>("当前价", "currentPrice")
+    val roi = Column<BigDecimal>("roi", "roi")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_roi_percent)
@@ -89,6 +98,24 @@ class ROIActivity : AppCompatActivity() {
             }
         }
         getAllCoinsAvgs()
+
+
+        val tableData: TableData<CostPriceItem> = TableData<CostPriceItem>(
+            "表格名",
+            costPriceItemList,
+            coin,roi,
+            totalCost, costPrice,
+            currentPrice
+        )
+        roi.isReverseSort = false
+        tableData.sortColumn = roi
+        table.tableData = tableData
+//        table.getConfig().setContentStyle(FontStyle(50, Color.BLUE))
+
+        table.setOnColumnClickListener {
+            table.setSortColumn(it.column, !it.column.isReverseSort)
+        }
+
     }
 
 
@@ -270,38 +297,6 @@ class ROIActivity : AppCompatActivity() {
 
     private fun routeItem() {
         when (currentItemId) {
-            R.id.Alpha -> {
-                var list = costPriceItemList.sortedBy { it.coin }
-
-                processROIData(list)
-
-                runOnUiThread {
-                    tvRoi.text = ""
-                    tvRoi.text = roiStringBuilder
-                }
-            }
-            R.id.DownPer -> {
-
-                var list = costPriceItemList.sortedBy { it.roi }
-
-                processROIData(list)
-
-                runOnUiThread {
-                    tvRoi.text = ""
-                    tvRoi.text = roiStringBuilder
-                }
-            }
-
-            R.id.SumBuy -> {
-                var list = costPriceItemList.sortedByDescending { it.sumBuy }
-
-                processROIData(list)
-
-                runOnUiThread {
-                    tvRoi.text = ""
-                    tvRoi.text = roiStringBuilder
-                }
-            }
             R.id.ROI -> {
 
                 getAllCoinsAvgs()
@@ -365,7 +360,9 @@ class ROIActivity : AppCompatActivity() {
         for (index in list.indices) {
 
             val item = list[index]
-
+            if (item.coin.equals("BUSDUSDT")) {
+                continue
+            }
             totalSum += item.sumBuy
 
             val avgPrice = item.avgPrice
@@ -375,6 +372,7 @@ class ROIActivity : AppCompatActivity() {
             for (downPerItem in Constant.downPerItemList) {
                 if (downPerItem.coin.contains(coin.replace("USDT", ""))) {
                     currentPrice = downPerItem.current
+                    item.currentPrice = currentPrice
                     break
                 }
             }
@@ -400,15 +398,15 @@ class ROIActivity : AppCompatActivity() {
             var win = (currentPrice - avgPrice) * item.holdNum
             totalWin += win
 
-            roiStringBuilder.append("${index + 1}. ")
-
-            roiStringBuilder.append(" $coin ${item.sumBuy} $avgPrice / $currentPrice /")
+//            roiStringBuilder.append("${index + 1}. ")
+//
+//            roiStringBuilder.append(" $coin ${item.sumBuy} $avgPrice / $currentPrice /")
 
             //roiStringBuilder.append("$roi / ")
 
-            ROIColor(roi, roiStringBuilder)
+//            ROIColor(roi, roiStringBuilder)
 
-            roiStringBuilder.append("\n")
+//            roiStringBuilder.append("\n")
         }
         var totalROI = BigDecimal.ZERO
         if (totalSum > BigDecimal.ZERO) {

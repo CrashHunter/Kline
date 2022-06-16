@@ -27,5 +27,6 @@ object Constant {
     var coinMarketList = ArrayList<Data>()
 
 
+    //ROI LIST
     var costPriceItemList: List<CostPriceItem> = ArrayList<CostPriceItem>()
 }
