@@ -41,7 +41,7 @@ public class CostPriceItem {
     this.roi = roi;
   }
 
-  private BigDecimal roi;
+  private BigDecimal roi= new BigDecimal(-1.0);
 
   public BigDecimal getAvgPrice() {
     return avgPrice;

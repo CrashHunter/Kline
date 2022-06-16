@@ -100,13 +100,13 @@ class TDActivity : AppCompatActivity() {
             H,
             L, volume, roi
         )
+        L.isReverseSort = true
+        tableData.sortColumn = L
         table.tableData = tableData
 //        table.getConfig().setContentStyle(FontStyle(50, Color.BLUE))
 
         table.setOnColumnClickListener {
-
             table.setSortColumn(it.column, !it.column.isReverseSort)
-
         }
 
     }
@@ -122,9 +122,18 @@ class TDActivity : AppCompatActivity() {
             TDJsonList = JSON.parseArray(jsonList, Candlestick::class.java)
 
             var list = TDJsonList.sortedBy { it.symbol }
+            TDList.clear()
             TDList = ArrayList(list)
-
-            table.notifyDataChanged()
+            //表格数据 datas 是需要填充的数据
+            val tableData: TableData<Candlestick> = TableData<Candlestick>(
+                "表格名",
+                TDList,
+                coin,
+                H,
+                L, volume, roi
+            )
+            tableData.sortColumn = L
+            table.tableData = tableData
 
             processData(list)
         } else {
@@ -293,6 +302,14 @@ class TDActivity : AppCompatActivity() {
                 getTDData()
 
             }
+
+            R.id.M -> {
+                header.text = "WEEKLY"
+                candlestickInterval = CandlestickInterval.MONTHLY
+                getTDData()
+
+            }
+
             R.id.oneDay -> {
                 header.text = "DAILY"
                 candlestickInterval = CandlestickInterval.DAILY
@@ -314,21 +331,6 @@ class TDActivity : AppCompatActivity() {
             R.id.oneyear -> {
                 header.text = "YEAR"
 
-            }
-
-            R.id.abcd -> {
-                var list = TDJsonList.sortedBy { it.symbol }
-                processData(list)
-
-            }
-            R.id.up -> {
-                var list = TDJsonList.sortedByDescending { it.tDhigh }
-                processData(list)
-            }
-
-            R.id.down -> {
-                var list = TDJsonList.sortedByDescending { it.tDlow }
-                processData(list)
             }
 
             else -> {

@@ -4,23 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-    <item
-        android:id="@+id/abcd"
-        android:title="abc"
-        app:showAsAction="always"
-        />
 
-    <item
-        android:id="@+id/up"
-        android:title="H"
-        app:showAsAction="always"
-        />
-
-    <item
-        android:id="@+id/down"
-        android:title="L"
-        app:showAsAction="always"
-        />
 
     <item
         android:id="@+id/D"
@@ -32,6 +16,12 @@
         android:title="W"
         app:showAsAction="always"
         />
+    <item
+        android:id="@+id/M"
+        android:title="M"
+        app:showAsAction="always"
+        />
+
     <item
         android:id="@+id/oneDay"
         android:title="refresh D"
