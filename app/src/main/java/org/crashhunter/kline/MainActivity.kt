@@ -158,8 +158,6 @@ class MainActivity : AppCompatActivity() {
 //        throw NullPointerException()
 
 
-        setLever()
-
         setContentView(R.layout.activity_main)
 
         volumeEnoughNum = 0
@@ -193,7 +191,7 @@ class MainActivity : AppCompatActivity() {
 
                     for (coin in Constant.ownCoinListName) {
                         var n = async {
-                            getCoinKlineData(coin + "USDT",Constant.holdCoinItemList)
+                            getCoinKlineData(coin + "USDT", Constant.holdCoinItemList)
                         }
                     }
                     amount
@@ -210,7 +208,7 @@ class MainActivity : AppCompatActivity() {
 
                     for (coin in Constant.contractCoins) {
                         var n = async {
-                            getCoinKlineData(coin + "USDT",Constant.downPerItemList)
+                            getCoinKlineData(coin + "USDT", Constant.downPerItemList)
                         }
                     }
                     amount
@@ -219,7 +217,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getCoinKlineData(coin: String, coinItemList: ArrayList<DownPerItem>): List<Candlestick> {
+    private fun getCoinKlineData(
+        coin: String,
+        coinItemList: ArrayList<DownPerItem>
+    ): List<Candlestick> {
 
         try {
             //没有YEAR的维度，最大到月
@@ -297,9 +298,25 @@ class MainActivity : AppCompatActivity() {
                     Constant.ownCoinList.add(item)
                 }
                 //获取持有币当前价格
+                getOwnCoinsCurrentPrice()
 //                getOwnCoinsKlineData()
             }
         }.start()
+    }
+
+    private fun getOwnCoinsCurrentPrice() {
+        for (coin in Constant.coinMarketList) {
+            if (Constant.ownCoinListName.contains(coin.symbol)) {
+
+                var downPerItem = DownPerItem()
+                //不含USDT后缀
+                downPerItem.coin = coin.symbol
+                downPerItem.current = BigDecimal(coin.quote.USD.price).setScale(2, BigDecimal.ROUND_HALF_UP)
+                Constant.holdCoinItemList.add(downPerItem)
+            }
+        }
+
+
     }
 
     private fun getContractList() {
@@ -340,12 +357,6 @@ class MainActivity : AppCompatActivity() {
 
             }
         }.start()
-    }
-
-
-    private fun setLever() {
-
-
     }
 
 
@@ -849,7 +860,7 @@ class MainActivity : AppCompatActivity() {
                 )
             }
                 .sortedBy { it.sevenDaysPercent }
-        titleStr.append("Filter: ${currentCoinList.size}")
+        titleStr.append("After Filter: ${currentCoinList.size}")
 
 //        getdiffs(currentCoinList, latestCoinList)
         sortListRefreshUI()

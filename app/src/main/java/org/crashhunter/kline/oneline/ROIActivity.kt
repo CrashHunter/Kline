@@ -247,7 +247,7 @@ class ROIActivity : AppCompatActivity() {
         GlobalScope.launch {
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
-//                    getSPOTAccountTrades("SXPUSDT")
+//                    getSPOTAccountTrades("FILUSDT")
                     for (coin in Constant.ownCoinListName.sorted()) {
                         Thread.sleep(10)
                         getSPOTAccountTrades(coin + "USDT")
@@ -256,8 +256,6 @@ class ROIActivity : AppCompatActivity() {
             }
 
             Constant.holdPriceItemList = avgList
-
-
 
             var list = Constant.holdPriceItemList.sortedBy { it.roi }
             processROIData(list)
@@ -290,7 +288,7 @@ class ROIActivity : AppCompatActivity() {
 
             val coin = item.coin
             for (downPerItem in Constant.holdCoinItemList) {
-                if (downPerItem.coin.equals(coin)) {
+                if (downPerItem.coin.equals(coin.replace("USDT",""))) {
                     currentPrice = downPerItem.current
                     item.currentPrice = currentPrice
                     break

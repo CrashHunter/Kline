@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 
 public class HoldPriceItem {
 
+  //含USDT后缀
   private String coin;
 
   private BigDecimal max;
