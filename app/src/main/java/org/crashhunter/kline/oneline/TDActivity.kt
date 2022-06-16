@@ -69,7 +69,8 @@ class TDActivity : AppCompatActivity() {
     val H = Column<Integer>("H", "TDhigh")
     val L = Column<Integer>("L", "TDlow")
     val volume = Column<Double>("volume_24h", "volume_24h")
-    val roi = Column<Double>("roi", "roi")
+    val holdRoi = Column<Double>("holdRoi", "holdRoi")
+    val coinRoi = Column<Double>("coinRoi", "coinRoi")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,7 +97,7 @@ class TDActivity : AppCompatActivity() {
             TDList,
             coin,
             H,
-            L, volume, roi
+            L, volume, holdRoi, coinRoi
         )
         L.isReverseSort = true
         tableData.sortColumn = L
@@ -128,7 +129,7 @@ class TDActivity : AppCompatActivity() {
                 TDList,
                 coin,
                 H,
-                L, volume, roi
+                L, volume, holdRoi
             )
             tableData.sortColumn = L
             table.tableData = tableData
@@ -223,7 +224,7 @@ class TDActivity : AppCompatActivity() {
 
                 for (coin in Constant.holdPriceItemList) {
                     if (coin.coin.equals(item.symbol)) {
-                        item.roi = coin.roi.toDouble()
+                        item.holdRoi = coin.roi.toDouble()
                         stringBuilder.append(" " + coin.roi.toString() + " ")
                         break
                     }

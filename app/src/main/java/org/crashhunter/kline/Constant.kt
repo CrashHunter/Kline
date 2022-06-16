@@ -27,6 +27,6 @@ object Constant {
     var coinMarketList = ArrayList<Data>()
 
 
-    //ROI LIST
+    //持有币的 成本统计
     var holdPriceItemList: List<HoldPriceItem> = ArrayList<HoldPriceItem>()
 }

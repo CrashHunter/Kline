@@ -25,7 +25,6 @@ import kotlinx.coroutines.*
 import org.crashhunter.kline.AppController
 import org.crashhunter.kline.CalculateActivity
 import org.crashhunter.kline.Constant
-import org.crashhunter.kline.Constant.holdPriceItemList
 import org.crashhunter.kline.R
 import org.crashhunter.kline.data.BaseSharedPreference
 import org.crashhunter.kline.data.LATESTAVGPRICEITEMLISTJSONSTR
@@ -79,14 +78,13 @@ class ROIActivity : AppCompatActivity() {
 
         if (latestAvgPriceItemListJsonStr.isNotEmpty()) {
 
-            holdPriceItemList =
-                Gson().fromJson(
-                    latestAvgPriceItemListJsonStr,
-                    object : TypeToken<List<HoldPriceItem>>() {}
-                        .type) as List<HoldPriceItem>
+            Constant.holdPriceItemList = Gson().fromJson(
+                latestAvgPriceItemListJsonStr,
+                object : TypeToken<List<HoldPriceItem>>() {}
+                    .type) as List<HoldPriceItem>
 
 
-            var list = holdPriceItemList.sortedBy { it.roi }
+            var list = Constant.holdPriceItemList.sortedBy { it.roi }
             processROIData(list)
 
             runOnUiThread {
@@ -98,7 +96,7 @@ class ROIActivity : AppCompatActivity() {
 
         val tableData: TableData<HoldPriceItem> = TableData<HoldPriceItem>(
             "表格名",
-            holdPriceItemList,
+            Constant.holdPriceItemList,
             coin, roi,
             totalCost, costPrice,
             currentPrice
@@ -111,7 +109,6 @@ class ROIActivity : AppCompatActivity() {
         table.setOnColumnClickListener {
             table.setSortColumn(it.column, !it.column.isReverseSort)
         }
-
     }
 
 
@@ -240,7 +237,7 @@ class ROIActivity : AppCompatActivity() {
 
     //获取成本价
     private fun getOwnCoinsCost() {
-        holdPriceItemList = ArrayList<HoldPriceItem>()
+        Constant.holdPriceItemList = ArrayList<HoldPriceItem>()
         avgList = ArrayList<HoldPriceItem>()
         if (Constant.ownCoinListName.isEmpty()) {
             Toast.makeText(applicationContext, "no ownCoinListName", Toast.LENGTH_LONG).show()
@@ -258,12 +255,11 @@ class ROIActivity : AppCompatActivity() {
                 }
             }
 
-            holdPriceItemList = avgList
+            Constant.holdPriceItemList = avgList
 
-            var jsonStr = Gson().toJson(holdPriceItemList)
-            latestAvgPriceItemListJsonStr = jsonStr
 
-            var list = holdPriceItemList.sortedBy { it.roi }
+
+            var list = Constant.holdPriceItemList.sortedBy { it.roi }
             processROIData(list)
 
             runOnUiThread {
@@ -317,7 +313,10 @@ class ROIActivity : AppCompatActivity() {
                     BigDecimal.ROUND_HALF_UP
                 )
             }
-            Log.d("Trades", "$coin: currentPrice:$currentPrice holdPrice:$holdPrice holdNum:${item.holdNum}")
+            Log.d(
+                "Trades",
+                "$coin: currentPrice:$currentPrice holdPrice:$holdPrice holdNum:${item.holdNum}"
+            )
             var win = (currentPrice - holdPrice) * item.holdNum
             totalWin += win
 
@@ -328,24 +327,28 @@ class ROIActivity : AppCompatActivity() {
         if (totalSum > BigDecimal.ZERO) {
             totalROI = totalWin / totalSum
         }
+
+        var jsonStr = Gson().toJson(list)
+        latestAvgPriceItemListJsonStr = jsonStr
+
         roiStringBuilder.append("totalSum:$totalSum \ntotalWin:$totalWin \ntotalROI:${totalROI} \n ")
     }
 
-    private fun ROIColor(roi: BigDecimal, stringBuilder: SpannableStringBuilder) {
-        if (roi > BigDecimal(0)) {
-            val span = SpannableStringBuilder("$roi")
-            span.setSpan(
-                ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
-                0,
-                roi.toString().length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-
-            stringBuilder.append(span)
-        } else {
-            stringBuilder.append("$roi")
-        }
-    }
+//    private fun ROIColor(roi: BigDecimal, stringBuilder: SpannableStringBuilder) {
+//        if (roi > BigDecimal(0)) {
+//            val span = SpannableStringBuilder("$roi")
+//            span.setSpan(
+//                ForegroundColorSpan(getColor(android.R.color.holo_red_light)),
+//                0,
+//                roi.toString().length,
+//                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+//            )
+//
+//            stringBuilder.append(span)
+//        } else {
+//            stringBuilder.append("$roi")
+//        }
+//    }
 
 
 }

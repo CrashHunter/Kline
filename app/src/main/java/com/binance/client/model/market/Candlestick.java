@@ -32,7 +32,19 @@ public class Candlestick {
 
   private Double volume_24h = 0.0;
 
-  private Double roi = -1.0;
+  //持有roi
+  private Double holdRoi = -1.0;
+
+  //币本身roi
+  private Double coinRoi = -1.0;
+
+  public Double getCoinRoi() {
+    return coinRoi;
+  }
+
+  public void setCoinRoi(Double coinRoi) {
+    this.coinRoi = coinRoi;
+  }
 
   public Double getVolume_24h() {
     return volume_24h;
@@ -42,12 +54,12 @@ public class Candlestick {
     this.volume_24h = volume_24h;
   }
 
-  public Double getRoi() {
-    return roi;
+  public Double getHoldRoi() {
+    return holdRoi;
   }
 
-  public void setRoi(Double roi) {
-    this.roi = roi;
+  public void setHoldRoi(Double holdRoi) {
+    this.holdRoi = holdRoi;
   }
 
   public Integer getTDhigh() {
