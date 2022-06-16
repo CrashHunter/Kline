@@ -28,5 +28,5 @@ object Constant {
 
 
     //ROI LIST
-    var costPriceItemList: List<HoldPriceItem> = ArrayList<HoldPriceItem>()
+    var holdPriceItemList: List<HoldPriceItem> = ArrayList<HoldPriceItem>()
 }

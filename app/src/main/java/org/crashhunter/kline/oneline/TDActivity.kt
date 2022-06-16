@@ -1,6 +1,5 @@
 package org.crashhunter.kline.oneline
 
-import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -12,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.alibaba.fastjson.JSON
 import com.bin.david.form.data.column.Column
 import com.bin.david.form.data.format.IFormat
-import com.bin.david.form.data.style.FontStyle
 import com.bin.david.form.data.table.TableData
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
@@ -221,9 +219,9 @@ class TDActivity : AppCompatActivity() {
                 }
             }
             //获取roi
-            if (Constant.costPriceItemList.isNotEmpty()) {
+            if (Constant.holdPriceItemList.isNotEmpty()) {
 
-                for (coin in Constant.costPriceItemList) {
+                for (coin in Constant.holdPriceItemList) {
                     if (coin.coin.equals(item.symbol)) {
                         item.roi = coin.roi.toDouble()
                         stringBuilder.append(" " + coin.roi.toString() + " ")

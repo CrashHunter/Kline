@@ -25,7 +25,7 @@ import kotlinx.coroutines.*
 import org.crashhunter.kline.AppController
 import org.crashhunter.kline.CalculateActivity
 import org.crashhunter.kline.Constant
-import org.crashhunter.kline.Constant.costPriceItemList
+import org.crashhunter.kline.Constant.holdPriceItemList
 import org.crashhunter.kline.R
 import org.crashhunter.kline.data.BaseSharedPreference
 import org.crashhunter.kline.data.LATESTAVGPRICEITEMLISTJSONSTR
@@ -79,14 +79,14 @@ class ROIActivity : AppCompatActivity() {
 
         if (latestAvgPriceItemListJsonStr.isNotEmpty()) {
 
-            costPriceItemList =
+            holdPriceItemList =
                 Gson().fromJson(
                     latestAvgPriceItemListJsonStr,
                     object : TypeToken<List<HoldPriceItem>>() {}
                         .type) as List<HoldPriceItem>
 
 
-            var list = costPriceItemList.sortedBy { it.roi }
+            var list = holdPriceItemList.sortedBy { it.roi }
             processROIData(list)
 
             runOnUiThread {
@@ -98,7 +98,7 @@ class ROIActivity : AppCompatActivity() {
 
         val tableData: TableData<HoldPriceItem> = TableData<HoldPriceItem>(
             "表格名",
-            costPriceItemList,
+            holdPriceItemList,
             coin, roi,
             totalCost, costPrice,
             currentPrice
@@ -240,7 +240,7 @@ class ROIActivity : AppCompatActivity() {
 
     //获取成本价
     private fun getOwnCoinsCost() {
-        costPriceItemList = ArrayList<HoldPriceItem>()
+        holdPriceItemList = ArrayList<HoldPriceItem>()
         avgList = ArrayList<HoldPriceItem>()
         if (Constant.ownCoinListName.isEmpty()) {
             Toast.makeText(applicationContext, "no ownCoinListName", Toast.LENGTH_LONG).show()
@@ -258,12 +258,12 @@ class ROIActivity : AppCompatActivity() {
                 }
             }
 
-            costPriceItemList = avgList
+            holdPriceItemList = avgList
 
-            var jsonStr = Gson().toJson(costPriceItemList)
+            var jsonStr = Gson().toJson(holdPriceItemList)
             latestAvgPriceItemListJsonStr = jsonStr
 
-            var list = costPriceItemList.sortedBy { it.roi }
+            var list = holdPriceItemList.sortedBy { it.roi }
             processROIData(list)
 
             runOnUiThread {
@@ -289,26 +289,26 @@ class ROIActivity : AppCompatActivity() {
             }
             totalSum += item.sumBuy
 
-            val avgPrice = item.holdPrice
+            val holdPrice = item.holdPrice
             var currentPrice = BigDecimal.ZERO
 
             val coin = item.coin
             for (downPerItem in Constant.downPerItemList) {
-                if (downPerItem.coin.contains(coin.replace("USDT", ""))) {
+                if (downPerItem.coin.equals(coin)) {
                     currentPrice = downPerItem.current
                     item.currentPrice = currentPrice
                     break
                 }
             }
-            if (avgPrice <= BigDecimal.ZERO) {
+            if (holdPrice <= BigDecimal.ZERO) {
                 //optimize
                 item.roi = BigDecimal(99999)
-            } else if (currentPrice >= avgPrice) {
-                item.roi = currentPrice.divide(avgPrice, 4, BigDecimal.ROUND_HALF_UP)
+            } else if (currentPrice >= holdPrice) {
+                item.roi = currentPrice.divide(holdPrice, 4, BigDecimal.ROUND_HALF_UP)
             } else {
                 item.roi = -(BigDecimal.ONE.minus(
                     currentPrice.divide(
-                        avgPrice,
+                        holdPrice,
                         4,
                         BigDecimal.ROUND_HALF_UP
                     )
@@ -317,9 +317,11 @@ class ROIActivity : AppCompatActivity() {
                     BigDecimal.ROUND_HALF_UP
                 )
             }
-
-            var win = (currentPrice - avgPrice) * item.holdNum
+            Log.d("Trades", "$coin: currentPrice:$currentPrice holdPrice:$holdPrice holdNum:${item.holdNum}")
+            var win = (currentPrice - holdPrice) * item.holdNum
             totalWin += win
+
+            Log.d("Trades", "$coin: win:$win ")
 
         }
         var totalROI = BigDecimal.ZERO
