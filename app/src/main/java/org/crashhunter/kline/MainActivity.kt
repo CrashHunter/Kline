@@ -297,7 +297,7 @@ class MainActivity : AppCompatActivity() {
                     Constant.ownCoinList.add(item)
                 }
                 //获取持有币当前价格
-                getOwnCoinsKlineData()
+//                getOwnCoinsKlineData()
             }
         }.start()
     }
@@ -334,10 +334,9 @@ class MainActivity : AppCompatActivity() {
                     } else {
 
                     }
-
-                    getContractCoinsKlineData()
-
                 }
+
+//                getContractCoinsKlineData()
 
             }
         }.start()

@@ -33,7 +33,7 @@ public class Candlestick {
   private Double volume_24h = 0.0;
 
   //持有roi
-  private Double holdRoi = -1.0;
+  private Double holdRoi = 0.0;
 
   //币本身roi
   private Double coinRoi = -1.0;
