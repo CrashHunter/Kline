@@ -15,14 +15,20 @@ import com.bin.david.form.data.table.TableData
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
+import com.binance.client.model.custom.HoldPriceItem
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.activity_roi_percent.*
 import kotlinx.android.synthetic.main.activity_td.*
+import kotlinx.android.synthetic.main.activity_td.table
 import kotlinx.coroutines.*
 import org.crashhunter.kline.AppController
 import org.crashhunter.kline.Constant
 import org.crashhunter.kline.R
 import org.crashhunter.kline.data.BaseSharedPreference
+import org.crashhunter.kline.data.LATESTAVGPRICEITEMLISTJSONSTR
 import org.crashhunter.kline.data.LATESTTDLISTJSONSTR
 import org.crashhunter.kline.data.SharedPreferenceUtil
 import org.crashhunter.kline.utils.NumberTools
@@ -63,7 +69,12 @@ class TDActivity : AppCompatActivity() {
         LATESTTDLISTJSONSTR,
         ""
     )
-
+    //hold roi
+    private var latestAvgPriceItemListJsonStr by BaseSharedPreference(
+        AppController.instance.applicationContext,
+        LATESTAVGPRICEITEMLISTJSONSTR,
+        ""
+    )
 
     val coin = Column<String>("coin", "symbol")
     val H = Column<Integer>("H", "TDhigh")
@@ -76,7 +87,13 @@ class TDActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_td)
+        if (latestAvgPriceItemListJsonStr.isNotEmpty()) {
 
+            Constant.holdPriceItemList = Gson().fromJson(
+                latestAvgPriceItemListJsonStr,
+                object : TypeToken<List<HoldPriceItem>>() {}
+                    .type) as List<HoldPriceItem>
+        }
 
         options.url = "https://api.binance.com"
         syncRequestClient = SyncRequestClient.create(
