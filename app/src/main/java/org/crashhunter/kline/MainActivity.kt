@@ -13,10 +13,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
+import com.binance.client.model.custom.DownPerItem
+import com.binance.client.model.enums.CandlestickInterval
+import com.binance.client.model.market.Candlestick
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.tvTitle
+import kotlinx.coroutines.*
 import org.crashhunter.kline.data.*
 import org.crashhunter.kline.oneline.*
 import org.crashhunter.kline.test.CoinMarketAPI
@@ -27,6 +31,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.math.BigDecimal
+import kotlin.system.measureTimeMillis
 
 
 class MainActivity : AppCompatActivity() {
@@ -179,6 +184,77 @@ class MainActivity : AppCompatActivity() {
         getContractList()
         getOwnAccountCoins()
     }
+    //获取持有币当前价格
+    private fun getOwnCoinsAvgs() {
+        GlobalScope.launch {
+            val time = measureTimeMillis {
+                val sum = withContext(Dispatchers.IO) {
+                    var amount = 0
+
+                    for (coin in Constant.ownCoinListName) {
+                        var n = async {
+                            getCoinKlineData(coin + "USDT")
+                        }
+                    }
+                    amount
+                }
+            }
+        }
+    }
+
+    private fun getCoinKlineData(coin: String): List<Candlestick> {
+
+        try {
+            //没有YEAR的维度，最大到月
+            var list = syncRequestClient.getSPOTCandlestick(
+                coin,
+                CandlestickInterval.MONTHLY,
+                null,
+                null,
+                36
+            )
+            Log.d("sss", "showData:$coin")
+
+            var max = BigDecimal.ZERO
+            var min = BigDecimal(9999999999)
+            for (index in list.indices) {
+                if (index == 0) {
+                    continue
+                }
+                if (list.get(index).high > max) {
+                    max = list.get(index).high
+                }
+
+                if (list.get(index).low < min
+                    && list.get(index).low > BigDecimal.ZERO
+                    && list.get(index).low != BigDecimal(0.0001)
+                ) {
+                    min = list.get(index).low
+                }
+            }
+
+            var current = list[list.size - 1].close
+            var downPer = BigDecimal.ONE.subtract(current.divide(max, 4, BigDecimal.ROUND_HALF_UP))
+                .setScale(4, BigDecimal.ROUND_HALF_UP)
+
+            var upPer = current.divide(min, 4, BigDecimal.ROUND_HALF_UP)
+
+
+            var downPerItem = DownPerItem()
+            downPerItem.coin = coin
+            downPerItem.current = current
+            downPerItem.max = max
+            downPerItem.min = min
+            downPerItem.downPer = downPer
+            downPerItem.upPer = upPer
+            Constant.downPerItemList.add(downPerItem)
+            return list
+        } catch (e: Exception) {
+            Log.e("sss", "Error Coin $coin: : " + Log.getStackTraceString(e))
+        }
+        return ArrayList<Candlestick>(0)
+    }
+
 
     private fun getOwnAccountCoins() {
         Log.d("sss", "getOwnAccountCoins")
@@ -203,6 +279,8 @@ class MainActivity : AppCompatActivity() {
                     Constant.ownCoinListName.add(item.asset)
                     Constant.ownCoinList.add(item)
                 }
+                //获取持有币当前价格
+                getOwnCoinsAvgs()
             }
         }.start()
     }
@@ -563,6 +641,7 @@ class MainActivity : AppCompatActivity() {
                 allCoinList.clear()
                 getFromAPi()
                 getContractList()
+                getOwnAccountCoins()
                 return true
             }
 

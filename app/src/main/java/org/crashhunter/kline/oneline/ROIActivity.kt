@@ -97,7 +97,6 @@ class ROIActivity : AppCompatActivity() {
                 tvRoi.text = roiStringBuilder
             }
         }
-        getAllCoinsAvgs()
 
 
         val tableData: TableData<CostPriceItem> = TableData<CostPriceItem>(
@@ -119,75 +118,6 @@ class ROIActivity : AppCompatActivity() {
     }
 
 
-    private fun getAllCoinsAvgs() {
-        GlobalScope.launch {
-            val time = measureTimeMillis {
-                val sum = withContext(Dispatchers.IO) {
-                    var amount = 0
-
-                    for (coin in Constant.ownCoinListName) {
-                        var n = async {
-                            getCoinKlineData(coin + "USDT")
-                        }
-                    }
-                    amount
-                }
-            }
-        }
-    }
-
-    private fun getCoinKlineData(coin: String): List<Candlestick> {
-
-        try {
-            //没有YEAR的维度，最大到月
-            var list = syncRequestClient.getSPOTCandlestick(
-                coin,
-                CandlestickInterval.MONTHLY,
-                null,
-                null,
-                36
-            )
-            Log.d("sss", "showData:$coin")
-
-            var max = BigDecimal.ZERO
-            var min = BigDecimal(9999999999)
-            for (index in list.indices) {
-                if (index == 0) {
-                    continue
-                }
-                if (list.get(index).high > max) {
-                    max = list.get(index).high
-                }
-
-                if (list.get(index).low < min
-                    && list.get(index).low > BigDecimal.ZERO
-                    && list.get(index).low != BigDecimal(0.0001)
-                ) {
-                    min = list.get(index).low
-                }
-            }
-
-            var current = list[list.size - 1].close
-            var downPer = BigDecimal.ONE.subtract(current.divide(max, 4, BigDecimal.ROUND_HALF_UP))
-                .setScale(4, BigDecimal.ROUND_HALF_UP)
-
-            var upPer = current.divide(min, 4, BigDecimal.ROUND_HALF_UP)
-
-
-            var downPerItem = DownPerItem()
-            downPerItem.coin = coin
-            downPerItem.current = current
-            downPerItem.max = max
-            downPerItem.min = min
-            downPerItem.downPer = downPer
-            downPerItem.upPer = upPer
-            Constant.downPerItemList.add(downPerItem)
-            return list
-        } catch (e: Exception) {
-            Log.e("sss", "Error Coin $coin: : " + Log.getStackTraceString(e))
-        }
-        return ArrayList<Candlestick>(0)
-    }
 
 
     //获取交易记录
@@ -298,8 +228,7 @@ class ROIActivity : AppCompatActivity() {
     private fun routeItem() {
         when (currentItemId) {
             R.id.ROI -> {
-
-                getAllCoinsAvgs()
+                //获取持有币成本
                 getOwnCoinsCost()
 
             }
