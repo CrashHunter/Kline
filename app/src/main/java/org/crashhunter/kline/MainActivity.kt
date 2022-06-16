@@ -167,13 +167,12 @@ class MainActivity : AppCompatActivity() {
         //Log.e("latestCoinListGet", latestCoinListJsonStr)
 
         if (latestCoinListJsonStr.isNotEmpty()) {
-//            allCoinList =
-//                Gson().fromJson(latestCoinListJsonStr, object : TypeToken<ArrayList<CoinInfo>>() {}
-//                    .type) as ArrayList<CoinInfo>
 
             coinMarketList =
                 Gson().fromJson(latestCoinListJsonStr, object : TypeToken<List<Data>>() {}
                     .type) as List<Data>
+
+            Constant.coinMarketList = ArrayList(coinMarketList)
             showAllCap()
         } else {
             getFromAPi()
@@ -184,6 +183,7 @@ class MainActivity : AppCompatActivity() {
         getContractList()
         getOwnAccountCoins()
     }
+
     //获取持有币当前价格
     private fun getOwnCoinsAvgs() {
         GlobalScope.launch {
@@ -620,7 +620,6 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
                 return true
             }
-
 
 
             R.id.coinmarketapi -> {
