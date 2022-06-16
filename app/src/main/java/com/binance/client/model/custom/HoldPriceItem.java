@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 
-public class CostPriceItem {
+public class HoldPriceItem {
 
   private String coin;
 
@@ -17,6 +17,9 @@ public class CostPriceItem {
 
   // 持仓成本
   private BigDecimal sumBuy = BigDecimal.ZERO;
+  //持仓价
+  private BigDecimal holdPrice= BigDecimal.ZERO;
+  //当前价
   @Nullable public BigDecimal currentPrice = BigDecimal.ZERO;
 
   public BigDecimal getRoi() {
@@ -45,15 +48,15 @@ public class CostPriceItem {
 
   private BigDecimal roi = new BigDecimal(-1.0);
 
-  public BigDecimal getAvgPrice() {
-    return avgPrice;
+  public BigDecimal getHoldPrice() {
+    return holdPrice;
   }
 
-  public void setAvgPrice(BigDecimal avgPrice) {
-    this.avgPrice = avgPrice;
+  public void setHoldPrice(BigDecimal holdPrice) {
+    this.holdPrice = holdPrice;
   }
 
-  private BigDecimal avgPrice;
+
 
   public BigDecimal getMin() {
     return min;

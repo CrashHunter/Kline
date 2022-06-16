@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
-import com.binance.client.model.custom.CostPriceItem
+import com.binance.client.model.custom.HoldPriceItem
 import com.binance.client.model.custom.DownPerItem
 import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
@@ -53,8 +53,8 @@ class DownPercentActivity : AppCompatActivity() {
 
     var dailyResultList = ArrayList<DownPerItem>()
 
-    var avgPriceItemList: List<CostPriceItem> = ArrayList<CostPriceItem>()
-    var avgList = ArrayList<CostPriceItem>()
+    var avgPriceItemList: List<HoldPriceItem> = ArrayList<HoldPriceItem>()
+    var avgList = ArrayList<HoldPriceItem>()
 
     var totalSum = BigDecimal.ZERO
     var totalWin = BigDecimal.ZERO
@@ -151,9 +151,9 @@ class DownPercentActivity : AppCompatActivity() {
                 Log.d("Trades", "$coin: sum:$sum holdNum:$holdNum avgPrice:${avgPrice} ")
 
                 var avgPriceItem =
-                    CostPriceItem()
+                    HoldPriceItem()
                 avgPriceItem.coin = coin
-                avgPriceItem.avgPrice = avgPrice
+                avgPriceItem.holdPrice = avgPrice
                 avgPriceItem.sumBuy = sum
                 avgPriceItem.holdNum = holdNum
 
@@ -390,8 +390,8 @@ class DownPercentActivity : AppCompatActivity() {
     }
 
     private fun getAllCoinsAvg() {
-        avgPriceItemList = ArrayList<CostPriceItem>()
-        avgList = ArrayList<CostPriceItem>()
+        avgPriceItemList = ArrayList<HoldPriceItem>()
+        avgList = ArrayList<HoldPriceItem>()
         if (Constant.ownCoinListName.isEmpty()) {
             Toast.makeText(applicationContext, "no ownCoinListName", Toast.LENGTH_LONG).show()
             return
@@ -443,7 +443,7 @@ class DownPercentActivity : AppCompatActivity() {
 
             totalSum += item.sumBuy
 
-            val avgPrice = item.avgPrice
+            val avgPrice = item.holdPrice
             var currentPrice = BigDecimal.ZERO
 
             val coin = item.coin

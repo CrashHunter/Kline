@@ -1,6 +1,6 @@
 package org.crashhunter.kline
 
-import com.binance.client.model.custom.CostPriceItem
+import com.binance.client.model.custom.HoldPriceItem
 import com.binance.client.model.custom.DownPerItem
 import com.binance.client.model.trade.BalancesItem
 import org.crashhunter.kline.data.Data
@@ -28,5 +28,5 @@ object Constant {
 
 
     //ROI LIST
-    var costPriceItemList: List<CostPriceItem> = ArrayList<CostPriceItem>()
+    var costPriceItemList: List<HoldPriceItem> = ArrayList<HoldPriceItem>()
 }

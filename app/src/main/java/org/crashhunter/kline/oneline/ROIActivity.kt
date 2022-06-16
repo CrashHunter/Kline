@@ -15,10 +15,7 @@ import com.bin.david.form.data.table.TableData
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
 import com.binance.client.examples.constants.PrivateConfig
-import com.binance.client.model.custom.CostPriceItem
-import com.binance.client.model.custom.DownPerItem
-import com.binance.client.model.enums.CandlestickInterval
-import com.binance.client.model.market.Candlestick
+import com.binance.client.model.custom.HoldPriceItem
 import com.binance.client.model.trade.MyTrade
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -50,7 +47,7 @@ class ROIActivity : AppCompatActivity() {
 
     var roiStringBuilder = SpannableStringBuilder()
 
-    var avgList = ArrayList<CostPriceItem>()
+    var avgList = ArrayList<HoldPriceItem>()
 
     var totalSum = BigDecimal.ZERO
     var totalWin = BigDecimal.ZERO
@@ -64,7 +61,7 @@ class ROIActivity : AppCompatActivity() {
 
     val coin = Column<String>("coin", "coin")
     val totalCost = Column<BigDecimal>("成本", "sumBuy")
-    val costPrice = Column<BigDecimal>("成本价", "avgPrice")
+    val costPrice = Column<BigDecimal>("成本价", "holdPrice")
     val currentPrice = Column<BigDecimal>("当前价", "currentPrice")
     val roi = Column<BigDecimal>("roi", "roi")
 
@@ -85,8 +82,8 @@ class ROIActivity : AppCompatActivity() {
             costPriceItemList =
                 Gson().fromJson(
                     latestAvgPriceItemListJsonStr,
-                    object : TypeToken<List<CostPriceItem>>() {}
-                        .type) as List<CostPriceItem>
+                    object : TypeToken<List<HoldPriceItem>>() {}
+                        .type) as List<HoldPriceItem>
 
 
             var list = costPriceItemList.sortedBy { it.roi }
@@ -99,10 +96,10 @@ class ROIActivity : AppCompatActivity() {
         }
 
 
-        val tableData: TableData<CostPriceItem> = TableData<CostPriceItem>(
+        val tableData: TableData<HoldPriceItem> = TableData<HoldPriceItem>(
             "表格名",
             costPriceItemList,
-            coin,roi,
+            coin, roi,
             totalCost, costPrice,
             currentPrice
         )
@@ -116,8 +113,6 @@ class ROIActivity : AppCompatActivity() {
         }
 
     }
-
-
 
 
     //获取交易记录
@@ -182,22 +177,22 @@ class ROIActivity : AppCompatActivity() {
 
 
             if (holdNum != BigDecimal.ZERO) {
-                var avgPrice = BigDecimal.ZERO
+                var holdPrice = BigDecimal.ZERO
                 if (sum > BigDecimal.ZERO) {
-                    avgPrice = sum / holdNum
+                    holdPrice = sum / holdNum
                 } else {
-                    avgPrice = BigDecimal.ZERO
+                    holdPrice = BigDecimal.ZERO
                 }
-                Log.d("Trades", "$coin: sum:$sum holdNum:$holdNum avgPrice:${avgPrice} ")
+                Log.d("Trades", "$coin: sum:$sum holdNum:$holdNum avgPrice:${holdPrice} ")
 
-                var avgPriceItem =
-                    CostPriceItem()
-                avgPriceItem.coin = coin
-                avgPriceItem.avgPrice = avgPrice
-                avgPriceItem.sumBuy = sum
-                avgPriceItem.holdNum = holdNum
+                var holdPriceItem =
+                    HoldPriceItem()
+                holdPriceItem.coin = coin
+                holdPriceItem.holdPrice = holdPrice
+                holdPriceItem.sumBuy = sum
+                holdPriceItem.holdNum = holdNum
 
-                avgList.add(avgPriceItem)
+                avgList.add(holdPriceItem)
             } else {
                 Log.d("Trades", "EMPTY")
             }
@@ -245,8 +240,8 @@ class ROIActivity : AppCompatActivity() {
 
     //获取成本价
     private fun getOwnCoinsCost() {
-        costPriceItemList = ArrayList<CostPriceItem>()
-        avgList = ArrayList<CostPriceItem>()
+        costPriceItemList = ArrayList<HoldPriceItem>()
+        avgList = ArrayList<HoldPriceItem>()
         if (Constant.ownCoinListName.isEmpty()) {
             Toast.makeText(applicationContext, "no ownCoinListName", Toast.LENGTH_LONG).show()
             return
@@ -280,7 +275,7 @@ class ROIActivity : AppCompatActivity() {
     }
 
 
-    private fun processROIData(list: List<CostPriceItem>) {
+    private fun processROIData(list: List<HoldPriceItem>) {
 
         roiStringBuilder.clear()
         var totalSum = BigDecimal.ZERO
@@ -294,7 +289,7 @@ class ROIActivity : AppCompatActivity() {
             }
             totalSum += item.sumBuy
 
-            val avgPrice = item.avgPrice
+            val avgPrice = item.holdPrice
             var currentPrice = BigDecimal.ZERO
 
             val coin = item.coin
@@ -322,20 +317,10 @@ class ROIActivity : AppCompatActivity() {
                     BigDecimal.ROUND_HALF_UP
                 )
             }
-            val roi = item.roi
 
             var win = (currentPrice - avgPrice) * item.holdNum
             totalWin += win
 
-//            roiStringBuilder.append("${index + 1}. ")
-//
-//            roiStringBuilder.append(" $coin ${item.sumBuy} $avgPrice / $currentPrice /")
-
-            //roiStringBuilder.append("$roi / ")
-
-//            ROIColor(roi, roiStringBuilder)
-
-//            roiStringBuilder.append("\n")
         }
         var totalROI = BigDecimal.ZERO
         if (totalSum > BigDecimal.ZERO) {
