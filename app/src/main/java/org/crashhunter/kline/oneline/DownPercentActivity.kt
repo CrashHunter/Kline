@@ -389,7 +389,7 @@ class DownPercentActivity : AppCompatActivity() {
         }
     }
 
-    private fun getAllCoinsAvg() {
+    private fun getOwnCoinHoldInfo() {
         avgPriceItemList = ArrayList<HoldPriceItem>()
         avgList = ArrayList<HoldPriceItem>()
         if (Constant.ownCoinListName.isEmpty()) {

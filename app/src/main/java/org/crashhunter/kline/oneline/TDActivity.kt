@@ -213,42 +213,40 @@ class TDActivity : AppCompatActivity() {
         for (index in list.indices) {
 
             val item = list[index]
-
-
-            var numStr = "${index + 1}."
-            stringBuilder.append("${StringUtils.addZeroForNum(numStr, 5)}")
-
-            stringBuilder.append("${StringUtils.addZeroForNum(item.symbol, 15)} / H ")
-
-            highColor(item, stringBuilder)
-
-            stringBuilder.append(" / L ")
-
-            lowColor(item, stringBuilder)
             //获取24H交易量
             if (Constant.coinMarketList.isNotEmpty()) {
 
                 for (coin in Constant.coinMarketList) {
                     if (item.symbol.equals(coin.symbol + "USDT")) {
                         item.volume_24h = coin.quote.USD.volume_24h.toDouble()
-                        stringBuilder.append(" ${NumberTools.amountConversion(coin.quote.USD.volume_24h.toDouble())} ")
                         break
                     }
                 }
             }
-            //获取roi
+            //获取hold roi
             if (Constant.holdPriceItemList.isNotEmpty()) {
 
                 for (coin in Constant.holdPriceItemList) {
                     if (coin.coin.equals(item.symbol)) {
                         item.holdRoi = coin.roi.toDouble()
-                        stringBuilder.append(" " + coin.roi.toString() + " ")
                         break
                     }
                 }
             }
 
-            stringBuilder.append("\n")
+
+            //获取币跌幅
+            if (Constant.downPerItemList.isNotEmpty()) {
+
+                for (coin in Constant.downPerItemList) {
+                    if (coin.coin.equals(item.symbol)) {
+                        item.coinRoi = coin.downPer.toDouble()
+                        break
+                    }
+                }
+            }
+
+
         }
 
 //        runOnUiThread {

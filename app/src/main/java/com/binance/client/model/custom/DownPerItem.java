@@ -32,6 +32,7 @@ public class DownPerItem {
         this.upPer = upPer;
     }
 
+    //币跌幅
     private BigDecimal downPer;
     private BigDecimal upPer;
 
