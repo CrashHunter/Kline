@@ -85,7 +85,7 @@ class TDActivity : AppCompatActivity() {
             options
         )
 
-        candlestickInterval = CandlestickInterval.DAILY
+        candlestickInterval = CandlestickInterval.WEEKLY
         getTDData()
 
         val format = IFormat<Double> { NumberTools.amountConversion(it) }
@@ -101,28 +101,14 @@ class TDActivity : AppCompatActivity() {
             L, volume, roi
         )
         table.tableData = tableData
-        table.getConfig().setContentStyle(FontStyle(50, Color.BLUE))
-        H.setOnColumnItemClickListener { column, value, t, position ->
+//        table.getConfig().setContentStyle(FontStyle(50, Color.BLUE))
 
-            table.setSortColumn(H, !H.isReverseSort)
+        table.setOnColumnClickListener {
 
-        }
-        L.setOnColumnItemClickListener { column, value, t, position ->
-
-            table.setSortColumn(L, !L.isReverseSort)
+            table.setSortColumn(it.column, !it.column.isReverseSort)
 
         }
 
-        volume.setOnColumnItemClickListener { column, value, t, position ->
-
-            table.setSortColumn(volume, !volume.isReverseSort)
-
-        }
-        roi.setOnColumnItemClickListener { column, value, t, position ->
-
-            table.setSortColumn(roi, !roi.isReverseSort)
-
-        }
     }
 
     private fun getTDData() {
@@ -138,14 +124,7 @@ class TDActivity : AppCompatActivity() {
             var list = TDJsonList.sortedBy { it.symbol }
             TDList = ArrayList(list)
 
-            val tableData: TableData<Candlestick> = TableData<Candlestick>(
-                "表格名",
-                TDList,
-                coin,
-                H,
-                L, volume, roi
-            )
-            table.tableData = tableData
+            table.notifyDataChanged()
 
             processData(list)
         } else {
@@ -194,10 +173,10 @@ class TDActivity : AppCompatActivity() {
             var list = TDJsonList.sortedBy { it.symbol }
             processData(list)
 
-            runOnUiThread {
-                tvTitle.text = ""
-                tvTitle.text = stringBuilder
-            }
+//            runOnUiThread {
+//                tvTitle.text = ""
+//                tvTitle.text = stringBuilder
+//            }
 
         }
     }
@@ -247,10 +226,10 @@ class TDActivity : AppCompatActivity() {
             stringBuilder.append("\n")
         }
 
-        runOnUiThread {
-            tvTitle.text = ""
-            tvTitle.text = stringBuilder
-        }
+//        runOnUiThread {
+//            tvTitle.text = ""
+//            tvTitle.text = stringBuilder
+//        }
     }
 
     private fun highColor(item: Candlestick, stringBuilder: SpannableStringBuilder) {

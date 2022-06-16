@@ -32,7 +32,7 @@ public class Candlestick {
 
   private Double volume_24h = 0.0;
 
-  private Double roi = 0.0;
+  private Double roi = -1.0;
 
   public Double getVolume_24h() {
     return volume_24h;
