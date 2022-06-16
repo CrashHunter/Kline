@@ -107,19 +107,10 @@ class TDActivity : AppCompatActivity() {
 
         val format = IFormat<Double> { NumberTools.amountConversion(it) }
         volume.format = format
-
-
-        //表格数据 datas 是需要填充的数据
-        val tableData: TableData<Candlestick> = TableData<Candlestick>(
-            "表格名",
-            TDList,
-            coin,
-            H,
-            L, volume, holdRoi, coinRoi
-        )
         L.isReverseSort = true
-        tableData.sortColumn = L
-        table.tableData = tableData
+
+
+        setTable()
 //        table.getConfig().setContentStyle(FontStyle(50, Color.BLUE))
 
         table.setOnColumnClickListener {
@@ -156,7 +147,7 @@ class TDActivity : AppCompatActivity() {
             TDList,
             coin,
             H,
-            L, volume, holdRoi, coinRoi
+            L, holdRoi, coinRoi, volume
         )
         tableData.sortColumn = L
         table.tableData = tableData

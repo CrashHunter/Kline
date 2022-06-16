@@ -177,15 +177,15 @@ class MainActivity : AppCompatActivity() {
         } else {
             getFromAPi()
         }
-//        getFromAPi()
 
 
         getContractList()
         getOwnAccountCoins()
+
     }
 
     //获取持有币当前价格
-    private fun getOwnCoinsAvgs() {
+    private fun getOwnCoinsKlineData() {
         GlobalScope.launch {
             val time = measureTimeMillis {
                 val sum = withContext(Dispatchers.IO) {
@@ -193,7 +193,7 @@ class MainActivity : AppCompatActivity() {
 
                     for (coin in Constant.ownCoinListName) {
                         var n = async {
-                            getCoinKlineData(coin + "USDT")
+                            getCoinKlineData(coin + "USDT",Constant.holdCoinItemList)
                         }
                     }
                     amount
@@ -202,7 +202,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getCoinKlineData(coin: String): List<Candlestick> {
+    private fun getContractCoinsKlineData() {
+        GlobalScope.launch {
+            val time = measureTimeMillis {
+                val sum = withContext(Dispatchers.IO) {
+                    var amount = 0
+
+                    for (coin in Constant.contractCoins) {
+                        var n = async {
+                            getCoinKlineData(coin + "USDT",Constant.downPerItemList)
+                        }
+                    }
+                    amount
+                }
+            }
+        }
+    }
+
+    private fun getCoinKlineData(coin: String, coinItemList: ArrayList<DownPerItem>): List<Candlestick> {
 
         try {
             //没有YEAR的维度，最大到月
@@ -247,7 +264,7 @@ class MainActivity : AppCompatActivity() {
             downPerItem.min = min
             downPerItem.downPer = downPer
             downPerItem.upPer = upPer
-            Constant.downPerItemList.add(downPerItem)
+            coinItemList.add(downPerItem)
             return list
         } catch (e: Exception) {
             Log.e("sss", "Error Coin $coin: : " + Log.getStackTraceString(e))
@@ -280,7 +297,7 @@ class MainActivity : AppCompatActivity() {
                     Constant.ownCoinList.add(item)
                 }
                 //获取持有币当前价格
-                getOwnCoinsAvgs()
+                getOwnCoinsKlineData()
             }
         }.start()
     }
@@ -317,6 +334,8 @@ class MainActivity : AppCompatActivity() {
                     } else {
 
                     }
+
+                    getContractCoinsKlineData()
 
                 }
 

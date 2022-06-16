@@ -289,7 +289,7 @@ class ROIActivity : AppCompatActivity() {
             var currentPrice = BigDecimal.ZERO
 
             val coin = item.coin
-            for (downPerItem in Constant.downPerItemList) {
+            for (downPerItem in Constant.holdCoinItemList) {
                 if (downPerItem.coin.equals(coin)) {
                     currentPrice = downPerItem.current
                     item.currentPrice = currentPrice
