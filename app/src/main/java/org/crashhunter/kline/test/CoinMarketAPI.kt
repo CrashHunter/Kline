@@ -73,7 +73,7 @@ internal object CoinMarketAPI {
 
     interface ListService {
 
-        @GET("v1/cryptocurrency/listings/latest?start=1&limit=500&convert=USD")
+        @GET("v1/cryptocurrency/listings/latest?start=1&limit=1000&convert=USD")
         fun queryList(): Call<CoinMarketList?>?
     }
 }

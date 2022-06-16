@@ -311,7 +311,7 @@ class MainActivity : AppCompatActivity() {
                 var downPerItem = DownPerItem()
                 //不含USDT后缀
                 downPerItem.coin = coin.symbol
-                downPerItem.current = BigDecimal(coin.quote.USD.price).setScale(2, BigDecimal.ROUND_HALF_UP)
+                downPerItem.current = BigDecimal(coin.quote.USD.price).setScale(4, BigDecimal.ROUND_HALF_UP)
                 Constant.holdCoinItemList.add(downPerItem)
             }
         }
