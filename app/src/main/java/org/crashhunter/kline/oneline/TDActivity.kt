@@ -69,6 +69,7 @@ class TDActivity : AppCompatActivity() {
         LATESTTDLISTJSONSTR,
         ""
     )
+
     //hold roi
     private var latestAvgPriceItemListJsonStr by BaseSharedPreference(
         AppController.instance.applicationContext,
@@ -140,22 +141,25 @@ class TDActivity : AppCompatActivity() {
             var list = TDJsonList.sortedBy { it.symbol }
             TDList.clear()
             TDList = ArrayList(list)
-            //表格数据 datas 是需要填充的数据
-            val tableData: TableData<Candlestick> = TableData<Candlestick>(
-                "表格名",
-                TDList,
-                coin,
-                H,
-                L, volume, holdRoi
-            )
-            tableData.sortColumn = L
-            table.tableData = tableData
+            setTable()
 
             processData(list)
         } else {
             getAllCoins()
 
         }
+    }
+
+    private fun setTable() {
+        val tableData: TableData<Candlestick> = TableData<Candlestick>(
+            "表格名",
+            TDList,
+            coin,
+            H,
+            L, volume, holdRoi, coinRoi
+        )
+        tableData.sortColumn = L
+        table.tableData = tableData
     }
 
 
