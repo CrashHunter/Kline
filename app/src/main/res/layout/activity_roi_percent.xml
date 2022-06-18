@@ -8,13 +8,6 @@
     tools:context=".MainActivity">
 
 
-    <EditText
-        android:id="@+id/tvRate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1.0"
-        android:inputType="number"
-        android:text="0.8" />
 
 
     <TextView

@@ -95,7 +95,7 @@ class ROIActivity : AppCompatActivity() {
 
 
         val tableData: TableData<HoldPriceItem> = TableData<HoldPriceItem>(
-            "表格名",
+            "",
             Constant.holdPriceItemList,
             coin, roi,
             totalCost, costPrice,

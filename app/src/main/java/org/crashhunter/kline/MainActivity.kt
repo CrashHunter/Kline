@@ -305,6 +305,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getOwnCoinsCurrentPrice() {
+        Constant.holdCoinItemList.clear()
         for (coin in Constant.coinMarketList) {
             if (Constant.ownCoinListName.contains(coin.symbol)) {
 
@@ -392,7 +393,7 @@ class MainActivity : AppCompatActivity() {
 //                var jsonList = Gson().toJson(allCoinList)
                 latestCoinListJsonStr = coinVolumeJsonStr
 
-
+                getOwnCoinsCurrentPrice()
 
                 showAllCap()
 

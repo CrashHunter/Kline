@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public class HoldPriceItem {
 
-  //含USDT后缀
+  // 含USDT后缀
   private String coin;
 
   private BigDecimal max;
@@ -18,9 +18,9 @@ public class HoldPriceItem {
 
   // 持仓成本
   private BigDecimal sumBuy = BigDecimal.ZERO;
-  //持仓价
-  private BigDecimal holdPrice= BigDecimal.ZERO;
-  //当前价
+  // 持仓价
+  private BigDecimal holdPrice = BigDecimal.ZERO;
+  // 当前价
   @Nullable public BigDecimal currentPrice = BigDecimal.ZERO;
 
   public BigDecimal getRoi() {
@@ -56,8 +56,6 @@ public class HoldPriceItem {
   public void setHoldPrice(BigDecimal holdPrice) {
     this.holdPrice = holdPrice;
   }
-
-
 
   public BigDecimal getMin() {
     return min;

@@ -15,7 +15,7 @@ object Constant {
     //持有币的最大值最小值，降幅，当前价
     var holdCoinItemList = ArrayList<DownPerItem>()
 
-    //持有币的最大值最小值，降幅，当前价
+    //合约的最大值最小值，降幅，当前价
     var downPerItemList = ArrayList<DownPerItem>()
 
 
