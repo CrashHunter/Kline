@@ -312,7 +312,18 @@ class MainActivity : AppCompatActivity() {
                 var downPerItem = DownPerItem()
                 //不含USDT后缀
                 downPerItem.coin = coin.symbol
-                downPerItem.current = BigDecimal(coin.quote.USD.price).setScale(4, BigDecimal.ROUND_HALF_UP)
+                if (coin.symbol.equals("SHIB")
+                    || coin.symbol.equals("BTTC")
+                    || coin.symbol.equals("XEC")
+                    || coin.symbol.equals("DENT")
+                ) {
+                    downPerItem.current =
+                        BigDecimal(coin.quote.USD.price).setScale(8, BigDecimal.ROUND_HALF_UP)
+                } else {
+                    downPerItem.current =
+                        BigDecimal(coin.quote.USD.price).setScale(4, BigDecimal.ROUND_HALF_UP)
+                }
+
                 Constant.holdCoinItemList.add(downPerItem)
             }
         }

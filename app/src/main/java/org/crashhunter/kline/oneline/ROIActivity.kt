@@ -94,6 +94,14 @@ class ROIActivity : AppCompatActivity() {
         }
 
 
+
+
+        table.setOnColumnClickListener {
+            table.setSortColumn(it.column, !it.column.isReverseSort)
+        }
+    }
+
+    private fun showTable() {
         val tableData: TableData<HoldPriceItem> = TableData<HoldPriceItem>(
             "",
             Constant.holdPriceItemList,
@@ -104,11 +112,7 @@ class ROIActivity : AppCompatActivity() {
         roi.isReverseSort = false
         tableData.sortColumn = roi
         table.tableData = tableData
-//        table.getConfig().setContentStyle(FontStyle(50, Color.BLUE))
-
-        table.setOnColumnClickListener {
-            table.setSortColumn(it.column, !it.column.isReverseSort)
-        }
+        //        table.getConfig().setContentStyle(FontStyle(50, Color.BLUE))
     }
 
 
@@ -330,6 +334,8 @@ class ROIActivity : AppCompatActivity() {
         latestAvgPriceItemListJsonStr = jsonStr
 
         roiStringBuilder.append("totalSum:$totalSum \ntotalWin:$totalWin \ntotalROI:${totalROI} \n ")
+
+        showTable()
     }
 
 //    private fun ROIColor(roi: BigDecimal, stringBuilder: SpannableStringBuilder) {

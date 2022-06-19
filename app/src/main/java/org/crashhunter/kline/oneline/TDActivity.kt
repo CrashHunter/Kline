@@ -102,20 +102,16 @@ class TDActivity : AppCompatActivity() {
             options
         )
 
-        candlestickInterval = CandlestickInterval.WEEKLY
-        getTDData()
-
         val format = IFormat<Double> { NumberTools.amountConversion(it) }
         volume.format = format
         L.isReverseSort = true
-
-
-        setTable()
-//        table.getConfig().setContentStyle(FontStyle(50, Color.BLUE))
-
         table.setOnColumnClickListener {
             table.setSortColumn(it.column, !it.column.isReverseSort)
         }
+
+        candlestickInterval = CandlestickInterval.WEEKLY
+
+        getTDData()
 
     }
 
@@ -137,7 +133,6 @@ class TDActivity : AppCompatActivity() {
             processData(list)
         } else {
             getAllCoins()
-
         }
     }
 
@@ -240,14 +235,9 @@ class TDActivity : AppCompatActivity() {
                     }
                 }
             }
-
-
         }
 
-//        runOnUiThread {
-//            tvTitle.text = ""
-//            tvTitle.text = stringBuilder
-//        }
+        setTable()
     }
 
     private fun highColor(item: Candlestick, stringBuilder: SpannableStringBuilder) {

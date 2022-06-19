@@ -555,7 +555,7 @@ class DownPercentActivity : AppCompatActivity() {
     }
 
     private fun getCoinKlineData(coin: String): List<Candlestick> {
-
+        //计算近36个月的最大最下值
 
         runOnUiThread {
             tvTitle.text = "Loading... $coin "
