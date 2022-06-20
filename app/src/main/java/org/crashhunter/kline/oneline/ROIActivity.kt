@@ -285,8 +285,9 @@ class ROIActivity : AppCompatActivity() {
             if (item.coin.equals("BUSDUSDT")) {
                 continue
             }
-            totalSum += item.sumBuy
-
+            if (item.sumBuy> BigDecimal.ZERO){
+                totalSum += item.sumBuy
+            }
             val holdPrice = item.holdPrice
             var currentPrice = BigDecimal.ZERO
 
@@ -333,7 +334,7 @@ class ROIActivity : AppCompatActivity() {
         var jsonStr = Gson().toJson(list)
         latestAvgPriceItemListJsonStr = jsonStr
 
-        roiStringBuilder.append("totalSum:$totalSum \ntotalWin:$totalWin \ntotalROI:${totalROI} \n ")
+        roiStringBuilder.append("总成本:$totalSum \n总盈亏:$totalWin \ntotalROI:${totalROI} \n ")
 
         showTable()
     }
