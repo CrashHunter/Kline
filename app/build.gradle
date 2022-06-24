@@ -6,6 +6,12 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     signingConfigs {
+        debug {
+            storeFile file('/Users/didi/AndroidStudioProjects/Kline/klineSign')
+            storePassword 'light3'
+            keyAlias 'klineSign'
+            keyPassword 'light3'
+        }
         dddd {
             storeFile file('kline_keystore.jks')
             storePassword 'Eclipse3'
