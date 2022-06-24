@@ -23,6 +23,18 @@ public class HoldPriceItem {
   // 当前价
   @Nullable public BigDecimal currentPrice = BigDecimal.ZERO;
 
+  // 回本需要涨多少倍
+  @Nullable public BigDecimal multi = BigDecimal.ZERO;
+
+  @Nullable
+  public BigDecimal getMulti() {
+    return multi;
+  }
+
+  public void setMulti(@Nullable BigDecimal multi) {
+    this.multi = multi;
+  }
+
   public BigDecimal getRoi() {
     return roi;
   }

@@ -63,6 +63,7 @@ class ROIActivity : AppCompatActivity() {
     val costPrice = Column<BigDecimal>("成本价", "holdPrice")
     val currentPrice = Column<BigDecimal>("当前价", "currentPrice")
     val roi = Column<BigDecimal>("roi", "roi")
+    val multi = Column<BigDecimal>("multi", "multi")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +106,7 @@ class ROIActivity : AppCompatActivity() {
         val tableData: TableData<HoldPriceItem> = TableData<HoldPriceItem>(
             "",
             Constant.holdPriceItemList,
-            coin, roi,
+            coin, roi,multi,
             totalCost, costPrice,
             currentPrice
         )
@@ -296,6 +297,8 @@ class ROIActivity : AppCompatActivity() {
                 if (downPerItem.coin.equals(coin.replace("USDT",""))) {
                     currentPrice = downPerItem.current
                     item.currentPrice = currentPrice
+
+                    item.multi = item.holdPrice.divide(item.currentPrice,2,BigDecimal.ROUND_HALF_UP)
                     break
                 }
             }
