@@ -99,6 +99,9 @@ class ROIActivity : AppCompatActivity() {
         val format = IFormat<Double> { NumberTools.amountConversion(it) }
         volume_24h.format = format
 
+        val totalCostFormat = IFormat<BigDecimal> { it.setScale(3,BigDecimal.ROUND_HALF_UP).toString() }
+        totalCost.format = totalCostFormat
+
         table.setOnColumnClickListener {
             table.setSortColumn(it.column, !it.column.isReverseSort)
         }
