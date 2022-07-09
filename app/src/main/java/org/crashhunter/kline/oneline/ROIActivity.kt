@@ -353,7 +353,9 @@ class ROIActivity : AppCompatActivity() {
         var jsonStr = Gson().toJson(list)
         latestAvgPriceItemListJsonStr = jsonStr
 
-        roiStringBuilder.append("总成本:$totalSum \n总盈亏:$totalWin \ntotalROI:${totalROI} \n ")
+        roiStringBuilder.append("总成本:${totalSum.setScale(2,BigDecimal.ROUND_HALF_UP)} " +
+                "/ 总盈亏:${totalWin.setScale(2,BigDecimal.ROUND_HALF_UP)} " +
+                "/ totalROI:${totalROI.setScale(2,BigDecimal.ROUND_HALF_UP)} ")
 
         showTable()
     }
