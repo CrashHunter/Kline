@@ -20,7 +20,6 @@ import com.binance.client.model.enums.CandlestickInterval
 import com.binance.client.model.market.Candlestick
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.activity_roi_percent.*
 import kotlinx.android.synthetic.main.activity_td.*
 import kotlinx.android.synthetic.main.activity_td.table
 import kotlinx.coroutines.*
@@ -32,7 +31,6 @@ import org.crashhunter.kline.data.LATESTAVGPRICEITEMLISTJSONSTR
 import org.crashhunter.kline.data.LATESTTDLISTJSONSTR
 import org.crashhunter.kline.data.SharedPreferenceUtil
 import org.crashhunter.kline.utils.NumberTools
-import org.crashhunter.kline.utils.StringUtils
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.system.measureTimeMillis
@@ -80,7 +78,7 @@ class TDActivity : AppCompatActivity() {
     val coin = Column<String>("coin", "symbol")
     val H = Column<Integer>("H", "TDhigh")
     val L = Column<Integer>("L", "TDlow")
-    val volume = Column<Double>("volume_24h", "volume_24h")
+    val volume_24h = Column<Double>("volume_24h", "volume_24h")
     val holdRoi = Column<Double>("holdRoi", "holdRoi")
     val coinRoi = Column<Double>("coinRoi", "coinRoi")
 
@@ -103,7 +101,7 @@ class TDActivity : AppCompatActivity() {
         )
 
         val format = IFormat<Double> { NumberTools.amountConversion(it) }
-        volume.format = format
+        volume_24h.format = format
         L.isReverseSort = true
         table.setOnColumnClickListener {
             table.setSortColumn(it.column, !it.column.isReverseSort)
@@ -142,7 +140,7 @@ class TDActivity : AppCompatActivity() {
             TDList,
             coin,
             H,
-            L, holdRoi, coinRoi, volume
+            L, holdRoi, coinRoi, volume_24h
         )
         tableData.sortColumn = L
         table.tableData = tableData

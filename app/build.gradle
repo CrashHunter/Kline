@@ -6,13 +6,13 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     signingConfigs {
-        debug {
-            storeFile file('/Users/didi/AndroidStudioProjects/Kline/klineSign')
+        debugKey {
+            storeFile file('klineSign')
             storePassword 'light3'
             keyAlias 'klineSign'
             keyPassword 'light3'
         }
-        dddd {
+        kline_keystore {
             storeFile file('kline_keystore.jks')
             storePassword 'Eclipse3'
             keyAlias 'kline'
@@ -40,7 +40,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         multiDexEnabled true
-        signingConfig signingConfigs.dddd
+        signingConfig signingConfigs.kline_keystore
     }
     buildTypes {
         release {

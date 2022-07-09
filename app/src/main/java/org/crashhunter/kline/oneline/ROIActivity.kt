@@ -3,14 +3,13 @@ package org.crashhunter.kline.oneline
 import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bin.david.form.data.column.Column
+import com.bin.david.form.data.format.IFormat
 import com.bin.david.form.data.table.TableData
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
@@ -28,6 +27,7 @@ import org.crashhunter.kline.Constant
 import org.crashhunter.kline.R
 import org.crashhunter.kline.data.BaseSharedPreference
 import org.crashhunter.kline.data.LATESTAVGPRICEITEMLISTJSONSTR
+import org.crashhunter.kline.utils.NumberTools
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
@@ -64,6 +64,7 @@ class ROIActivity : AppCompatActivity() {
     val currentPrice = Column<BigDecimal>("当前价", "currentPrice")
     val roi = Column<BigDecimal>("roi", "roi")
     val multi = Column<BigDecimal>("multi", "multi")
+    val volume_24h = Column<Double>("volume_24h", "volume_24h")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +96,8 @@ class ROIActivity : AppCompatActivity() {
         }
 
 
-
+        val format = IFormat<Double> { NumberTools.amountConversion(it) }
+        volume_24h.format = format
 
         table.setOnColumnClickListener {
             table.setSortColumn(it.column, !it.column.isReverseSort)
@@ -106,9 +108,10 @@ class ROIActivity : AppCompatActivity() {
         val tableData: TableData<HoldPriceItem> = TableData<HoldPriceItem>(
             "",
             Constant.holdPriceItemList,
-            coin, roi,multi,
-            totalCost, costPrice,
-            currentPrice
+            coin, costPrice, roi,multi,
+            totalCost,
+            currentPrice,
+            volume_24h
         )
         roi.isReverseSort = false
         tableData.sortColumn = roi
@@ -292,9 +295,10 @@ class ROIActivity : AppCompatActivity() {
             val holdPrice = item.holdPrice
             var currentPrice = BigDecimal.ZERO
 
-            val coin = item.coin
+            val coinName = item.coin
+            //获取 currentPrice multi
             for (downPerItem in Constant.holdCoinItemList) {
-                if (downPerItem.coin.equals(coin.replace("USDT",""))) {
+                if (downPerItem.coin.equals(coinName.replace("USDT",""))) {
                     currentPrice = downPerItem.current
                     item.currentPrice = currentPrice
 
@@ -302,6 +306,18 @@ class ROIActivity : AppCompatActivity() {
                     break
                 }
             }
+
+            //获取24H交易量
+            if (Constant.coinMarketList.isNotEmpty()) {
+
+                for (coin in Constant.coinMarketList) {
+                    if (coinName.equals(coin.symbol+"USDT")) {
+                        item.volume_24h = coin.quote.USD.volume_24h.toDouble()
+                        break
+                    }
+                }
+            }
+
             if (holdPrice <= BigDecimal.ZERO) {
                 //optimize
                 item.roi = BigDecimal(99999)
@@ -321,12 +337,12 @@ class ROIActivity : AppCompatActivity() {
             }
             Log.d(
                 "Trades",
-                "$coin: currentPrice:$currentPrice holdPrice:$holdPrice holdNum:${item.holdNum}"
+                "$coinName: currentPrice:$currentPrice holdPrice:$holdPrice holdNum:${item.holdNum}"
             )
             var win = (currentPrice - holdPrice) * item.holdNum
             totalWin += win
 
-            Log.d("Trades", "$coin: win:$win ")
+            Log.d("Trades", "$coinName: win:$win ")
 
         }
         var totalROI = BigDecimal.ZERO
