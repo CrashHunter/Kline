@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.system.measureTimeMillis
+
 //合约的跌幅
 class DownPercentActivity : AppCompatActivity() {
 
@@ -343,7 +344,13 @@ class DownPercentActivity : AppCompatActivity() {
 
             stringBuilder.append("$coin $max / $current / ")
 
+            //跌幅
             downPerColor(item, stringBuilder)
+
+            stringBuilder.append(
+                " " + max.divide(current, 2, BigDecimal.ROUND_HALF_UP).toString() + " "
+            )
+
             if (Constant.ownCoinListName.contains(coin.replace("USDT", ""))) {
                 stringBuilder.append(" OWN")
             }
