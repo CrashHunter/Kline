@@ -32,4 +32,10 @@ object Constant {
 
     //持有币的 成本统计
     var holdPriceItemList: List<HoldPriceItem> = ArrayList<HoldPriceItem>()
+
+
+
+    var badCoinList = arrayListOf(
+        "REEF", "LINA", "ANC", "ALPHA"
+    )
 }

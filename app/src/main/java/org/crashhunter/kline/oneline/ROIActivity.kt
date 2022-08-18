@@ -8,8 +8,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.bin.david.form.core.TableConfig
+import com.bin.david.form.data.CellInfo
 import com.bin.david.form.data.column.Column
 import com.bin.david.form.data.format.IFormat
+import com.bin.david.form.data.format.bg.BaseCellBackgroundFormat
+import com.bin.david.form.data.format.bg.ICellBackgroundFormat
 import com.bin.david.form.data.table.TableData
 import com.binance.client.RequestOptions
 import com.binance.client.SyncRequestClient
@@ -19,7 +24,6 @@ import com.binance.client.model.trade.MyTrade
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_roi_percent.*
-
 import kotlinx.coroutines.*
 import org.crashhunter.kline.AppController
 import org.crashhunter.kline.CalculateActivity
@@ -31,7 +35,6 @@ import org.crashhunter.kline.utils.NumberTools
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.system.measureTimeMillis
 
 class ROIActivity : AppCompatActivity() {
@@ -66,6 +69,7 @@ class ROIActivity : AppCompatActivity() {
     val multi = Column<BigDecimal>("multi", "multi")
     val volume_24h = Column<Double>("volume_24h", "volume_24h")
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_roi_percent)
@@ -99,7 +103,8 @@ class ROIActivity : AppCompatActivity() {
         val format = IFormat<Double> { NumberTools.amountConversion(it) }
         volume_24h.format = format
 
-        val totalCostFormat = IFormat<BigDecimal> { it.setScale(3,BigDecimal.ROUND_HALF_UP).toString() }
+        val totalCostFormat =
+            IFormat<BigDecimal> { it.setScale(3, BigDecimal.ROUND_HALF_UP).toString() }
         totalCost.format = totalCostFormat
 
         table.setOnColumnClickListener {
@@ -111,7 +116,7 @@ class ROIActivity : AppCompatActivity() {
         val tableData: TableData<HoldPriceItem> = TableData<HoldPriceItem>(
             "",
             Constant.holdPriceItemList,
-            coin, costPrice, roi,multi,
+            coin, costPrice, roi, multi,
             totalCost,
             currentPrice,
             volume_24h
@@ -119,6 +124,21 @@ class ROIActivity : AppCompatActivity() {
         roi.isReverseSort = false
         tableData.sortColumn = roi
         table.tableData = tableData
+
+
+        val backgroundFormat: ICellBackgroundFormat<CellInfo<*>> =
+            object : BaseCellBackgroundFormat<CellInfo<*>>() {
+                override fun getBackGroundColor(cellInfo: CellInfo<*>): Int {
+
+                    var coin = cellInfo.data.toString().replace("USDT", "")
+                    if (Constant.badCoinList.contains(coin)) {
+                        return ContextCompat.getColor(this@ROIActivity, R.color.brown)
+                    } else {
+                        return TableConfig.INVALID_COLOR
+                    }
+                }
+            }
+        table.getConfig().setContentCellBackgroundFormat(backgroundFormat)
         //        table.getConfig().setContentStyle(FontStyle(50, Color.BLUE))
     }
 
@@ -292,7 +312,7 @@ class ROIActivity : AppCompatActivity() {
             if (item.coin.equals("BUSDUSDT")) {
                 continue
             }
-            if (item.sumBuy> BigDecimal.ZERO){
+            if (item.sumBuy > BigDecimal.ZERO) {
                 totalSum += item.sumBuy
             }
             val holdPrice = item.holdPrice
@@ -301,11 +321,12 @@ class ROIActivity : AppCompatActivity() {
             val coinName = item.coin
             //获取 currentPrice multi
             for (downPerItem in Constant.holdCoinItemList) {
-                if (downPerItem.coin.equals(coinName.replace("USDT",""))) {
+                if (downPerItem.coin.equals(coinName.replace("USDT", ""))) {
                     currentPrice = downPerItem.current
                     item.currentPrice = currentPrice
 
-                    item.multi = item.holdPrice.divide(item.currentPrice,2,BigDecimal.ROUND_HALF_UP)
+                    item.multi =
+                        item.holdPrice.divide(item.currentPrice, 2, BigDecimal.ROUND_HALF_UP)
                     break
                 }
             }
@@ -314,7 +335,7 @@ class ROIActivity : AppCompatActivity() {
             if (Constant.coinMarketList.isNotEmpty()) {
 
                 for (coin in Constant.coinMarketList) {
-                    if (coinName.equals(coin.symbol+"USDT")) {
+                    if (coinName.equals(coin.symbol + "USDT")) {
                         item.volume_24h = coin.quote.USD.volume_24h.toDouble()
                         break
                     }
@@ -356,9 +377,11 @@ class ROIActivity : AppCompatActivity() {
         var jsonStr = Gson().toJson(list)
         latestAvgPriceItemListJsonStr = jsonStr
 
-        roiStringBuilder.append("总成本:${totalSum.setScale(2,BigDecimal.ROUND_HALF_UP)} " +
-                "/ 总盈亏:${totalWin.setScale(2,BigDecimal.ROUND_HALF_UP)} " +
-                "/ totalROI:${totalROI.setScale(2,BigDecimal.ROUND_HALF_UP)} ")
+        roiStringBuilder.append(
+            "总成本:${totalSum.setScale(2, BigDecimal.ROUND_HALF_UP)} " +
+                    "/ 总盈亏:${totalWin.setScale(2, BigDecimal.ROUND_HALF_UP)} " +
+                    "/ totalROI:${totalROI.setScale(2, BigDecimal.ROUND_HALF_UP)} "
+        )
 
         showTable()
     }
