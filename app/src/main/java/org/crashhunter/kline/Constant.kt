@@ -2,6 +2,7 @@ package org.crashhunter.kline
 
 import com.binance.client.model.custom.HoldPriceItem
 import com.binance.client.model.custom.DownPerItem
+import com.binance.client.model.custom.MarketCapItem
 import com.binance.client.model.trade.BalancesItem
 import org.crashhunter.kline.data.Data
 
@@ -33,6 +34,9 @@ object Constant {
     //持有币的 成本统计
     var holdPriceItemList: List<HoldPriceItem> = ArrayList<HoldPriceItem>()
 
+
+    // 币种市值
+    var marketcapItemList: List<MarketCapItem> = ArrayList<MarketCapItem>()
 
 
     var badCoinList = arrayListOf(

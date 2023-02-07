@@ -25,8 +25,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.math.BigDecimal
 import kotlin.collections.ArrayList
-
 //合约的市值
+//Deprecated by MarketCapActivity
 class CoinMarketAPIActivity : AppCompatActivity() {
     val options = RequestOptions()
     var syncRequestClient = SyncRequestClient.create(

@@ -209,7 +209,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 startActivity(Intent(this, ContractListActivity::class.java))
             }
             R.id.coinmarketapi -> {
-                startActivity(Intent(this, CoinMarketAPIActivity::class.java))
+                startActivity(Intent(this, MarketCapActivity::class.java))
             }
 
             R.id.downPercent -> {

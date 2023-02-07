@@ -665,7 +665,7 @@ class MainActivity : AppCompatActivity() {
 
             R.id.coinmarketapi -> {
                 //合约市值
-                var intent = Intent(this, CoinMarketAPIActivity::class.java)
+                var intent = Intent(this, MarketCapActivity::class.java)
                 startActivity(intent)
                 return true
             }
