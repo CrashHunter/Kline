@@ -68,6 +68,7 @@ class ROIActivity : AppCompatActivity() {
     val roi = Column<BigDecimal>("roi", "roi")
     val multi = Column<BigDecimal>("multi", "multi")
     val volume_24h = Column<Double>("volume_24h", "volume_24h")
+    val marketcap = Column<Double>("marketcap", "marketcap")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,6 +103,7 @@ class ROIActivity : AppCompatActivity() {
 
         val format = IFormat<Double> { NumberTools.amountConversion(it) }
         volume_24h.format = format
+        marketcap.format = format
 
         val totalCostFormat =
             IFormat<BigDecimal> { it.setScale(3, BigDecimal.ROUND_HALF_UP).toString() }
@@ -116,10 +118,10 @@ class ROIActivity : AppCompatActivity() {
         val tableData: TableData<HoldPriceItem> = TableData<HoldPriceItem>(
             "",
             Constant.holdPriceItemList,
-            coin, costPrice, roi, multi,
+            coin, costPrice, currentPrice, roi, multi,
             totalCost,
-            currentPrice,
-            volume_24h
+            volume_24h,
+            marketcap
         )
         roi.isReverseSort = false
         tableData.sortColumn = roi
@@ -337,6 +339,7 @@ class ROIActivity : AppCompatActivity() {
                 for (coin in Constant.coinMarketList) {
                     if (coinName.equals(coin.symbol + "USDT")) {
                         item.volume_24h = coin.quote.USD.volume_24h.toDouble()
+                        item.marketcap = coin.quote.USD.market_cap.toDouble()
                         break
                     }
                 }

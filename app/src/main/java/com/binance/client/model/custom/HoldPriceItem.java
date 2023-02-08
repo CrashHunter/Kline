@@ -28,6 +28,16 @@ public class HoldPriceItem {
 
   private Double volume_24h = 0.0;
 
+  private Double marketcap = 0.0;
+
+  public Double getMarketcap() {
+    return marketcap;
+  }
+
+  public void setMarketcap(Double marketcap) {
+    this.marketcap = marketcap;
+  }
+
   public Double getVolume_24h() {
     return volume_24h;
   }
