@@ -1,5 +1,7 @@
 package com.binance.client.impl;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +45,7 @@ class RestApiRequestImpl {
     private Request createRequest(String url, String address, UrlParamsBuilder builder) {
         String requestUrl = url + address;
         System.out.print(requestUrl);
+        Log.d("requestUrl",requestUrl);
         if (builder != null) {
             if (builder.hasPostParam()) {
                 return new Request.Builder().url(requestUrl).post(builder.buildPostBody())

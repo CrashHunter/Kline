@@ -6,6 +6,9 @@ import java.util.*
 
 
 object StringUtils {
+     fun String.nosuffix(): String {
+        return this.replace("USDT","").replace("BUSD","");
+    }
 
     /**
      *

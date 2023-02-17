@@ -25,6 +25,7 @@ import org.crashhunter.kline.data.*
 import org.crashhunter.kline.oneline.*
 import org.crashhunter.kline.test.CoinMarketAPI
 import org.crashhunter.kline.utils.StringUtils
+import org.crashhunter.kline.utils.StringUtils.nosuffix
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -67,15 +68,7 @@ class MainActivity : AppCompatActivity() {
 
     //not in binance
     var notBinance = arrayListOf(
-
-//        "ZB", "HT", "OKB", "SNT", "SEELE",
-//        "MOF", "XMX", "GRIN", "XEM", "HYC",
-//        "YOU", "INB", "BSV", "LOOM",
-//        "AE", "BTM", "VALOR", "WICC", "TRUE",
-//        "BNT", "ELF", "BCV", "EKT", "OCEAN",
-//        "ABBC", "LAMB", "BTG", "CRO", "KCS",
-//        "NEXO", "REP", "BCD", "XZC", "MONA"
-        ""
+        "ANC","BTCST","AUCTION","SC","SRM"
     )
 
 //    var foreignList = arrayListOf(
@@ -112,6 +105,8 @@ class MainActivity : AppCompatActivity() {
 //        "TNT", "EDO", "POA", "STRAT"
         ""
     )
+
+
 
 
     var handler: Handler = Handler()
@@ -343,14 +338,14 @@ class MainActivity : AppCompatActivity() {
 
                 var list = data.symbols
                 list = list.filterNot {
-                    it.symbol.contains("_")
+                    it.symbol.contains("_") || notBinance.contains(it.symbol.nosuffix())
                 }
                 list = list.sortedBy { it.symbol }
                 Log.d("sss", "contract coin size: ${list.size}")
                 for (index in list.indices) {
 
                     var symbol = list.get(index)
-//                    Log.d("sss", "contract coin:" + symbol.symbol)
+                    Log.d("sss", "contract coin:" + symbol.symbol)
                     //处理1000shib 特殊情况
 
                     //提取币名
@@ -929,3 +924,5 @@ class MainActivity : AppCompatActivity() {
 
     }
 }
+
+
