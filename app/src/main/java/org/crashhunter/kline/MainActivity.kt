@@ -21,6 +21,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.tvTitle
 import kotlinx.coroutines.*
+import org.crashhunter.kline.Constant.notBinance
 import org.crashhunter.kline.data.*
 import org.crashhunter.kline.oneline.*
 import org.crashhunter.kline.test.CoinMarketAPI
@@ -66,10 +67,7 @@ class MainActivity : AppCompatActivity() {
     )
 
 
-    //not in binance
-    var notBinance = arrayListOf(
-        "ANC","BTCST","AUCTION","SC","SRM"
-    )
+
 
 //    var foreignList = arrayListOf(
 //        "BSV", "BCD", "ZEC", "BTS", "XEM",

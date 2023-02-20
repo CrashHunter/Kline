@@ -27,6 +27,7 @@ import org.crashhunter.kline.Constant
 import org.crashhunter.kline.R
 import org.crashhunter.kline.data.BaseSharedPreference
 import org.crashhunter.kline.data.LATESTAVGPRICEITEMLISTJSONSTR
+import org.crashhunter.kline.utils.StringUtils.nosuffix
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
@@ -342,7 +343,9 @@ class DownPercentActivity : AppCompatActivity() {
 
             stringBuilder.append("${index + 1}. ")
 
-            stringBuilder.append("$coin $max / $current / ")
+            levelColor(item, stringBuilder)
+
+            stringBuilder.append(" $max / $current / ")
 
             //跌幅
             downPerColor(item, stringBuilder)
@@ -355,9 +358,28 @@ class DownPercentActivity : AppCompatActivity() {
                 stringBuilder.append(" OWN")
             }
 
+
             stringBuilder.append("\n \n")
         }
     }
+
+
+    private fun levelColor(item: DownPerItem, stringBuilder: SpannableStringBuilder) {
+        val coin = item.coin
+        if (Constant.ACoinList.contains(coin.nosuffix())) {
+            val span = SpannableStringBuilder("$coin")
+            span.setSpan(
+                ForegroundColorSpan(getColor(android.R.color.holo_blue_light)),
+                0,
+                coin.toString().length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            stringBuilder.append(span)
+        } else {
+            stringBuilder.append("$coin")
+        }
+    }
+
 
     private fun downPerColor(item: DownPerItem, stringBuilder: SpannableStringBuilder) {
         val downPer = item.downPer

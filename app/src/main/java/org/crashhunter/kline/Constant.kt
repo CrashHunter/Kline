@@ -40,6 +40,23 @@ object Constant {
 
 
     var badCoinList = arrayListOf(
-        "REEF", "LINA", "ANC", "ALPHA"
+         "LINA", "ANC", "ALPHA"
+    )
+
+    //not in binance
+    var notBinance = arrayListOf(
+        "ANC","BTCST","AUCTION","SC","SRM",
+        "CVC","FTT","BNX"
+
+    )
+
+    var ACoinList = arrayListOf(
+        "ADA", "APT", "ATOM","AUDIO","AVAX",
+        "AXS", "BAT", "BNB","BTC","CHZ",
+        "CRV", "DOT", "ENS","ETH","FIL",
+        "FLOW", "GALA", "GMT","GRT","ICP",
+        "KAVA", "LINK", "MANA","NEAR","ONT",
+        "OP", "SAND", "SNX","SOL","STORJ",
+        "UNI", "YFI", "ZRX"
     )
 }

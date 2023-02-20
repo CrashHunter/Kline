@@ -135,11 +135,14 @@ class ROIActivity : AppCompatActivity() {
                     var coin = cellInfo.data.toString().replace("USDT", "")
                     if (Constant.badCoinList.contains(coin)) {
                         return ContextCompat.getColor(this@ROIActivity, R.color.brown)
-                    } else {
-                        return TableConfig.INVALID_COLOR
                     }
+                    if (Constant.ACoinList.contains(coin)) {
+                        return ContextCompat.getColor(this@ROIActivity, R.color.blue)
+                    }
+                    return TableConfig.INVALID_COLOR
                 }
             }
+
         table.getConfig().setContentCellBackgroundFormat(backgroundFormat)
         //        table.getConfig().setContentStyle(FontStyle(50, Color.BLUE))
     }
