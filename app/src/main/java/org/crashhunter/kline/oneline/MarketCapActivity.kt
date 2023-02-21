@@ -125,17 +125,16 @@ class MarketCapActivity : AppCompatActivity() {
         table.tableData = tableData
 
 
-
         val backgroundFormat: ICellBackgroundFormat<CellInfo<*>> =
             object : BaseCellBackgroundFormat<CellInfo<*>>() {
                 override fun getBackGroundColor(cellInfo: CellInfo<*>): Int {
-
                     var coin = cellInfo.data.toString().replace("USDT", "")
-                    if (Constant.ownCoinListName.contains(coin)) {
+
+                    if (Constant.ACoinList.contains(coin)) {
                         return ContextCompat.getColor(this@MarketCapActivity, R.color.blue)
-                    } else {
-                        return TableConfig.INVALID_COLOR
                     }
+
+                    return TableConfig.INVALID_COLOR
                 }
             }
         table.getConfig().setContentCellBackgroundFormat(backgroundFormat)

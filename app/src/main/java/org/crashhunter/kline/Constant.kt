@@ -43,6 +43,14 @@ object Constant {
          "LINA", "ANC", "ALPHA"
     )
 
+    var cleanCoinList = arrayListOf(
+        "AKRO", "ALPHA", "BAKE","BCH","BTS",
+        "DODO", "DOGE", "EOS","ETC","FLM",
+        "LINA", "LTC", "NKN","RAY","REN",
+        "SC", "SXP", "TLM","XEM"
+    )
+
+
     //not in binance
     var notBinance = arrayListOf(
         "ANC","BTCST","AUCTION","SC","SRM",
@@ -55,7 +63,7 @@ object Constant {
         "AXS", "BAT", "BNB","BTC","CHZ",
         "CRV", "DOT", "ENS","ETH","FIL",
         "FLOW", "GALA", "GMT","GRT","ICP",
-        "KAVA", "LINK", "MANA","NEAR","ONT",
+        "KAVA", "LINK", "MANA","NEAR",
         "OP", "SAND", "SNX","SOL","STORJ",
         "UNI", "YFI", "ZRX"
     )

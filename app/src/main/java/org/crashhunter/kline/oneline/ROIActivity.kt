@@ -133,6 +133,10 @@ class ROIActivity : AppCompatActivity() {
                 override fun getBackGroundColor(cellInfo: CellInfo<*>): Int {
 
                     var coin = cellInfo.data.toString().replace("USDT", "")
+
+                    if (Constant.cleanCoinList.contains(coin)) {
+                        return ContextCompat.getColor(this@ROIActivity, android.R.color.darker_gray)
+                    }
                     if (Constant.badCoinList.contains(coin)) {
                         return ContextCompat.getColor(this@ROIActivity, R.color.brown)
                     }
