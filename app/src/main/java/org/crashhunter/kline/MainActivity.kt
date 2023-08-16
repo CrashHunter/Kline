@@ -335,7 +335,7 @@ class MainActivity : AppCompatActivity() {
                 var data = syncRequestClient_contract.getExchangeInformation()
 
                 var list = data.symbols
-                list = list.filterNot {
+                list = list.filterNot {   it.symbol.contains("BUSD") ||
                     it.symbol.contains("_") || notBinance.contains(it.symbol.nosuffix())
                 }
                 list = list.sortedBy { it.symbol }
@@ -348,9 +348,7 @@ class MainActivity : AppCompatActivity() {
 
                     //提取币名
                     var symbolName = symbol.symbol
-                        .replace("1000", "")
-                        .replace("USDT", "")
-                        .replace("BUSD", "");
+                        .replace("USDT", "");
                     if (!Constant.contractCoins.contains(symbolName)) {
                         Constant.contractCoins.add(symbolName)
                     } else {
