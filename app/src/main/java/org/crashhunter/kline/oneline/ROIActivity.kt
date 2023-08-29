@@ -118,8 +118,7 @@ class ROIActivity : AppCompatActivity() {
         val tableData: TableData<HoldPriceItem> = TableData<HoldPriceItem>(
             "",
             Constant.holdPriceItemList,
-            coin, costPrice, currentPrice, roi, multi,
-            totalCost,
+            coin, totalCost, costPrice, currentPrice, roi, multi,
             volume_24h,
             marketcap
         )
