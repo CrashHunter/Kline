@@ -23,6 +23,9 @@ public class HoldPriceItem {
   // 当前价
   @Nullable public BigDecimal currentPrice = BigDecimal.ZERO;
 
+  // 当前价值
+   public BigDecimal currentValue = BigDecimal.ZERO;
+
   // 回本需要涨多少倍
   @Nullable public BigDecimal multi = BigDecimal.ZERO;
 
@@ -44,6 +47,14 @@ public class HoldPriceItem {
 
   public void setVolume_24h(Double volume_24h) {
     this.volume_24h = volume_24h;
+  }
+
+  public BigDecimal getCurrentValue() {
+    return currentValue;
+  }
+
+  public void setCurrentValue(BigDecimal currentValue) {
+    this.currentValue = currentValue;
   }
 
   @Nullable

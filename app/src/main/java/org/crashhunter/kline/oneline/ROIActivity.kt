@@ -65,6 +65,7 @@ class ROIActivity : AppCompatActivity() {
     val totalCost = Column<BigDecimal>("成本", "sumBuy")
     val costPrice = Column<BigDecimal>("成本价", "holdPrice")
     val currentPrice = Column<BigDecimal>("当前价", "currentPrice")
+    val currentValue = Column<BigDecimal>("当前价值", "currentValue")
     val roi = Column<BigDecimal>("roi", "roi")
     val multi = Column<BigDecimal>("multi", "multi")
     val volume_24h = Column<Double>("volume_24h", "volume_24h")
@@ -118,7 +119,7 @@ class ROIActivity : AppCompatActivity() {
         val tableData: TableData<HoldPriceItem> = TableData<HoldPriceItem>(
             "",
             Constant.holdPriceItemList,
-            coin, totalCost, costPrice, currentPrice, roi, multi,
+            coin, totalCost, costPrice, currentPrice, currentValue,roi, multi,
             volume_24h,
             marketcap
         )
@@ -350,6 +351,9 @@ class ROIActivity : AppCompatActivity() {
                     }
                 }
             }
+
+
+            item.currentValue = item.currentPrice?.times(item.holdNum)?.divide(BigDecimal.ONE, 2, BigDecimal.ROUND_HALF_UP) ?: BigDecimal.ZERO
 
             if (holdPrice <= BigDecimal.ZERO) {
                 //optimize
