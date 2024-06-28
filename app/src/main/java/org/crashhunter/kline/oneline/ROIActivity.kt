@@ -205,6 +205,7 @@ class ROIActivity : AppCompatActivity() {
                     "$coin: ${item.isBuyer} price:${item.price} qty:${item.qty} quoteQty:${item.quoteQty} $tradeTime"
                 )
 
+
                 //找到最近满足持仓的记录
                 if (tempHoldNum >= holdNum) {
                     break

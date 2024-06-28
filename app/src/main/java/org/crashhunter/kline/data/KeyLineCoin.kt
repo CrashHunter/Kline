@@ -8,6 +8,7 @@ class KeyLineCoin {
     var close = BigDecimal(0)
     var rateInc = BigDecimal(0)
     var rangeInc = BigDecimal(0)
+    var volumeRatio = BigDecimal(0)//量比
     var quoteAssetVolume = BigDecimal(0)//成交额
     var takerBuyBaseAssetVolume = BigDecimal(0)
     var takerBuyQuoteAssetVolume = BigDecimal(0)

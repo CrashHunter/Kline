@@ -59,12 +59,24 @@ object Constant {
     )
 
     var ACoinList = arrayListOf(
-        "ADA", "APT", "ATOM","AUDIO","AVAX",
-        "AXS", "BAT", "BNB","BTC","CHZ",
-        "CRV", "DOT", "ENS","ETH","FIL",
-        "FLOW", "GALA", "GMT","GRT","ICP",
-        "KAVA", "LINK", "MANA","NEAR",
-        "OP", "SAND", "SNX","SOL","STORJ",
-        "UNI", "YFI", "ZRX"
+        "ATOM","AVAX",
+        "BNB","BTC",
+        "CRV",
+        "DOGE","DOT",
+        "ENS","ETH",
+        "FIL",
+        "GALA","GRT",
+        "ICP",
+        "LINK",
+        "MATIC",
+        "NOT",
+        "OP","ORDI",
+        "PEOPLE","PEPE",
+        "RNDR",
+        "SHIB","SOL",
+        "TRB","TRX",
+        "UNI",
+        "WLD",
+        "ZRX"
     )
 }

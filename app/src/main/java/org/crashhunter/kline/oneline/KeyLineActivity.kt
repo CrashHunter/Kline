@@ -59,7 +59,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
     var rate = 1.0
 
-    var historyRange = 2
+    var historyRange = 3
 
     var currentItemId = R.id.oneDay
 
@@ -256,7 +256,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var rateInc = coin.rateInc
             var ratePrec = "  ${coin.rateInc.setScale(2, RoundingMode.HALF_UP)}%"
             var rangePrec = "  ${coin.rangeInc.setScale(2, RoundingMode.HALF_UP)}%"
-
+            var volumeRatio = coin.volumeRatio
 
             if (type == "Volume") {
                 if (index != 0) {
@@ -277,13 +277,12 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 //            }
             i++;
 
-            var header = "No.${i} ${coin.name} $rangePrec $ratePrec\n"
+
+            var header = "No.${i} ${coin.name} 量:$volumeRatio 涨:$ratePrec 振:$rangePrec\n"
 
 
-            if (coin.name == "BTCUSDT" || rateInc < BigDecimal(rate) && rateInc > -BigDecimal(
-                    rate
-                )
-            ) {
+            if (Constant.ACoinList.contains(coin.name))
+             {
                 var str = setTextColor(
                     "$header",
                     android.R.color.holo_red_light
@@ -310,7 +309,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 //                itemStr.append(volumeStr)
 //            }
             var volumeStr2 =
-                "           --$close | " + StringUtils.getFormattedVolume(coin.quoteAssetVolume.toString()) + "\n"
+                "           --收:$close | " + "额:"+StringUtils.getFormattedVolume(coin.quoteAssetVolume.toString()) + "\n"
             itemStr.append(volumeStr2)
 
 
@@ -452,11 +451,18 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             Log.d("sss", time.toString())
 
             if (currentItemId != R.id.all) {
-                stringBuilder.append("-------------- Volume --------------\n")
-                getLastestRank("Volume")
-                stringBuilder.append("-------------- Rate --------------\n")
+
+
+                stringBuilder.append("-------------- 涨跌幅 --------------\n")
                 getLastestRank("Rate")
-                stringBuilder.append("-------------- Range --------------\n")
+
+                stringBuilder.append("-------------- 成交额 --------------\n")
+                getLastestRank("Volume")
+
+                stringBuilder.append("-------------- 量比 --------------\n")
+                getLastestRank("volumeRatio")
+
+                stringBuilder.append("-------------- 振幅 --------------\n")
                 getLastestRank("Range")
 
 
@@ -481,7 +487,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
         var sorted = openTimeList.sortedDescending()
         for (index in sorted.indices) {
-            if (index == 0 && type == "Volume") {
+            if (index == 0 && (type == "Volume"||type == "volumeRatio"||type == "Rate"||type == "Range")) {
+                // 只显示上一周期数据
                 continue
             }
             if (index > 1) {
@@ -493,11 +500,71 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var list = ArrayList(filterList)
 
             if (type == "Range") {
-                list.sortBy { it.rangeInc }
+                var filterList = list.filter { it.rangeInc > BigDecimal.ZERO}
+                list = ArrayList(filterList)
+                list.sortByDescending { it.rangeInc }
+                // 取 list 前 5 后 5
+
+                var top5 = ArrayList(list.subList(0, 5))
+                var bottom5 = ArrayList(list.subList(list.size - 5, list.size))
+                // 包含 Constant.ACoinList 里的数据
+                var Alist = list.filter { Constant.ACoinList.contains(it.name) }
+
+                list = ArrayList(top5)
+                list.addAll(bottom5)
+                list.addAll(Alist)
+
+                // list 去重
+                list = list.distinctBy { it.name } as ArrayList<KeyLineCoin>
+
+                list.sortByDescending { it.rangeInc }
+
             } else if (type == "Rate") {
-                list.sortBy { it.rateInc }
+                var filterList = list.filter { it.rateInc > BigDecimal.ZERO}
+                list = ArrayList(filterList)
+                list.sortByDescending { it.rateInc }
+
+
+                var top5 = ArrayList(list.subList(0, 5))
+                var bottom5 = ArrayList(list.subList(list.size - 5, list.size))
+                // 包含 Constant.ACoinList 里的数据
+                var Alist = list.filter { Constant.ACoinList.contains(it.name) }
+
+                list = ArrayList(top5)
+                list.addAll(bottom5)
+                list.addAll(Alist)
+                // list 去重
+                list = list.distinctBy { it.name } as ArrayList<KeyLineCoin>
+
+                list.sortByDescending { it.rateInc }
             } else if (type == "Volume") {
+                list.filter { it.quoteAssetVolume > BigDecimal.ZERO}
+                // list 去重
+                list = list.distinctBy { it.name } as ArrayList<KeyLineCoin>
+
                 list.sortByDescending { it.quoteAssetVolume }
+
+            } else if (type == "volumeRatio") {
+
+                var filterList = list.filter { it.volumeRatio > BigDecimal.ZERO}
+                list = ArrayList(filterList)
+
+                list.sortByDescending { it.volumeRatio }
+
+
+                var top5 = ArrayList(list.subList(0, 5))
+                var bottom5 = ArrayList(list.subList(list.size - 5, list.size))
+                // 包含 Constant.ACoinList 里的数据
+                var Alist = list.filter { Constant.ACoinList.contains(it.name) }
+
+                list = ArrayList(top5)
+                list.addAll(bottom5)
+                list.addAll(Alist)
+
+                // list 去重
+                list = list.distinctBy { it.name } as ArrayList<KeyLineCoin>
+
+                list.sortByDescending { it.volumeRatio }
             }
 
             var itemStr = SpannableStringBuilder()
@@ -625,13 +692,24 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
             // 默认行业是涨幅计算公式是=（今收-昨收）/昨收  但我是(close-open)/open 来计算单个k柱的涨跌幅  当前一个close和当前open有偏差时会不一样
 
+            // 涨幅
             var rateInc = diff.divide(open, 6, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
+            // 振幅
             var rangeInc = rangeDiff.divide(low, 6, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
+
+            // 量比
+            var volumeRatio = 0.toBigDecimal()
+            if (index > 0 && list[index - 1].volume > BigDecimal.ZERO) {
+                volumeRatio = item.volume.divide(list[index - 1].volume, 6, BigDecimal.ROUND_HALF_UP)
+            }
+
+
 
 //            if (index == list.size - 2) {
             var coinrange = KeyLineCoin()
             coinrange.name = coin
             coinrange.close = item.close
+            coinrange.volumeRatio = volumeRatio
             coinrange.rateInc = rateInc
             coinrange.rangeInc = rangeInc
             coinrange.candlestickInterval = candlestickInterval
@@ -800,7 +878,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 null,
                 historyRange
             )
-            Log.d("sss", "showData: $coinPair")
+
 
             //Log.d("sss", list.toString())
             SharedPreferenceUtil.saveData(
@@ -808,6 +886,8 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 "KeyLine-${coin}-$candlestickInterval",
                 JSON.toJSONString(list)
             )
+
+            Log.d("sss", "showData111: $coinPair"+"  list: $list")
             return list
         } catch (e: Exception) {
             Log.e("sss", Log.getStackTraceString(e))
