@@ -285,7 +285,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
              {
                 var str = setTextColor(
                     "$header",
-                    android.R.color.holo_red_light
+                    android.R.color.holo_blue_light
                 )
                 itemStr.append(str)
             } else {
@@ -500,13 +500,24 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var list = ArrayList(filterList)
 
             if (type == "Range") {
+                // 振幅
                 var filterList = list.filter { it.rangeInc > BigDecimal.ZERO}
                 list = ArrayList(filterList)
                 list.sortByDescending { it.rangeInc }
                 // 取 list 前 5 后 5
 
-                var top5 = ArrayList(list.subList(0, 5))
-                var bottom5 = ArrayList(list.subList(list.size - 5, list.size))
+                val top5 = if (list.size >= 5) {
+                    ArrayList(list.subList(0, 5))
+                } else {
+                    ArrayList(list)
+                }
+
+                val bottom5 = if (list.size >= 5) {
+                    ArrayList(list.subList(list.size - 5, list.size))
+                } else {
+                    ArrayList(list)
+                }
+
                 // 包含 Constant.ACoinList 里的数据
                 var Alist = list.filter { Constant.ACoinList.contains(it.name) }
 
@@ -520,13 +531,24 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 list.sortByDescending { it.rangeInc }
 
             } else if (type == "Rate") {
-                var filterList = list.filter { it.rateInc > BigDecimal.ZERO}
-                list = ArrayList(filterList)
+                // 涨跌幅
+//                var filterList = list.filter { it.rateInc > BigDecimal.ZERO}
+//                list = ArrayList(filterList)
                 list.sortByDescending { it.rateInc }
 
 
-                var top5 = ArrayList(list.subList(0, 5))
-                var bottom5 = ArrayList(list.subList(list.size - 5, list.size))
+                val top5 = if (list.size >= 5) {
+                    ArrayList(list.subList(0, 5))
+                } else {
+                    ArrayList(list)
+                }
+
+                val bottom5 = if (list.size >= 5) {
+                    ArrayList(list.subList(list.size - 5, list.size))
+                } else {
+                    ArrayList(list)
+                }
+
                 // 包含 Constant.ACoinList 里的数据
                 var Alist = list.filter { Constant.ACoinList.contains(it.name) }
 
@@ -538,6 +560,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
                 list.sortByDescending { it.rateInc }
             } else if (type == "Volume") {
+                // 成交额
                 list.filter { it.quoteAssetVolume > BigDecimal.ZERO}
                 // list 去重
                 list = list.distinctBy { it.name } as ArrayList<KeyLineCoin>
@@ -546,14 +569,26 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
             } else if (type == "volumeRatio") {
 
+                // 量比
                 var filterList = list.filter { it.volumeRatio > BigDecimal.ZERO}
                 list = ArrayList(filterList)
 
                 list.sortByDescending { it.volumeRatio }
 
 
-                var top5 = ArrayList(list.subList(0, 5))
-                var bottom5 = ArrayList(list.subList(list.size - 5, list.size))
+
+                val top5 = if (list.size >= 5) {
+                    ArrayList(list.subList(0, 5))
+                } else {
+                    ArrayList(list)
+                }
+
+                val bottom5 = if (list.size >= 5) {
+                    ArrayList(list.subList(list.size - 5, list.size))
+                } else {
+                    ArrayList(list)
+                }
+
                 // 包含 Constant.ACoinList 里的数据
                 var Alist = list.filter { Constant.ACoinList.contains(it.name) }
 
@@ -573,7 +608,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             var format = SimpleDateFormat("MM.dd HH:mm")
             var openTimeStr = format.format(date)
 
-            itemStr.append("${openTimeStr} \n")
+            itemStr.append("开始时间：${openTimeStr} \n")
             printSortedCoinList(list, itemStr, type)
 
             stringBuilder.append(itemStr)
@@ -890,7 +925,7 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
             Log.d("sss", "showData111: $coinPair"+"  list: $list")
             return list
         } catch (e: Exception) {
-            Log.e("sss", Log.getStackTraceString(e))
+            Log.e("sss","coin"+ Log.getStackTraceString(e))
         }
         return ArrayList<Candlestick>(0)
     }
