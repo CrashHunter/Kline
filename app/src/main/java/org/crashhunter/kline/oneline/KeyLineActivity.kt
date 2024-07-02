@@ -456,11 +456,11 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
                 stringBuilder.append("-------------- 涨跌幅 --------------\n")
                 getLastestRank("Rate")
 
-                stringBuilder.append("-------------- 成交额 --------------\n")
-                getLastestRank("Volume")
-
                 stringBuilder.append("-------------- 量比 --------------\n")
                 getLastestRank("volumeRatio")
+
+                stringBuilder.append("-------------- 成交额 --------------\n")
+                getLastestRank("Volume")
 
                 stringBuilder.append("-------------- 振幅 --------------\n")
                 getLastestRank("Range")
@@ -729,6 +729,9 @@ class KeyLineActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListene
 
             // 涨幅
             var rateInc = diff.divide(open, 6, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
+
+            Log.d("sss", "coin $coin open $open close $close diff $diff rateInc $rateInc")
+
             // 振幅
             var rangeInc = rangeDiff.divide(low, 6, BigDecimal.ROUND_HALF_UP) * BigDecimal(100)
 
