@@ -47,6 +47,8 @@ class DownPercentActivity : AppCompatActivity() {
 
     var stringBuilder = SpannableStringBuilder()
 
+    var sLevelStringBuilder = SpannableStringBuilder()
+
     var dailyStringBuilder = SpannableStringBuilder()
 
     var roiStringBuilder = SpannableStringBuilder()
@@ -204,6 +206,9 @@ class DownPercentActivity : AppCompatActivity() {
                 runOnUiThread {
                     tvTitle.text = ""
                     tvTitle.text = stringBuilder
+
+                    tvSLevel.text = ""
+                    tvSLevel.text = sLevelStringBuilder
                 }
             }
             R.id.DownPer -> {
@@ -212,6 +217,9 @@ class DownPercentActivity : AppCompatActivity() {
                 runOnUiThread {
                     tvTitle.text = ""
                     tvTitle.text = stringBuilder
+
+                    tvSLevel.text = ""
+                    tvSLevel.text = sLevelStringBuilder
                 }
             }
             R.id.ROI -> {
@@ -328,6 +336,8 @@ class DownPercentActivity : AppCompatActivity() {
 
     private fun processDownData() {
         stringBuilder.clear()
+        sLevelStringBuilder.clear()
+
         resultList.sortByDescending { it.downPer }
 
 
@@ -359,7 +369,27 @@ class DownPercentActivity : AppCompatActivity() {
             }
 
 
-            stringBuilder.append("\n \n")
+            stringBuilder.append("\n")
+
+
+            if (Constant.ACoinList.contains(coin.replace("USDT", ""))) {
+                sLevelStringBuilder.append("${index + 1}. ")
+                levelColor(item, sLevelStringBuilder)
+                sLevelStringBuilder.append(" $max / $current / ")
+
+                //跌幅
+                downPerColor(item, sLevelStringBuilder)
+                sLevelStringBuilder.append(
+                    " " + max.divide(current, 2, BigDecimal.ROUND_HALF_UP).toString() + " "
+                )
+
+                if (Constant.ownCoinListName.contains(coin.replace("USDT", ""))) {
+                    sLevelStringBuilder.append(" OWN")
+                }
+
+                sLevelStringBuilder.append("\n")
+            }
+
         }
     }
 
@@ -554,6 +584,9 @@ class DownPercentActivity : AppCompatActivity() {
             runOnUiThread {
                 tvTitle.text = ""
                 tvTitle.text = stringBuilder
+
+                tvSLevel.text = ""
+                tvSLevel.text = sLevelStringBuilder
             }
         }
     }
