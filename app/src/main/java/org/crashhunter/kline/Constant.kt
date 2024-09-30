@@ -59,9 +59,10 @@ object Constant {
     )
 
     var ACoinList = arrayListOf(
-        "ATOM",
-        "BNB","BTC",
-        "ENS",
+        "ADA","AVAX", "ATOM",
+        "BNB","BTC","BCH",
+        "DOT",
+        "ENS","ETH",
         "FIL",
         "GALA",
         "ICP",
@@ -74,6 +75,7 @@ object Constant {
         "TRX",
         "UNI",
         "WLD",
+        "XRP",
         "ZRX"
     )
 }
